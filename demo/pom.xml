@@ -50,4 +50,18 @@
             </plugin>
         </plugins>
     </build>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>googlecode-releases</id>
+            <name>Google Code Maven repository of releases</name>
+            <url>http://maven-samaxes-plugin.googlecode.com/svn/repo/releases</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
 </project>
