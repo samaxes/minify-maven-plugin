@@ -99,8 +99,9 @@
             <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>
         <site>
+            <!-- Need to be local so it can be uploaded with the correct myme-type -->
             <id>local</id>
-            <url>file://${basedir}/site</url>
+            <url>file://${basedir}/../sites/${project.artifactId}</url>
         </site>
     </distributionManagement>
 
