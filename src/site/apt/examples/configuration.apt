@@ -1,0 +1,52 @@
+ ------
+ Maven Minify Plugin Configuration
+ ------
+ Samuel Santos
+ ------
+ 2009-06-10
+ ------
+
+Maven Minify Plugin Configuration
+
+* Configuring your <<<pom.xml>>>
+
+  You can use the following configuration in your <<<pom.xml>>> to run the Maven Minify Plugin
+  everytime the project is built.
+
++---+
+<project>
+  ...
+  <build>
+    <plugins>
+      ...
+      <plugin>
+        <groupId>com.samaxes.maven</groupId>
+        <artifactId>maven-minify-plugin</artifactId>
+        <version>1.0</version>
+        <configuration>
+          <cssFilenames>
+            <param>file-1.css</param>
+            ...
+            <param>file-n.css</param>
+          </cssFilenames>
+          <jsFilenames>
+            <param>file-1.js</param>
+            ...
+            <param>file-n.js</param>
+          </jsFilenames>
+        </configuration>
+      </plugin>
+      ...
+    </plugins>
+  </build>
+  ...
+</project>
++---+
+
+* From the command-line
+
+  It can also be easily executed from the command line using:
+
++---+
+mvn minify:minify
++---+

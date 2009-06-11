@@ -1,0 +1,36 @@
+ ------
+ Introduction
+ ------
+ Samuel Santos
+ ------
+ 2009-06-10
+ ------
+
+Maven Minify Plugin
+
+  This plugin combines and minimizes JavaScript and CSS files using
+  {{{http://www.julienlecomte.net/yuicompressor/}YUI Compressor}}  for faster page loading.
+
+* Goals Overview
+
+  * {{{minify-mojo.html}minify:minify}} combine and minimize JavaScript and CSS files.
+
+* Usage
+
+  General instructions on how to use the Maven Minify Plugin can be found on the {{{usage.html}usage page}}. Some more
+  specific use cases are described in the examples given below.
+
+  If you feel like the plugin is missing a feature or has a defect, you can fill a feature request or bug report in our
+  {{{issue-tracking.html}issue tracker}}. When creating a new issue, please provide a comprehensive description of your
+  concern. Especially for fixing bugs it is crucial that the developers can reproduce your problem. For this reason,
+  entire debug logs, POMs or most preferably little demo projects attached to the issue are very much appreciated.
+  Of course, patches are welcome, too. Contributors can check out the project from our
+  {{{source-repository.html}source repository}} and will find supplementary information in the
+  {{{http://maven.apache.org/guides/development/guide-helping.html}guide to helping with Maven}}.
+
+* Examples
+
+  To provide you with better understanding of some usages of the Maven Minify Plugin,
+  you can take a look into the following examples:
+
+  * {{{examples/configuration.html}Minify Plugin Configuration}}
