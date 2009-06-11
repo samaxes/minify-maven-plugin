@@ -26,13 +26,27 @@
         </license>
     </licenses>
 
+    <developers>
+        <developer>
+            <id>samaxes</id>
+            <name>Samuel Santos</name>
+            <url>http://www.samaxes.com/</url>
+            <roles>
+                <role>project owner</role>
+                <role>developer</role>
+            </roles>
+            <timezone>0</timezone>
+        </developer>
+    </developers>
+
     <issueManagement>
         <system>Google Code</system>
-        <url>http://code.google.com/p/maven-samaxes-plugin/issues</url>
+        <url>http://code.google.com/p/maven-samaxes-plugin/issues/list</url>
     </issueManagement>
     <scm>
-        <connection>scm:svn:http://maven-samaxes-plugin.googlecode.com/svn/trunk/</connection>
-        <url>http://maven-samaxes-plugin.googlecode.com/svn/trunk/</url>
+        <connection>scm:svn:http://maven-samaxes-plugin.googlecode.com/svn/trunk</connection>
+        <developerConnection>scm:svn:https://maven-samaxes-plugin.googlecode.com/svn/trunk</developerConnection>
+        <url>http://maven-samaxes-plugin.googlecode.com/svn/trunk</url>
     </scm>
 
     <prerequisites>
@@ -40,6 +54,13 @@
     </prerequisites>
 
     <build>
+        <extensions>
+            <extension>
+                <groupId>org.jvnet.wagon-svn</groupId>
+                <artifactId>wagon-svn</artifactId>
+                <version>1.9</version>
+            </extension>
+        </extensions>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -66,6 +87,17 @@
     </build>
 
     <distributionManagement>
+        <repository>
+            <id>googlecode-releases</id>
+            <name>Google Code Maven repository of releases</name>
+            <url>svn:https://maven-samaxes-plugin.googlecode.com/svn/repo/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>googlecode-snapshots</id>
+            <name>Google Code Maven repository of snapshots</name>
+            <url>svn:https://maven-samaxes-plugin.googlecode.com/svn/repo/snapshots</url>
+            <uniqueVersion>false</uniqueVersion>
+        </snapshotRepository>
         <site>
             <id>local</id>
             <url>file://${basedir}/site</url>
