@@ -1,0 +1,11 @@
+div#toc ul li {
+    list-style: none;
+}
+
+div#toc ul li ul {
+    margin-bottom: 0.75em;
+}
+
+div#toc ul li ul li ul {
+    margin-bottom: 0.25em;
+}

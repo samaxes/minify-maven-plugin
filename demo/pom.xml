@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.samaxes.maven</groupId>
+    <artifactId>maven-minify-plugin-example</artifactId>
+    <version>1.0</version>
+    <packaging>war</packaging>
+
+    <name>Minify Maven Plugin Example</name>
+    <url>http://code.google.com/p/maven-samaxes-plugin/</url>
+    <description>How to use the maven plugin maven-minify-plugin.</description>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultSpecificationEntries>false</addDefaultSpecificationEntries>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addClasspath>false</addClasspath>
+                        </manifest>
+                        <addMavenDescriptor>false</addMavenDescriptor>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.samaxes.maven</groupId>
+                <artifactId>maven-minify-plugin</artifactId>
+                <version>1.0</version>
+                <configuration>
+                    <cssFilenames>
+                        <param>reset.css</param>
+                        <param>fonts.css</param>
+                        <param>base.css</param>
+                        <param>style.css</param>
+                    </cssFilenames>
+                    <jsFilenames>
+                        <param>samaxesjs.core.js</param>
+                        <param>samaxesjs.toc.js</param>
+                    </jsFilenames>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

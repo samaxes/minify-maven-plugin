@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Meta Tags -->
+    <meta charset="UTF-8">
+    <meta name="robots" content="noarchive, noindex" />
+    <meta name="description" content="Install Apache" />
+    <meta name="keywords" content="apache, apache2" />
+
+    <title>Install Apache</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.min.css" type="text/css" />
+    <!-- JavaScript -->
+    <script type="text/javascript" src="js/samaxesjs.min.js"></script>
+</head>
+<body>
+    <h1 id="install_apache">Install Apache</h1>
+
+    <h2 id="table_of_content">Table of contents</h2>
+    <div id="toc"></div>
+
+    <h2 id="introduction">Introduction</h2>
+    <blockquote cite="http://httpd.apache.org/">
+        <p>
+            The Apache HTTP Server Project is an effort to develop and maintain an open-source HTTP server for modern
+            operating systems including UNIX and Windows NT. The goal of this project is to provide a secure, efficient
+            and extensible server that provides HTTP services in sync with the current HTTP standards.
+        </p>
+        <p>Apache has been the most popular web server on the Internet since April 1996.</p>
+        <p>The Apache HTTP Server is a project of the <a href="http://www.apache.org/">Apache Software Foundation</a>.</p>
+    </blockquote>
+
+    <h2 id="download">Download &amp; Unpack</h2>
+    <p>
+        Download and install Apache from
+        <a href="http://httpd.apache.org/download.cgi">http://httpd.apache.org/download.cgi</a>.
+    </p>
+    <p>Look for the <em>Win32 Binary</em> version.</p>
+
+    <h2 id="install">Install</h2>
+    <p>
+        When you install Apache, you'll get a prompt for <em>Server Information</em>. Here are the settings I've used:
+    </p>
+    <p><img src="http://samaxes.appspot.com/images/install-apache-1.png" alt="Apache Server Information" /></p>
+    <dl class="example">
+        <dt>Network Domain</dt> <dd><kbd>localhost</kbd></dd>
+        <dt>Server Name</dt> <dd><kbd>localhost</kbd></dd>
+        <dt>Admin Email</dt> <dd><kbd>(your any email)</kbd></dd>
+    </dl>
+    <p>I recommend you to check <strong>for All Users, on Port 80, as a Service</strong>.</p>
+
+    <h3 id="path">Path notes</h3>
+    <p>
+        If you choose <em>Typical</em> setup and <code class="path">C:\apache</code> as your installation folder,
+        it'll actually be installed to <code class="path">C:\apache\Apache2</code>.
+    </p>
+    <p>In <em>Custom</em> setup you can specifically choose where to install each of it's parts/sub-parts.</p>
+    <p class="note">
+        if you are updating from a previous version of 2.x, you will have to uninstall the old version before
+        installing the new one.
+        <br />However, Apache 2.x will play very nicely with an older Apache 1.x version.
+    </p>
+
+    <h2 id="server">Starting / Stopping Apache</h2>
+    <p>After installing, Apache2 will automatically start.</p>
+    <ul>
+        <li>
+            The <img src="http://samaxes.appspot.com/images/apache-start.gif" alt="Apache Start" />
+            start icon in the system tray means it is running.
+        </li>
+        <li>
+            The <img src="http://samaxes.appspot.com/images/apache-stop.gif" alt="Apache Stop" />
+            stop icon means that the Apache server monitor is running, but Apache2 hasn't started.
+        </li>
+    </ul>
+    <p>You can easily start | stop | restart Apache and Apache2 via that icon in your system tray.</p>
+    <p>
+        If you get the <samp>The requested operation has failed!</samp> error while starting apache try the
+        <em>Test Configuration</em> shortcut in the Start Menu to find the error
+        (if the console window pops up and closes before you can read it, it means that your configuration is fine).
+    </p>
+
+    <h2 id="testing">Testing</h2>
+    <p>Now the ultimate test to see if it's all working.</p>
+    <p>
+        Open your browser and head to <a href="http://127.0.0.1/">http://127.0.0.1/</a> or
+        <a href="http://localhost/">http://localhost/</a>.
+    </p>
+    <p><img src="http://samaxes.appspot.com/images/install-apache-2.png" alt="Apache Installed" /></p>
+    <p>If you see the above Apache installation's test page then you have your server configured and running.</p>
+
+    <h2 id="configuration">Making Apache point to your files</h2>
+    <ol>
+        <li>
+            Using a text editor open <code class="path">C:\&lt;APACHE_INSTALLATION_FOLDER>\conf\httpd.conf</code>
+            (in the start-menu there should also be a <em>Edit the Apache httpd.conf Configuration File</em> shortcut)
+            and search for <var>DocumentRoot</var>.
+        </li>
+        <li>
+            Change it from something like <code>DocumentRoot C:/&lt;APACHE_INSTALLATION_FOLDER>/htdocs</code> to the
+            location where your HTML files are located (e.g. <code>DocumentRoot C:/public_html</code>).
+        </li>
+        <li>
+            Then scroll down about one page and change
+            <code>&lt;Directory "C:/&lt;APACHE_INSTALLATION_FOLDER>/htdocs"></code> to point to the same location
+            you set <var>DocumentRoot</var> to in the last step.
+        </li>
+        <li>Restart apache so the changes take effect.</li>
+    </ol>
+
+    <script type="text/javascript">
+        samaxesJS.toc(document.getElementById('toc'));
+    </script>
+</body>
+</html>
