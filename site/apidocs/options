@@ -1,0 +1,28 @@
+-classpath
+'F:/projects/samaxes/maven-samaxes-plugin/maven-minify-plugin/target/classes;C:/Users/Silenius/.m2/repository/org/apache/maven/maven-plugin-api/2.1.0/maven-plugin-api-2.1.0.jar;C:/Users/Silenius/.m2/repository/com/yahoo/platform/yui/yuicompressor/2.3.6/yuicompressor-2.3.6.jar'
+-encoding
+'UTF-8'
+-protected
+-quiet
+-source
+'1.6'
+-sourcepath
+'F:/projects/samaxes/maven-samaxes-plugin/maven-minify-plugin/src/main/java'
+-author
+-bottom
+'Copyright &#169; 2009 <a href="http://www.samaxes.com/">samaxes</a>. All Rights Reserved.'
+-charset
+'UTF-8'
+-d
+'F:/projects/samaxes/maven-samaxes-plugin/maven-minify-plugin/target/site/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'Maven Minify Plugin 1.0 API'
+-link
+'http://java.sun.com/javase/6/docs/api'
+-linksource
+-use
+-version
+-windowtitle
+'Maven Minify Plugin 1.0 API'
