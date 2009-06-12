@@ -6,11 +6,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.samaxes.maven</groupId>
-    <artifactId>maven-minify-plugin-example</artifactId>
+    <artifactId>maven-minify-plugin-demo</artifactId>
     <version>1.0</version>
     <packaging>war</packaging>
 
-    <name>Minify Maven Plugin Example</name>
+    <name>Minify Maven Plugin Demo</name>
     <url>http://code.google.com/p/maven-samaxes-plugin/</url>
     <description>How to use the maven plugin maven-minify-plugin.</description>
 
@@ -29,6 +29,16 @@
                         </manifest>
                         <addMavenDescriptor>false</addMavenDescriptor>
                     </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>src</descriptorRef>
+                    </descriptorRefs>
                 </configuration>
             </plugin>
             <plugin>
@@ -56,12 +66,6 @@
             <id>googlecode-releases</id>
             <name>Google Code Maven repository of releases</name>
             <url>http://maven-samaxes-plugin.googlecode.com/svn/repo/releases</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
         </pluginRepository>
     </pluginRepositories>
 </project>
