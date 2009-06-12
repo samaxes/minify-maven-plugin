@@ -10,7 +10,7 @@
     <version>1.0</version>
     <packaging>war</packaging>
 
-    <name>Minify Maven Plugin Demo</name>
+    <name>Maven Minify Plugin Demo</name>
     <url>http://code.google.com/p/maven-samaxes-plugin/</url>
     <description>How to use the maven plugin maven-minify-plugin.</description>
 
