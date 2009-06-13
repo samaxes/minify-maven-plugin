@@ -90,12 +90,12 @@
         <repository>
             <id>googlecode-releases</id>
             <name>Google Code Maven repository of releases</name>
-            <url>svn:https://maven-samaxes-plugin.googlecode.com/svn/repo/releases</url>
+            <url>svn:https://maven-samaxes-repo.googlecode.com/svn/releases</url>
         </repository>
         <snapshotRepository>
             <id>googlecode-snapshots</id>
             <name>Google Code Maven repository of snapshots</name>
-            <url>svn:https://maven-samaxes-plugin.googlecode.com/svn/repo/snapshots</url>
+            <url>svn:https://maven-samaxes-repo.googlecode.com/svn/snapshots</url>
             <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>
         <site>

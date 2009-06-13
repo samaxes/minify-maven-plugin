@@ -65,7 +65,7 @@
         <pluginRepository>
             <id>googlecode-releases</id>
             <name>Google Code Maven repository of releases</name>
-            <url>http://maven-samaxes-plugin.googlecode.com/svn/repo/releases</url>
+            <url>http://maven-samaxes-repo.googlecode.com/svn/releases</url>
         </pluginRepository>
     </pluginRepositories>
 </project>
