@@ -20,6 +20,7 @@
  */
 package com.samaxes.maven.plugin.minify;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -31,13 +32,13 @@ import org.apache.maven.plugin.logging.Log;
 
 /**
  * {@code ListOfFiles} is used to initialize the SequenceInputStream which uses {@code ListOfFiles} to get a new
- * InputStream for every filename listed.
+ * InputStream for every file listed.
  */
 public class ListOfFiles implements Enumeration<InputStream> {
 
     private Log log;
 
-    private List<String> listOfFiles;
+    private List<File> files;
 
     private int current = 0;
 
@@ -45,11 +46,11 @@ public class ListOfFiles implements Enumeration<InputStream> {
      * ListOfFiles public constructor.
      * 
      * @param log Maven plugin log
-     * @param listOfFiles list of pathnames
+     * @param files list of files
      */
-    public ListOfFiles(Log log, List<String> listOfFiles) {
+    public ListOfFiles(Log log, List<File> files) {
         this.log = log;
-        this.listOfFiles = listOfFiles;
+        this.files = files;
     }
 
     /**
@@ -59,7 +60,7 @@ public class ListOfFiles implements Enumeration<InputStream> {
      *         <code>false</code> otherwise.
      */
     public boolean hasMoreElements() {
-        return (current < listOfFiles.size()) ? true : false;
+        return (current < files.size()) ? true : false;
     }
 
     /**
@@ -75,14 +76,40 @@ public class ListOfFiles implements Enumeration<InputStream> {
             throw new NoSuchElementException("No more files.");
         else {
             try {
-                String nextElement = listOfFiles.get(current);
+                File nextElement = files.get(current);
                 current++;
                 is = new FileInputStream(nextElement);
             } catch (FileNotFoundException e) {
-                log.error("The file " + listOfFiles.get(current) + " was not found.", e);
+                log.error("The file [" + files.get(current).getName() + "] was not found.", e);
             }
         }
 
         return is;
+    }
+
+    /**
+     * Returns the list of files contained in this object.
+     * 
+     * @return the list of files
+     */
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder("[");
+        for (File file : files) {
+            if (stringBuilder.length() > 1) {
+                stringBuilder.append(", ");
+            }
+            stringBuilder.append(file.getName());
+        }
+
+        return stringBuilder.append("]").toString();
+    }
+
+    /**
+     * Returns the number of elements in this list.
+     * 
+     * @return the number of elements in this list
+     */
+    public int size() {
+        return files.size();
     }
 }

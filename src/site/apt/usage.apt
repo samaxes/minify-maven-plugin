@@ -3,7 +3,7 @@
  ------
  Samuel Santos
  ------
- 2009-06-10
+ 2009-09-21
  ------
 
 Usage
@@ -13,12 +13,9 @@ Usage
   critical to cover two topics: Configuring your project's <<<pom.xml>>> to run
   the plugin during the build and using the plugin from the command-line.
 
-* Configuring the plugin in <<<pom.xml>>>
+* Basic configuration
 
-  You can use the following configuration in your <<<pom.xml>>> to run the Maven Minify Plugin
-  everytime the project is built. This configuration shows all the possible configuration parameters;
-  a simpler version available at {{{examples/configuration.html}Minify Plugin Configuration}}
-  should be enough.
+  The recommended basic configuration.
 
 +---+
 <project>
@@ -31,20 +28,56 @@ Usage
         <artifactId>maven-minify-plugin</artifactId>
         <version>1.0</version>
         <configuration>
-          <webAppDir>${basedir}/src/main/webapp</webAppDir>
-          <webAppTargetDir>${project.build.directory}/${project.build.finalName}</webAppTargetDir>
-          <cssDir>css</cssDir>
-          <jsDir>js</jsDir>
-          <cssFilenames>
+          <cssFiles>
             <param>file-1.css</param>
             ...
             <param>file-n.css</param>
-          </cssFilenames>
-          <jsFilenames>
+          </cssFiles>
+          <jsFiles>
             <param>file-1.js</param>
             ...
             <param>file-n.js</param>
-          </jsFilenames>
+          </jsFiles>
+        </configuration>
+      </plugin>
+      ...
+    </plugins>
+  </build>
+  ...
+</project>
++---+
+
+* Complete configuration
+
+  In case you need more flexibility, this configuration shows all the possible configuration parameters.
+
++---+
+<project>
+  ...
+  <build>
+    <plugins>
+      ...
+      <plugin>
+        <groupId>com.samaxes.maven</groupId>
+        <artifactId>maven-minify-plugin</artifactId>
+        <version>1.0</version>
+        <configuration>
+          <webappSourceDir>${basedir}/src/main/webapp</webappSourceDir>
+          <webappTargetDir>${project.build.directory}/${project.build.finalName}</webappTargetDir>
+          <cssDir>css</cssDir>
+          <jsDir>js</jsDir>
+          <cssFiles>
+            <param>file-1.css</param>
+            ...
+            <param>file-n.css</param>
+          </cssFiles>
+          <jsFiles>
+            <param>file-1.js</param>
+            ...
+            <param>file-n.js</param>
+          </jsFiles>
+          <cssFinalFile>style.css</cssFinalFile>
+          <jsFinalFile>script.js</jsFinalFile>
           <linebreak>-1</linebreak>
           <nomunge>false</nomunge>
           <verbose>false</verbose>

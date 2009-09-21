@@ -35,26 +35,26 @@ import org.apache.maven.plugin.MojoFailureException;
  * Goal which combines and minifies CSS and JavaScript files.
  * 
  * @goal minify
- * @phase process-sources
+ * @phase process-resources
  */
 public class MinifyMojo extends AbstractMojo {
 
     /**
      * Webapp source directory.
      * 
-     * @parameter expression="${minify.webAppDir}" default-value="${basedir}/src/main/webapp"
+     * @parameter expression="${minify.webappSourceDir}" default-value="${basedir}/src/main/webapp"
      * @required
      */
-    private String webAppDir;
+    private String webappSourceDir;
 
     /**
-     * Webapp output directory.
+     * Webapp target directory.
      * 
-     * @parameter expression="${minify.webAppTargetDir}"
+     * @parameter expression="${minify.webappTargetDir}"
      *            default-value="${project.build.directory}/${project.build.finalName}"
      * @required
      */
-    private String webAppTargetDir;
+    private String webappTargetDir;
 
     /**
      * CSS source directory.
@@ -77,28 +77,28 @@ public class MinifyMojo extends AbstractMojo {
      * 
      * @parameter
      */
-    private List<String> cssFilenames = new ArrayList<String>();
+    private List<String> cssFiles = new ArrayList<String>();
 
     /**
      * JavaScript filenames list.
      * 
      * @parameter
      */
-    private List<String> jsFilenames = new ArrayList<String>();
+    private List<String> jsFiles = new ArrayList<String>();
 
     /**
      * CSS output filename.
      * 
-     * @parameter expression="${minify.cssFinalName}" default-value="style.css"
+     * @parameter expression="${minify.cssFinalFile}" default-value="style.css"
      */
-    private String cssFinalName;
+    private String cssFinalFile;
 
     /**
      * JavaScript output filename.
      * 
-     * @parameter expression="${minify.jsFinalName}" default-value="script.js"
+     * @parameter expression="${minify.jsFinalFile}" default-value="script.js"
      */
-    private String jsFinalName;
+    private String jsFinalFile;
 
     /**
      * Some source control tools don't like files containing lines longer than, say 8000 characters. The linebreak
@@ -157,20 +157,16 @@ public class MinifyMojo extends AbstractMojo {
      */
     public void execute() throws MojoExecutionException, MojoFailureException {
         ExecutorService executor = Executors.newFixedThreadPool(2);
-        Future<String> cssMergeTask = executor.submit(new MergeFilesTask(getLog(), bufferSize, webAppDir,
-                webAppTargetDir, cssDir, cssFilenames, cssFinalName));
-        Future<String> jsMergeTask = executor.submit(new MergeFilesTask(getLog(), bufferSize, webAppDir,
-                webAppTargetDir, jsDir, jsFilenames, jsFinalName));
-        Future<?> cssCompressTask;
-        Future<?> jsCompressTask;
+        Future<?> processCSSFilesTask = executor.submit(new ProcessFilesTask(getLog(), bufferSize, webappSourceDir,
+                webappTargetDir, cssDir, cssFiles, cssFinalFile, linebreak, !nomunge, verbose, preserveAllSemiColons,
+                disableOptimizations));
+        Future<?> processJSFilesTask = executor.submit(new ProcessFilesTask(getLog(), bufferSize, webappSourceDir,
+                webappTargetDir, jsDir, jsFiles, jsFinalFile, linebreak, !nomunge, verbose, preserveAllSemiColons,
+                disableOptimizations));
 
         try {
-            cssCompressTask = executor.submit(new CompressFileTask(getLog(), cssMergeTask.get(), linebreak, !nomunge,
-                    verbose, preserveAllSemiColons, disableOptimizations));
-            jsCompressTask = executor.submit(new CompressFileTask(getLog(), jsMergeTask.get(), linebreak, !nomunge,
-                    verbose, preserveAllSemiColons, disableOptimizations));
-            cssCompressTask.get();
-            jsCompressTask.get();
+            processCSSFilesTask.get();
+            processJSFilesTask.get();
         } catch (InterruptedException e) {
             getLog().error(e.getMessage(), e);
         } catch (ExecutionException e) {

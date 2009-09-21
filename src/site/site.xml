@@ -8,7 +8,9 @@
             <!--item name="FAQ" href="faq.html" /-->
         </menu>
         <menu name="Examples">
-            <item name="Minify Plugin Configuration" href="examples/configuration.html" />
+            <item name="Basic Configuration" href="examples/basic.html" />
+            <item name="Binding to a Phase in the Project Build Cycle" href="examples/binding.html" />
+            <item name="Exclude source files from the WAR package" href="examples/exclude.html" />
         </menu>
         ${reports}
     </body>

@@ -18,9 +18,28 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.0.2</version>
                 <configuration>
+                    <warSourceExcludes>**/reset.css,**/fonts.css,**/base.css,**/samaxesjs.core.js,**/samaxesjs.toc.js</warSourceExcludes>
                     <archive>
                         <manifest>
                             <addDefaultSpecificationEntries>false</addDefaultSpecificationEntries>
@@ -44,19 +63,28 @@
             <plugin>
                 <groupId>com.samaxes.maven</groupId>
                 <artifactId>maven-minify-plugin</artifactId>
-                <version>1.0</version>
-                <configuration>
-                    <cssFilenames>
-                        <param>reset.css</param>
-                        <param>fonts.css</param>
-                        <param>base.css</param>
-                        <param>style.css</param>
-                    </cssFilenames>
-                    <jsFilenames>
-                        <param>samaxesjs.core.js</param>
-                        <param>samaxesjs.toc.js</param>
-                    </jsFilenames>
-                </configuration>
+                <version>1.1-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <id>default-minify</id>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <cssFiles>
+                                <param>reset.css</param>
+                                <param>fonts.css</param>
+                                <param>base.css</param>
+                                <param>style.css</param>
+                            </cssFiles>
+                            <jsFiles>
+                                <param>samaxesjs.core.js</param>
+                                <param>samaxesjs.toc.js</param>
+                            </jsFiles>
+                        </configuration>
+                        <goals>
+                            <goal>minify</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

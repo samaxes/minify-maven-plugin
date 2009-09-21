@@ -7,7 +7,7 @@
 
     <groupId>com.samaxes.maven</groupId>
     <artifactId>maven-minify-plugin</artifactId>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <name>Maven Minify Plugin</name>
@@ -46,11 +46,11 @@
     <scm>
         <connection>scm:svn:http://maven-samaxes-plugin.googlecode.com/svn/trunk</connection>
         <developerConnection>scm:svn:https://maven-samaxes-plugin.googlecode.com/svn/trunk</developerConnection>
-        <url>http://maven-samaxes-plugin.googlecode.com/svn/trunk</url>
+        <url>http://maven-samaxes-plugin.googlecode.com/svn/trunk/maven-minify-plugin</url>
     </scm>
 
     <prerequisites>
-        <maven>2.0.10</maven>
+        <maven>[2.1.0,)</maven>
     </prerequisites>
 
     <build>
@@ -69,6 +69,14 @@
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>

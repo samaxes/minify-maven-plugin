@@ -60,7 +60,7 @@ public class JavaScriptErrorReporter implements ErrorReporter {
 
     /**
      * Reports an error. If execution has not yet begun, the JavaScript engine is free to find additional errors rather
-     * than terminating the translation. It will not execute a script that had errors, however.
+     * than terminating the translation. However, it will not execute a script that had errors.
      * 
      * @param message a String describing the warning
      * @param sourceName a String describing the JavaScript source where the warning occured; typically a filename or

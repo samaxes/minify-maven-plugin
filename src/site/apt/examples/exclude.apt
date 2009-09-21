@@ -1,0 +1,68 @@
+ ------
+ Exclude source files from the WAR package
+ ------
+ Samuel Santos
+ ------
+ 2009-09-21
+ ------
+
+Exclude source files from the WAR package
+
+* Configuring your Maven WAR Plugin
+
+  You can use the following configuration in your <<<pom.xml>>> to exclude source files from the WAR package.
+
++---+
+<project>
+  ...
+  <build>
+    <plugins>
+      ...
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <warSourceExcludes>**/file-1.css,...,**/file-n.css,**/file-1.js,...,**/file-n.js</warSourceExcludes>
+        </configuration>
+      </plugin>
+      ...
+      <plugin>
+        <groupId>com.samaxes.maven</groupId>
+        <artifactId>maven-minify-plugin</artifactId>
+        <version>1.0</version>
+        <executions>
+          <execution>
+            <id>default-minify</id>
+            <phase>process-resources</phase>
+            <configuration>
+              <cssFiles>
+                <param>file-1.css</param>
+                ...
+                <param>file-n.css</param>
+              </cssFiles>
+              <jsFiles>
+                <param>file-1.js</param>
+                ...
+                <param>file-n.js</param>
+              </jsFiles>
+            </configuration>
+            <goals>
+              <goal>minify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      ...
+    </plugins>
+  </build>
+  ...
+</project>
++---+
+
+* From the command-line
+
+  Only the merged and minified files will be included in your package:
+
++---+
+mvn package
++---+

@@ -43,7 +43,7 @@
   
     
             <div class="xleft">
-        Last Published: 2009-06-13
+        Last Published: 2009-09-21
                       </div>
             <div class="xright">      
   
@@ -87,7 +87,15 @@
             <ul>
               
     <li class="none">
-                    <a href="examples/configuration.html">Minify Plugin Configuration</a>
+                    <a href="examples/basic.html">Basic Configuration</a>
+          </li>
+              
+    <li class="none">
+                    <a href="examples/binding.html">Binding to a Phase in the Project Build Cycle</a>
+          </li>
+              
+    <li class="none">
+                    <a href="examples/exclude.html">Exclude source files from the WAR package</a>
           </li>
           </ul>
               <h5>Project Documentation</h5>
@@ -148,8 +156,8 @@
       <div id="contentBox">
         <div class="section"><h2>Usage</h2>
 <p>This document is intended to provide instructions for using the Maven Minify Plugin. In order for this discussion to be useful, it's critical to cover two topics: Configuring your project's <tt>pom.xml</tt> to run the plugin during the build and using the plugin from the command-line.</p>
-<div class="section"><h3>Configuring the plugin in <tt>pom.xml</tt></h3>
-<p>You can use the following configuration in your <tt>pom.xml</tt> to run the Maven Minify Plugin everytime the project is built. This configuration shows all the possible configuration parameters; a simpler version available at <a href="examples/configuration.html">Minify Plugin Configuration</a> should be enough.</p>
+<div class="section"><h3>Basic configuration</h3>
+<p>The recommended basic configuration.</p>
 <div class="source"><pre>&lt;project&gt;
   ...
   &lt;build&gt;
@@ -160,20 +168,53 @@
         &lt;artifactId&gt;maven-minify-plugin&lt;/artifactId&gt;
         &lt;version&gt;1.0&lt;/version&gt;
         &lt;configuration&gt;
-          &lt;webAppDir&gt;${basedir}/src/main/webapp&lt;/webAppDir&gt;
-          &lt;webAppTargetDir&gt;${project.build.directory}/${project.build.finalName}&lt;/webAppTargetDir&gt;
-          &lt;cssDir&gt;css&lt;/cssDir&gt;
-          &lt;jsDir&gt;js&lt;/jsDir&gt;
-          &lt;cssFilenames&gt;
+          &lt;cssFiles&gt;
             &lt;param&gt;file-1.css&lt;/param&gt;
             ...
             &lt;param&gt;file-n.css&lt;/param&gt;
-          &lt;/cssFilenames&gt;
-          &lt;jsFilenames&gt;
+          &lt;/cssFiles&gt;
+          &lt;jsFiles&gt;
             &lt;param&gt;file-1.js&lt;/param&gt;
             ...
             &lt;param&gt;file-n.js&lt;/param&gt;
-          &lt;/jsFilenames&gt;
+          &lt;/jsFiles&gt;
+        &lt;/configuration&gt;
+      &lt;/plugin&gt;
+      ...
+    &lt;/plugins&gt;
+  &lt;/build&gt;
+  ...
+&lt;/project&gt;</pre>
+</div>
+</div>
+<div class="section"><h3>Complete configuration</h3>
+<p>In case you need more flexibility, this configuration shows all the possible configuration parameters.</p>
+<div class="source"><pre>&lt;project&gt;
+  ...
+  &lt;build&gt;
+    &lt;plugins&gt;
+      ...
+      &lt;plugin&gt;
+        &lt;groupId&gt;com.samaxes.maven&lt;/groupId&gt;
+        &lt;artifactId&gt;maven-minify-plugin&lt;/artifactId&gt;
+        &lt;version&gt;1.0&lt;/version&gt;
+        &lt;configuration&gt;
+          &lt;webappSourceDir&gt;${basedir}/src/main/webapp&lt;/webappSourceDir&gt;
+          &lt;webappTargetDir&gt;${project.build.directory}/${project.build.finalName}&lt;/webappTargetDir&gt;
+          &lt;cssDir&gt;css&lt;/cssDir&gt;
+          &lt;jsDir&gt;js&lt;/jsDir&gt;
+          &lt;cssFiles&gt;
+            &lt;param&gt;file-1.css&lt;/param&gt;
+            ...
+            &lt;param&gt;file-n.css&lt;/param&gt;
+          &lt;/cssFiles&gt;
+          &lt;jsFiles&gt;
+            &lt;param&gt;file-1.js&lt;/param&gt;
+            ...
+            &lt;param&gt;file-n.js&lt;/param&gt;
+          &lt;/jsFiles&gt;
+          &lt;cssFinalFile&gt;style.css&lt;/cssFinalFile&gt;
+          &lt;jsFinalFile&gt;script.js&lt;/jsFinalFile&gt;
           &lt;linebreak&gt;-1&lt;/linebreak&gt;
           &lt;nomunge&gt;false&lt;/nomunge&gt;
           &lt;verbose&gt;false&lt;/verbose&gt;

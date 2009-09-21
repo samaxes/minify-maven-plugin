@@ -33,4 +33,8 @@ Maven Minify Plugin
   To provide you with better understanding of some usages of the Maven Minify Plugin,
   you can take a look into the following examples:
 
-  * {{{examples/configuration.html}Minify Plugin Configuration}}
+  * {{{examples/basic.html}Basic Configuration}}
+
+  * {{{examples/binding.html}Binding to a Phase in the Project Build Cycle}}
+
+  * {{{examples/exclude.html}Exclude source files from the WAR package}}

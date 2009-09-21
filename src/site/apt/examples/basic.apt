@@ -1,12 +1,12 @@
  ------
- Maven Minify Plugin Configuration
+ Basic Configuration
  ------
  Samuel Santos
  ------
- 2009-06-10
+ 2009-09-21
  ------
 
-Maven Minify Plugin Configuration
+Basic Configuration
 
 * Configuring your <<<pom.xml>>>
 
@@ -24,16 +24,16 @@ Maven Minify Plugin Configuration
         <artifactId>maven-minify-plugin</artifactId>
         <version>1.0</version>
         <configuration>
-          <cssFilenames>
+          <cssFiles>
             <param>file-1.css</param>
             ...
             <param>file-n.css</param>
-          </cssFilenames>
-          <jsFilenames>
+          </cssFiles>
+          <jsFiles>
             <param>file-1.js</param>
             ...
             <param>file-n.js</param>
-          </jsFilenames>
+          </jsFiles>
         </configuration>
       </plugin>
       ...
@@ -45,8 +45,8 @@ Maven Minify Plugin Configuration
 
 * From the command-line
 
-  It can also be easily executed from the command line using:
+  Create a package containing the new files:
 
 +---+
-mvn minify:minify
+mvn minify:minify package
 +---+
