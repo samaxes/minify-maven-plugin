@@ -1,0 +1,401 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+
+
+
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Maven Minify Plugin - minify:minify</title>
+    <style type="text/css" media="all">
+      @import url("./css/maven-base.css");
+      @import url("./css/maven-theme.css");
+      @import url("./css/site.css");
+    </style>
+    <link rel="stylesheet" href="./css/print.css" type="text/css" media="print" />
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+      </head>
+  <body class="composite">
+    <div id="banner">
+                    <span id="bannerLeft">
+    
+            Maven Minify Plugin
+    
+            </span>
+                    <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="breadcrumbs">
+          
+  
+
+  
+    
+  
+  
+    
+            <div class="xleft">
+        Last Published: 2009-09-26
+                      </div>
+            <div class="xright">      
+  
+
+  
+    
+  
+  
+    
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="leftColumn">
+      <div id="navcolumn">
+           
+  
+
+  
+    
+  
+  
+    
+                   <h5>Overview</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="index.html">Introduction</a>
+          </li>
+              
+    <li class="none">
+                    <a href="plugin-info.html">Goals</a>
+          </li>
+              
+    <li class="none">
+                    <a href="usage.html">Usage</a>
+          </li>
+          </ul>
+              <h5>Examples</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="examples/basic.html">Basic Configuration</a>
+          </li>
+              
+    <li class="none">
+                    <a href="examples/binding.html">Binding to a Phase in the Project Build Cycle</a>
+          </li>
+              
+    <li class="none">
+                    <a href="examples/exclude.html">Exclude source files from the WAR package</a>
+          </li>
+          </ul>
+              <h5>Project Documentation</h5>
+            <ul>
+              
+                
+              
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+              
+        <li class="collapsed">
+                    <a href="project-info.html">Project Information</a>
+                </li>
+              
+                
+              
+      
+            
+      
+            
+      
+              
+        <li class="collapsed">
+                    <a href="project-reports.html">Project Reports</a>
+                </li>
+          </ul>
+                                           <a href="http://maven.apache.org/" title="Built by Maven" class="poweredBy">
+            <img alt="Built by Maven" src="./images/logos/maven-feather.png"></img>
+          </a>
+                       
+  
+
+  
+    
+  
+  
+    
+        </div>
+    </div>
+    <div id="bodyColumn">
+      <div id="contentBox">
+        <div class="section"><h2><a name="minify:minify"></a>minify:minify</h2>
+<p><strong>Full name</strong>:</p>
+<p>com.samaxes.maven:maven-minify-plugin:1.1:minify</p>
+<p><strong>Description</strong>:</p>
+<div>Goal which combines and minifies CSS and JavaScript files.</div><p><strong>Attributes</strong>:</p>
+<ul><li>Requires a Maven 2.0 project to be executed.</li>
+<li>Binds by default to the lifecycle phase: <code>process-resources</code>.</li>
+</ul>
+<div class="section"><h3><a name="Required_Parameters"></a>Required Parameters</h3>
+<table class="bodyTable"><tr class="a"><th>Name</th>
+<th>Type</th>
+<th>Since</th>
+<th>Description</th>
+</tr>
+<tr class="b"><td><strong><a href="#bufferSize">bufferSize</a></strong></td>
+<td><code>int</code></td>
+<td><code>-</code></td>
+<td>Size of the buffer used to read source files.<br />
+<strong>Default value is</strong>: <code>4096</code>.</td>
+</tr>
+<tr class="a"><td><strong><a href="#cssDir">cssDir</a></strong></td>
+<td><code>String</code></td>
+<td><code>-</code></td>
+<td>CSS source directory.<br />
+<strong>Default value is</strong>: <code>css</code>.</td>
+</tr>
+<tr class="b"><td><strong><a href="#disableOptimizations">disableOptimizations</a></strong></td>
+<td><code>boolean</code></td>
+<td><code>-</code></td>
+<td>Disable all the built-in micro optimizations.<br />
+<strong>Default value is</strong>: <code>false</code>.</td>
+</tr>
+<tr class="a"><td><strong><a href="#jsDir">jsDir</a></strong></td>
+<td><code>String</code></td>
+<td><code>-</code></td>
+<td>JavaScript source directory.<br />
+<strong>Default value is</strong>: <code>js</code>.</td>
+</tr>
+<tr class="b"><td><strong><a href="#linebreak">linebreak</a></strong></td>
+<td><code>int</code></td>
+<td><code>-</code></td>
+<td>Some source control tools don't like files containing lines longer
+than, say 8000 characters. The linebreak option is used in that
+case to split long lines after a specific column. It can also be
+used to make the code more readable, easier to debug (especially
+with the MS Script Debugger). Specify 0 to get a line break after
+each semi-colon in JavaScript, and after each rule in CSS. Specify
+-1 to disallow line breaks.<br />
+<strong>Default value is</strong>: <code>-1</code>.</td>
+</tr>
+<tr class="a"><td><strong><a href="#nomunge">nomunge</a></strong></td>
+<td><code>boolean</code></td>
+<td><code>-</code></td>
+<td>Minify only. Do not obfuscate local symbols.<br />
+<strong>Default value is</strong>: <code>false</code>.</td>
+</tr>
+<tr class="b"><td><strong><a href="#preserveAllSemiColons">preserveAllSemiColons</a></strong></td>
+<td><code>boolean</code></td>
+<td><code>-</code></td>
+<td>Preserve unnecessary semicolons (such as right before a '}'). This
+option is useful when compressed code has to be run through JSLint
+(which is the case of YUI for example).<br />
+<strong>Default value is</strong>: <code>false</code>.</td>
+</tr>
+<tr class="a"><td><strong><a href="#verbose">verbose</a></strong></td>
+<td><code>boolean</code></td>
+<td><code>-</code></td>
+<td>Display informational messages and warnings.<br />
+<strong>Default value is</strong>: <code>false</code>.</td>
+</tr>
+<tr class="b"><td><strong><a href="#webappSourceDir">webappSourceDir</a></strong></td>
+<td><code>String</code></td>
+<td><code>-</code></td>
+<td>Webapp source directory.<br />
+<strong>Default value is</strong>: <code>${basedir}/src/main/webapp</code>.</td>
+</tr>
+<tr class="a"><td><strong><a href="#webappTargetDir">webappTargetDir</a></strong></td>
+<td><code>String</code></td>
+<td><code>-</code></td>
+<td>Webapp target directory.<br />
+<strong>Default value is</strong>: <code>${project.build.directory}/${project.build.finalName}</code>.</td>
+</tr>
+</table>
+</div>
+<div class="section"><h3><a name="Optional_Parameters"></a>Optional Parameters</h3>
+<table class="bodyTable"><tr class="b"><th>Name</th>
+<th>Type</th>
+<th>Since</th>
+<th>Description</th>
+</tr>
+<tr class="a"><td><strong><a href="#cssFiles">cssFiles</a></strong></td>
+<td><code>List</code></td>
+<td><code>-</code></td>
+<td>CSS filenames list.<br />
+</td>
+</tr>
+<tr class="b"><td><strong><a href="#cssFinalFile">cssFinalFile</a></strong></td>
+<td><code>String</code></td>
+<td><code>-</code></td>
+<td>CSS output filename.<br />
+<strong>Default value is</strong>: <code>style.css</code>.</td>
+</tr>
+<tr class="a"><td><strong><a href="#jsFiles">jsFiles</a></strong></td>
+<td><code>List</code></td>
+<td><code>-</code></td>
+<td>JavaScript filenames list.<br />
+</td>
+</tr>
+<tr class="b"><td><strong><a href="#jsFinalFile">jsFinalFile</a></strong></td>
+<td><code>String</code></td>
+<td><code>-</code></td>
+<td>JavaScript output filename.<br />
+<strong>Default value is</strong>: <code>script.js</code>.</td>
+</tr>
+</table>
+</div>
+<div class="section"><h3><a name="Parameter_Details"></a>Parameter Details</h3>
+<p><strong><a name="bufferSize">bufferSize</a>:</strong></p>
+<div>Size of the buffer used to read source files.</div><ul><li><strong>Type</strong>: <code>int</code></li>
+<li><strong>Required</strong>: <code>Yes</code></li>
+<li><strong>Expression</strong>: <code>${minify.bufferSize}</code></li>
+<li><strong>Default</strong>: <code>4096</code></li>
+</ul>
+<hr />
+<p><strong><a name="cssDir">cssDir</a>:</strong></p>
+<div>CSS source directory.</div><ul><li><strong>Type</strong>: <code>java.lang.String</code></li>
+<li><strong>Required</strong>: <code>Yes</code></li>
+<li><strong>Expression</strong>: <code>${minify.cssDir}</code></li>
+<li><strong>Default</strong>: <code>css</code></li>
+</ul>
+<hr />
+<p><strong><a name="cssFiles">cssFiles</a>:</strong></p>
+<div>CSS filenames list.</div><ul><li><strong>Type</strong>: <code>java.util.List</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+</ul>
+<hr />
+<p><strong><a name="cssFinalFile">cssFinalFile</a>:</strong></p>
+<div>CSS output filename.</div><ul><li><strong>Type</strong>: <code>java.lang.String</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+<li><strong>Expression</strong>: <code>${minify.cssFinalFile}</code></li>
+<li><strong>Default</strong>: <code>style.css</code></li>
+</ul>
+<hr />
+<p><strong><a name="disableOptimizations">disableOptimizations</a>:</strong></p>
+<div>Disable all the built-in micro optimizations.</div><ul><li><strong>Type</strong>: <code>boolean</code></li>
+<li><strong>Required</strong>: <code>Yes</code></li>
+<li><strong>Expression</strong>: <code>${minify.disableOptimizations}</code></li>
+<li><strong>Default</strong>: <code>false</code></li>
+</ul>
+<hr />
+<p><strong><a name="jsDir">jsDir</a>:</strong></p>
+<div>JavaScript source directory.</div><ul><li><strong>Type</strong>: <code>java.lang.String</code></li>
+<li><strong>Required</strong>: <code>Yes</code></li>
+<li><strong>Expression</strong>: <code>${minify.jsDir}</code></li>
+<li><strong>Default</strong>: <code>js</code></li>
+</ul>
+<hr />
+<p><strong><a name="jsFiles">jsFiles</a>:</strong></p>
+<div>JavaScript filenames list.</div><ul><li><strong>Type</strong>: <code>java.util.List</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+</ul>
+<hr />
+<p><strong><a name="jsFinalFile">jsFinalFile</a>:</strong></p>
+<div>JavaScript output filename.</div><ul><li><strong>Type</strong>: <code>java.lang.String</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+<li><strong>Expression</strong>: <code>${minify.jsFinalFile}</code></li>
+<li><strong>Default</strong>: <code>script.js</code></li>
+</ul>
+<hr />
+<p><strong><a name="linebreak">linebreak</a>:</strong></p>
+<div>Some source control tools don't like files containing lines longer
+than, say 8000 characters. The linebreak option is used in that
+case to split long lines after a specific column. It can also be
+used to make the code more readable, easier to debug (especially
+with the MS Script Debugger). Specify 0 to get a line break after
+each semi-colon in JavaScript, and after each rule in CSS. Specify
+-1 to disallow line breaks.</div><ul><li><strong>Type</strong>: <code>int</code></li>
+<li><strong>Required</strong>: <code>Yes</code></li>
+<li><strong>Expression</strong>: <code>${minify.linebreak}</code></li>
+<li><strong>Default</strong>: <code>-1</code></li>
+</ul>
+<hr />
+<p><strong><a name="nomunge">nomunge</a>:</strong></p>
+<div>Minify only. Do not obfuscate local symbols.</div><ul><li><strong>Type</strong>: <code>boolean</code></li>
+<li><strong>Required</strong>: <code>Yes</code></li>
+<li><strong>Expression</strong>: <code>${minify.munge}</code></li>
+<li><strong>Default</strong>: <code>false</code></li>
+</ul>
+<hr />
+<p><strong><a name="preserveAllSemiColons">preserveAllSemiColons</a>:</strong></p>
+<div>Preserve unnecessary semicolons (such as right before a '}'). This
+option is useful when compressed code has to be run through JSLint
+(which is the case of YUI for example).</div><ul><li><strong>Type</strong>: <code>boolean</code></li>
+<li><strong>Required</strong>: <code>Yes</code></li>
+<li><strong>Expression</strong>: <code>${minify.preserveAllSemiColons}</code></li>
+<li><strong>Default</strong>: <code>false</code></li>
+</ul>
+<hr />
+<p><strong><a name="verbose">verbose</a>:</strong></p>
+<div>Display informational messages and warnings.</div><ul><li><strong>Type</strong>: <code>boolean</code></li>
+<li><strong>Required</strong>: <code>Yes</code></li>
+<li><strong>Expression</strong>: <code>${minify.verbose}</code></li>
+<li><strong>Default</strong>: <code>false</code></li>
+</ul>
+<hr />
+<p><strong><a name="webappSourceDir">webappSourceDir</a>:</strong></p>
+<div>Webapp source directory.</div><ul><li><strong>Type</strong>: <code>java.lang.String</code></li>
+<li><strong>Required</strong>: <code>Yes</code></li>
+<li><strong>Expression</strong>: <code>${minify.webappSourceDir}</code></li>
+<li><strong>Default</strong>: <code>${basedir}/src/main/webapp</code></li>
+</ul>
+<hr />
+<p><strong><a name="webappTargetDir">webappTargetDir</a>:</strong></p>
+<div>Webapp target directory.</div><ul><li><strong>Type</strong>: <code>java.lang.String</code></li>
+<li><strong>Required</strong>: <code>Yes</code></li>
+<li><strong>Expression</strong>: <code>${minify.webappTargetDir}</code></li>
+<li><strong>Default</strong>: <code>${project.build.directory}/${project.build.finalName}</code></li>
+</ul>
+</div>
+</div>
+
+      </div>
+    </div>
+    <div class="clear">
+      <hr/>
+    </div>
+    <div id="footer">
+      <div class="xright">&#169;  
+          2009
+    
+          samaxes
+          
+  
+
+  
+    
+  
+  
+    
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+  </body>
+</html>
