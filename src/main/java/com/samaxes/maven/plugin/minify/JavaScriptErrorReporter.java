@@ -31,13 +31,17 @@ public class JavaScriptErrorReporter implements ErrorReporter {
 
     private Log log;
 
+    private String filename;
+
     /**
      * Error reporter constructor.
      * 
      * @param log Maven plugin log
+     * @param filename JavaScript source filename
      */
-    public JavaScriptErrorReporter(Log log) {
+    public JavaScriptErrorReporter(Log log, String filename) {
         this.log = log;
+        this.filename = filename;
     }
 
     /**
@@ -54,7 +58,7 @@ public class JavaScriptErrorReporter implements ErrorReporter {
         if (line < 0) {
             log.warn(message);
         } else {
-            log.warn(line + ':' + lineOffset + ':' + message);
+            log.warn("[" + filename + ":" + line + "] " + message);
         }
     }
 
@@ -73,7 +77,7 @@ public class JavaScriptErrorReporter implements ErrorReporter {
         if (line < 0) {
             log.error(message);
         } else {
-            log.error(line + ':' + lineOffset + ':' + message);
+            log.error("[" + filename + ":" + line + "] " + message);
         }
     }
 

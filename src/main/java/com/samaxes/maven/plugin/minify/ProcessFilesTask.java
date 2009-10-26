@@ -142,11 +142,12 @@ public class ProcessFilesTask implements Runnable {
      * @param sourceFile the source file
      */
     private void minify(File sourceFile) {
-        log.info("Minifying file " + sourceFile.getName());
+        String name = sourceFile.getName();
+        log.info("Minifying file " + name);
 
         if (sourceFile.exists()) {
-            String extension = sourceFile.getName().substring(sourceFile.getName().lastIndexOf('.'));
-            File destFile = new File(targetDir, sourceFile.getName().replace(extension, suffix.concat(extension)));
+            String extension = name.substring(name.lastIndexOf('.'));
+            File destFile = new File(targetDir, name.replace(extension, suffix.concat(extension)));
 
             try {
                 Reader reader = new FileReader(sourceFile);
@@ -156,7 +157,8 @@ public class ProcessFilesTask implements Runnable {
                     CssCompressor compressor = new CssCompressor(reader);
                     compressor.compress(writer, linebreak);
                 } else if (".js".equalsIgnoreCase(extension)) {
-                    JavaScriptCompressor compressor = new JavaScriptCompressor(reader, new JavaScriptErrorReporter(log));
+                    JavaScriptCompressor compressor = new JavaScriptCompressor(reader, new JavaScriptErrorReporter(log,
+                            name));
                     compressor.compress(writer, linebreak, munge, verbose, preserveAllSemiColons, disableOptimizations);
                 }
 

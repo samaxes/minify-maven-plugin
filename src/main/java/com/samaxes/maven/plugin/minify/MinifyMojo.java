@@ -157,16 +157,20 @@ public class MinifyMojo extends AbstractMojo {
      */
     public void execute() throws MojoExecutionException, MojoFailureException {
         ExecutorService executor = Executors.newFixedThreadPool(2);
-        Future<?> processCSSFilesTask = executor.submit(new ProcessFilesTask(getLog(), bufferSize, webappSourceDir,
-                webappTargetDir, cssDir, cssFiles, cssFinalFile, linebreak, !nomunge, verbose, preserveAllSemiColons,
-                disableOptimizations));
-        Future<?> processJSFilesTask = executor.submit(new ProcessFilesTask(getLog(), bufferSize, webappSourceDir,
-                webappTargetDir, jsDir, jsFiles, jsFinalFile, linebreak, !nomunge, verbose, preserveAllSemiColons,
-                disableOptimizations));
+        Future<?> processCSSFilesTask = (cssFiles.isEmpty()) ? null : executor.submit(new ProcessFilesTask(getLog(),
+                bufferSize, webappSourceDir, webappTargetDir, cssDir, cssFiles, cssFinalFile, linebreak, !nomunge,
+                verbose, preserveAllSemiColons, disableOptimizations));
+        Future<?> processJSFilesTask = (jsFiles.isEmpty()) ? null : executor.submit(new ProcessFilesTask(getLog(),
+                bufferSize, webappSourceDir, webappTargetDir, jsDir, jsFiles, jsFinalFile, linebreak, !nomunge,
+                verbose, preserveAllSemiColons, disableOptimizations));
 
         try {
-            processCSSFilesTask.get();
-            processJSFilesTask.get();
+            if (processCSSFilesTask != null) {
+                processCSSFilesTask.get();
+            }
+            if (processJSFilesTask != null) {
+                processJSFilesTask.get();
+            }
         } catch (InterruptedException e) {
             getLog().error(e.getMessage(), e);
         } catch (ExecutionException e) {
