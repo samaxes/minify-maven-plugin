@@ -243,29 +243,17 @@ option is useful when compressed code has to be run through JSLint
 <th>Since</th>
 <th>Description</th>
 </tr>
-<tr class="a"><td><strong><a href="#cssExtension">cssExtension</a></strong></td>
-<td><code>String</code></td>
-<td><code>-</code></td>
-<td>CSS file extension.<br />
-<strong>Default value is</strong>: <code>.css</code>.</td>
-</tr>
-<tr class="b"><td><strong><a href="#cssFiles">cssFiles</a></strong></td>
+<tr class="a"><td><strong><a href="#cssFiles">cssFiles</a></strong></td>
 <td><code>List</code></td>
 <td><code>-</code></td>
 <td>CSS filenames list.<br />
 </td>
 </tr>
-<tr class="a"><td><strong><a href="#cssFinalFile">cssFinalFile</a></strong></td>
+<tr class="b"><td><strong><a href="#cssFinalFile">cssFinalFile</a></strong></td>
 <td><code>String</code></td>
 <td><code>-</code></td>
 <td>CSS output filename.<br />
 <strong>Default value is</strong>: <code>style.css</code>.</td>
-</tr>
-<tr class="b"><td><strong><a href="#jsExtension">jsExtension</a></strong></td>
-<td><code>String</code></td>
-<td><code>-</code></td>
-<td>JavaScript file extension.<br />
-<strong>Default value is</strong>: <code>.js</code>.</td>
 </tr>
 <tr class="a"><td><strong><a href="#jsFiles">jsFiles</a></strong></td>
 <td><code>List</code></td>
@@ -296,13 +284,6 @@ option is useful when compressed code has to be run through JSLint
 <li><strong>Default</strong>: <code>css</code></li>
 </ul>
 <hr />
-<p><strong><a name="cssExtension">cssExtension</a>:</strong></p>
-<div>CSS file extension.</div><ul><li><strong>Type</strong>: <code>java.lang.String</code></li>
-<li><strong>Required</strong>: <code>No</code></li>
-<li><strong>Expression</strong>: <code>${minify.cssExtension}</code></li>
-<li><strong>Default</strong>: <code>.css</code></li>
-</ul>
-<hr />
 <p><strong><a name="cssFiles">cssFiles</a>:</strong></p>
 <div>CSS filenames list.</div><ul><li><strong>Type</strong>: <code>java.util.List</code></li>
 <li><strong>Required</strong>: <code>No</code></li>
@@ -327,13 +308,6 @@ option is useful when compressed code has to be run through JSLint
 <li><strong>Required</strong>: <code>Yes</code></li>
 <li><strong>Expression</strong>: <code>${minify.jsDir}</code></li>
 <li><strong>Default</strong>: <code>js</code></li>
-</ul>
-<hr />
-<p><strong><a name="jsExtension">jsExtension</a>:</strong></p>
-<div>JavaScript file extension.</div><ul><li><strong>Type</strong>: <code>java.lang.String</code></li>
-<li><strong>Required</strong>: <code>No</code></li>
-<li><strong>Expression</strong>: <code>${minify.jsExtension}</code></li>
-<li><strong>Default</strong>: <code>.js</code></li>
 </ul>
 <hr />
 <p><strong><a name="jsFiles">jsFiles</a>:</strong></p>
@@ -407,7 +381,7 @@ option is useful when compressed code has to be run through JSLint
     </div>
     <div id="footer">
       <div class="xright">&#169;  
-          2009-2010
+          2010
     
           samaxes
           

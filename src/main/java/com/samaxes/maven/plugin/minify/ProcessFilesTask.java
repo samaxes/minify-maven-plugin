@@ -22,51 +22,34 @@ package com.samaxes.maven.plugin.minify;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.Reader;
 import java.io.SequenceInputStream;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.maven.plugin.logging.Log;
 
-import com.yahoo.platform.yui.compressor.CssCompressor;
-import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
-
 /**
- * Task for merging and compressing a list of files.
+ * Abstract class for merging and compressing a files list.
  */
-public class ProcessFilesTask implements Runnable {
+public abstract class ProcessFilesTask implements Runnable {
 
-    private Log log;
+    protected final static String suffix = ".min";
+
+    protected Log log;
+
+    protected File targetDir;
+
+    protected File finalFile;
+
+    protected int linebreak;
 
     private Integer bufferSize;
 
     private File sourceDir;
 
-    private File targetDir;
-
     private List<File> files = new ArrayList<File>();
-
-    private File finalFile;
-
-    private String finalFileExtension;
-
-    private int linebreak;
-
-    private boolean munge;
-
-    private boolean verbose;
-
-    private boolean preserveAllSemiColons;
-
-    private boolean disableOptimizations;
-
-    private final String suffix = ".min";
 
     /**
      * Task constructor.
@@ -78,33 +61,21 @@ public class ProcessFilesTask implements Runnable {
      * @param filesDir directory containing input files
      * @param filenames filenames list
      * @param finalFilename final filename
-     * @param finalFileExtension final file extension
      * @param linebreak split long lines after a specific column
-     * @param munge minify only
-     * @param verbose display informational messages and warnings
-     * @param preserveAllSemiColons preserve unnecessary semicolons
-     * @param disableOptimizations disable all the built-in micro optimizations
      */
     public ProcessFilesTask(Log log, Integer bufferSize, String webappSourceDir, String webappTargetDir,
-            String filesDir, List<String> filenames, String finalFilename, String finalFileExtension, int linebreak,
-            boolean munge, boolean verbose, boolean preserveAllSemiColons, boolean disableOptimizations) {
+            String filesDir, List<String> filenames, String finalFilename, int linebreak) {
         this.log = log;
         this.bufferSize = bufferSize;
         this.sourceDir = new File(webappSourceDir.concat(File.separator).concat(filesDir));
         this.targetDir = new File(webappTargetDir.concat(File.separator).concat(filesDir));
+        this.linebreak = linebreak;
         for (String filename : filenames) {
             files.add(new File(sourceDir, filename));
         }
         if (targetDir.exists() || targetDir.mkdirs()) {
             this.finalFile = new File(targetDir, finalFilename);
         }
-        this.finalFileExtension = finalFileExtension;
-
-        this.linebreak = linebreak;
-        this.munge = munge;
-        this.verbose = verbose;
-        this.preserveAllSemiColons = preserveAllSemiColons;
-        this.disableOptimizations = disableOptimizations;
     }
 
     /**
@@ -116,12 +87,12 @@ public class ProcessFilesTask implements Runnable {
     }
 
     /**
-     * Merges a list of files.
+     * Merges files list.
      */
     private void mergeFiles() {
         ListOfFiles listOfFiles = new ListOfFiles(this.log, files);
-        log.info("Merging files " + listOfFiles.toString());
 
+        log.info("Merging files " + listOfFiles.toString());
         if (listOfFiles.size() > 0) {
             try {
                 SequenceInputStream sequence = new SequenceInputStream(listOfFiles);
@@ -141,36 +112,7 @@ public class ProcessFilesTask implements Runnable {
     }
 
     /**
-     * Minifies a CSS or JavaScript file.
-     * 
-     * @param sourceFile the source file
+     * Minifies source file.
      */
-    private void minify() {
-        if (finalFile.exists()) {
-            String name = finalFile.getName();
-            log.info("Minifying file " + name);
-
-            String extension = name.substring(name.lastIndexOf('.'));
-            File destFile = new File(targetDir, name.replace(extension, suffix.concat(extension)));
-
-            try {
-                Reader reader = new FileReader(finalFile);
-                Writer writer = new FileWriter(destFile);
-
-                if (finalFileExtension.equalsIgnoreCase(extension)) {
-                    CssCompressor compressor = new CssCompressor(reader);
-                    compressor.compress(writer, linebreak);
-                } else if (finalFileExtension.equalsIgnoreCase(extension)) {
-                    JavaScriptCompressor compressor = new JavaScriptCompressor(reader, new JavaScriptErrorReporter(log,
-                            name));
-                    compressor.compress(writer, linebreak, munge, verbose, preserveAllSemiColons, disableOptimizations);
-                }
-
-                reader.close();
-                writer.close();
-            } catch (IOException e) {
-                log.error(e.getMessage(), e);
-            }
-        }
-    }
+    abstract void minify();
 }

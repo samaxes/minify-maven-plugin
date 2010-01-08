@@ -77,9 +77,7 @@ Usage
             <param>file-n.js</param>
           </jsFiles>
           <cssFinalFile>style.css</cssFinalFile>
-          <cssExtension>.css</cssExtension>
           <jsFinalFile>script.js</jsFinalFile>
-          <jsExtension>.js</jsExtension>
           <linebreak>-1</linebreak>
           <nomunge>false</nomunge>
           <verbose>false</verbose>
