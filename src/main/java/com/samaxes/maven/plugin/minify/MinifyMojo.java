@@ -94,11 +94,25 @@ public class MinifyMojo extends AbstractMojo {
     private String cssFinalFile;
 
     /**
+     * CSS file extension.
+     * 
+     * @parameter expression="${minify.cssExtension}" default-value=".css"
+     */
+    private String cssExtension;
+
+    /**
      * JavaScript output filename.
      * 
      * @parameter expression="${minify.jsFinalFile}" default-value="script.js"
      */
     private String jsFinalFile;
+
+    /**
+     * JavaScript file extension.
+     * 
+     * @parameter expression="${minify.jsExtension}" default-value=".js"
+     */
+    private String jsExtension;
 
     /**
      * Some source control tools don't like files containing lines longer than, say 8000 characters. The linebreak
@@ -158,11 +172,11 @@ public class MinifyMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         ExecutorService executor = Executors.newFixedThreadPool(2);
         Future<?> processCSSFilesTask = (cssFiles.isEmpty()) ? null : executor.submit(new ProcessFilesTask(getLog(),
-                bufferSize, webappSourceDir, webappTargetDir, cssDir, cssFiles, cssFinalFile, linebreak, !nomunge,
-                verbose, preserveAllSemiColons, disableOptimizations));
+                bufferSize, webappSourceDir, webappTargetDir, cssDir, cssFiles, cssFinalFile, cssExtension, linebreak,
+                !nomunge, verbose, preserveAllSemiColons, disableOptimizations));
         Future<?> processJSFilesTask = (jsFiles.isEmpty()) ? null : executor.submit(new ProcessFilesTask(getLog(),
-                bufferSize, webappSourceDir, webappTargetDir, jsDir, jsFiles, jsFinalFile, linebreak, !nomunge,
-                verbose, preserveAllSemiColons, disableOptimizations));
+                bufferSize, webappSourceDir, webappTargetDir, jsDir, jsFiles, jsFinalFile, jsExtension, linebreak,
+                !nomunge, verbose, preserveAllSemiColons, disableOptimizations));
 
         try {
             if (processCSSFilesTask != null) {

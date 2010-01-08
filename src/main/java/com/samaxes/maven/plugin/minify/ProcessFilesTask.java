@@ -54,6 +54,8 @@ public class ProcessFilesTask implements Runnable {
 
     private File finalFile;
 
+    private String finalFileExtension;
+
     private int linebreak;
 
     private boolean munge;
@@ -76,6 +78,7 @@ public class ProcessFilesTask implements Runnable {
      * @param filesDir directory containing input files
      * @param filenames filenames list
      * @param finalFilename final filename
+     * @param finalFileExtension final file extension
      * @param linebreak split long lines after a specific column
      * @param munge minify only
      * @param verbose display informational messages and warnings
@@ -83,8 +86,8 @@ public class ProcessFilesTask implements Runnable {
      * @param disableOptimizations disable all the built-in micro optimizations
      */
     public ProcessFilesTask(Log log, Integer bufferSize, String webappSourceDir, String webappTargetDir,
-            String filesDir, List<String> filenames, String finalFilename, int linebreak, boolean munge,
-            boolean verbose, boolean preserveAllSemiColons, boolean disableOptimizations) {
+            String filesDir, List<String> filenames, String finalFilename, String finalFileExtension, int linebreak,
+            boolean munge, boolean verbose, boolean preserveAllSemiColons, boolean disableOptimizations) {
         this.log = log;
         this.bufferSize = bufferSize;
         this.sourceDir = new File(webappSourceDir.concat(File.separator).concat(filesDir));
@@ -95,6 +98,7 @@ public class ProcessFilesTask implements Runnable {
         if (targetDir.exists() || targetDir.mkdirs()) {
             this.finalFile = new File(targetDir, finalFilename);
         }
+        this.finalFileExtension = finalFileExtension;
 
         this.linebreak = linebreak;
         this.munge = munge;
@@ -108,7 +112,7 @@ public class ProcessFilesTask implements Runnable {
      */
     public void run() {
         mergeFiles();
-        minify(finalFile);
+        minify();
     }
 
     /**
@@ -141,22 +145,22 @@ public class ProcessFilesTask implements Runnable {
      * 
      * @param sourceFile the source file
      */
-    private void minify(File sourceFile) {
-        String name = sourceFile.getName();
-        log.info("Minifying file " + name);
+    private void minify() {
+        if (finalFile.exists()) {
+            String name = finalFile.getName();
+            log.info("Minifying file " + name);
 
-        if (sourceFile.exists()) {
             String extension = name.substring(name.lastIndexOf('.'));
             File destFile = new File(targetDir, name.replace(extension, suffix.concat(extension)));
 
             try {
-                Reader reader = new FileReader(sourceFile);
+                Reader reader = new FileReader(finalFile);
                 Writer writer = new FileWriter(destFile);
 
-                if (".css".equalsIgnoreCase(extension)) {
+                if (finalFileExtension.equalsIgnoreCase(extension)) {
                     CssCompressor compressor = new CssCompressor(reader);
                     compressor.compress(writer, linebreak);
-                } else if (".js".equalsIgnoreCase(extension)) {
+                } else if (finalFileExtension.equalsIgnoreCase(extension)) {
                     JavaScriptCompressor compressor = new JavaScriptCompressor(reader, new JavaScriptErrorReporter(log,
                             name));
                     compressor.compress(writer, linebreak, munge, verbose, preserveAllSemiColons, disableOptimizations);

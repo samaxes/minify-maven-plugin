@@ -5,12 +5,12 @@
 -protected
 -quiet
 -source
-'1.6'
+'1.5'
 -sourcepath
 'F:/projects/samaxes/maven-samaxes-plugin/maven-minify-plugin/src/main/java'
 -author
 -bottom
-'Copyright &#169; 2009 <a href="http://www.samaxes.com/">samaxes</a>. All Rights Reserved.'
+'Copyright &#169; 2009-2010 <a href="http://www.samaxes.com/">samaxes</a>. All Rights Reserved.'
 -charset
 'UTF-8'
 -d
@@ -18,11 +18,11 @@
 -docencoding
 'UTF-8'
 -doctitle
-'Maven Minify Plugin 1.1 API'
+'Maven Minify Plugin 1.2.0-SNAPSHOT API'
 -link
 'http://java.sun.com/javase/6/docs/api'
 -linksource
 -use
 -version
 -windowtitle
-'Maven Minify Plugin 1.1 API'
+'Maven Minify Plugin 1.2.0-SNAPSHOT API'

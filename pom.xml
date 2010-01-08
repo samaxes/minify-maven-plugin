@@ -7,13 +7,13 @@
 
     <groupId>com.samaxes.maven</groupId>
     <artifactId>maven-minify-plugin</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2.0-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <name>Maven Minify Plugin</name>
     <url>http://code.google.com/p/maven-samaxes-plugin/</url>
     <description>Combine and minimize JavaScript and CSS files for faster page loading.</description>
-    <inceptionYear>2009</inceptionYear>
+    <inceptionYear>2010</inceptionYear>
     <organization>
         <name>samaxes</name>
         <url>http://www.samaxes.com/</url>
@@ -67,8 +67,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.0.2</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.5</source>
+                    <target>1.5</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
@@ -78,6 +78,21 @@
                 <version>2.3</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultSpecificationEntries>false</addDefaultSpecificationEntries>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addClasspath>false</addClasspath>
+                        </manifest>
+                        <addMavenDescriptor>false</addMavenDescriptor>
+                    </archive>
                 </configuration>
             </plugin>
             <plugin>
@@ -139,7 +154,7 @@
                     <charset>UTF-8</charset>
                     <encoding>UTF-8</encoding>
                     <docencoding>UTF-8</docencoding>
-                    <source>1.6</source>
+                    <source>1.5</source>
                     <linksource>true</linksource>
                     <quiet>true</quiet>
                     <links>
