@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.samaxes.maven</groupId>
     <artifactId>maven-minify-plugin</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2.0-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <name>Maven Minify Plugin</name>
@@ -43,7 +46,7 @@
     <scm>
         <connection>scm:svn:http://maven-samaxes-plugin.googlecode.com/svn/trunk</connection>
         <developerConnection>scm:svn:https://maven-samaxes-plugin.googlecode.com/svn/trunk</developerConnection>
-        <url>http://maven-samaxes-plugin.googlecode.com/svn/trunk</url>
+        <url>http://maven-samaxes-plugin.googlecode.com/svn/trunk/maven-minify-plugin</url>
     </scm>
 
     <prerequisites>
@@ -51,6 +54,13 @@
     </prerequisites>
 
     <build>
+        <extensions>
+            <extension>
+                <groupId>org.jvnet.wagon-svn</groupId>
+                <artifactId>wagon-svn</artifactId>
+                <version>1.9</version>
+            </extension>
+        </extensions>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -97,11 +107,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.0-beta-9</version>
-            </plugin>
         </plugins>
     </build>
 
@@ -137,20 +142,21 @@
 
     <distributionManagement>
         <repository>
-            <id>sonatype-nexus-staging</id>
-            <name>Nexus Release Repository</name>
-            <url>http://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+            <id>googlecode-releases</id>
+            <name>Google Code Maven repository of releases</name>
+            <url>svn:https://maven-samaxes-repo.googlecode.com/svn/releases</url>
         </repository>
         <snapshotRepository>
-            <id>sonatype-nexus-snapshots</id>
-            <name>Sonatype Nexus Snapshots</name>
-            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+            <id>googlecode-snapshots</id>
+            <name>Google Code Maven repository of snapshots</name>
+            <url>svn:https://maven-samaxes-repo.googlecode.com/svn/snapshots</url>
+            <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>
-        <!--site>
-            < Need to be local so it can be uploaded with the correct mime-type >
+        <site>
+            <!-- Need to be local so it can be uploaded with the correct mime-type -->
             <id>local</id>
             <url>file://${basedir}/site</url>
-        </site-->
+        </site>
     </distributionManagement>
 
     <dependencies>
