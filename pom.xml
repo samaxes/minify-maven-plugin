@@ -65,7 +65,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.1</version>
+                <version>2.3</version>
                 <configuration>
                     <source>1.5</source>
                     <target>1.5</target>
@@ -142,13 +142,13 @@
 
     <distributionManagement>
         <repository>
-            <id>googlecode-releases</id>
-            <name>Google Code Maven repository of releases</name>
+            <id>samaxes-releases</id>
+            <name>samaxes Releases Repository</name>
             <url>svn:https://maven-samaxes-repo.googlecode.com/svn/releases</url>
         </repository>
         <snapshotRepository>
-            <id>googlecode-snapshots</id>
-            <name>Google Code Maven repository of snapshots</name>
+            <id>samaxes-snapshots</id>
+            <name>samaxes Snapshots Repository</name>
             <url>svn:https://maven-samaxes-repo.googlecode.com/svn/snapshots</url>
             <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>

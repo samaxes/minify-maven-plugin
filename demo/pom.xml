@@ -19,7 +19,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.0.2</version>
+                <version>2.3</version>
                 <configuration>
                     <source>1.5</source>
                     <target>1.5</target>
@@ -29,7 +29,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>2.3</version>
+                <version>2.4.2</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
                 </configuration>
@@ -91,8 +91,8 @@
 
     <pluginRepositories>
         <pluginRepository>
-            <id>googlecode-releases</id>
-            <name>Google Code Maven repository of releases</name>
+            <id>samaxes-releases</id>
+            <name>samaxes Releases Repository</name>
             <url>http://maven-samaxes-repo.googlecode.com/svn/releases</url>
         </pluginRepository>
     </pluginRepositories>
