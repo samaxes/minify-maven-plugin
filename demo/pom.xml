@@ -69,16 +69,16 @@
                         <id>default-minify</id>
                         <phase>process-resources</phase>
                         <configuration>
-                            <cssFiles>
+                            <cssSourceFiles>
                                 <param>reset.css</param>
                                 <param>fonts.css</param>
                                 <param>base.css</param>
                                 <param>style.css</param>
-                            </cssFiles>
-                            <jsFiles>
+                            </cssSourceFiles>
+                            <jsSourceFiles>
                                 <param>samaxesjs.core.js</param>
                                 <param>samaxesjs.toc.js</param>
-                            </jsFiles>
+                            </jsSourceFiles>
                         </configuration>
                         <goals>
                             <goal>minify</goal>

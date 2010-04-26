@@ -24,16 +24,16 @@ Basic Configuration
         <artifactId>maven-minify-plugin</artifactId>
         <version>1.2-SNAPSHOT</version>
         <configuration>
-          <cssFiles>
+          <cssSourceFiles>
             <param>file-1.css</param>
             ...
             <param>file-n.css</param>
-          </cssFiles>
-          <jsFiles>
+          </cssSourceFiles>
+          <jsSourceFiles>
             <param>file-1.js</param>
             ...
             <param>file-n.js</param>
-          </jsFiles>
+          </jsSourceFiles>
         </configuration>
       </plugin>
       ...

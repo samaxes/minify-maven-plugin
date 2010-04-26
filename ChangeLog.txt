@@ -3,6 +3,7 @@
 =======================
 
 == 1.2 ==
+ * Exclude/include patterns added, with the caveat that the developer must name their source files so their lexicographical order is correct for minifying.
  * Don't minify a file type if the list of files to process is empty.
  * Make JavaScript minify error messages clearer.
  * Make file extensions configurable (e.g. it's now possible to save a JavaScript file as *.jsp or *.php).

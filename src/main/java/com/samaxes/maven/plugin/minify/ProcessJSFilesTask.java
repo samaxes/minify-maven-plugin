@@ -13,6 +13,7 @@ import java.util.List;
 
 import org.apache.maven.plugin.logging.Log;
 
+import com.samaxes.maven.plugin.common.JavaScriptErrorReporter;
 import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
 
 /**
@@ -37,6 +38,8 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      * @param webappTargetDir web resources target directory
      * @param filesDir directory containing input files
      * @param filenames filenames list
+     * @param sourceIncludes comma separated list of source files to include
+     * @param sourceExcludes comma separated list of source files to exclude
      * @param finalFilename final filename
      * @param linebreak split long lines after a specific column
      * @param munge minify only
@@ -45,9 +48,11 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      * @param disableOptimizations disable all the built-in micro optimizations
      */
     public ProcessJSFilesTask(Log log, Integer bufferSize, String webappSourceDir, String webappTargetDir,
-            String filesDir, List<String> filenames, String finalFilename, int linebreak, boolean munge,
-            boolean verbose, boolean preserveAllSemiColons, boolean disableOptimizations) {
-        super(log, bufferSize, webappSourceDir, webappTargetDir, filesDir, filenames, finalFilename, linebreak);
+            String filesDir, List<String> filenames, String sourceIncludes, String sourceExcludes,
+            String finalFilename, int linebreak, boolean munge, boolean verbose, boolean preserveAllSemiColons,
+            boolean disableOptimizations) {
+        super(log, bufferSize, webappSourceDir, webappTargetDir, filesDir, filenames, sourceIncludes, sourceExcludes,
+                finalFilename, linebreak);
 
         this.munge = munge;
         this.verbose = verbose;
@@ -62,9 +67,9 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
         if (finalFile.exists()) {
             String name = finalFile.getName();
             String extension = name.substring(name.lastIndexOf('.'));
-            File destFile = new File(targetDir, name.replace(extension, suffix.concat(extension)));
+            File destFile = new File(targetDir, name.replace(extension, SUFFIX.concat(extension)));
 
-            log.info("Minifying file " + name);
+            log.info("Minifying file [" + name + "]");
             try {
                 Reader reader = new FileReader(finalFile);
                 Writer writer = new FileWriter(destFile);

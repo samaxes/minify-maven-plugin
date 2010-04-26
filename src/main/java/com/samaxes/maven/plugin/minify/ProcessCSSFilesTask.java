@@ -29,12 +29,16 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
      * @param webappTargetDir web resources target directory
      * @param filesDir directory containing input files
      * @param filenames filenames list
+     * @param sourceIncludes comma separated list of source files to include
+     * @param sourceExcludes comma separated list of source files to exclude
      * @param finalFilename final filename
      * @param linebreak split long lines after a specific column
      */
     public ProcessCSSFilesTask(Log log, Integer bufferSize, String webappSourceDir, String webappTargetDir,
-            String filesDir, List<String> filenames, String finalFilename, int linebreak) {
-        super(log, bufferSize, webappSourceDir, webappTargetDir, filesDir, filenames, finalFilename, linebreak);
+            String filesDir, List<String> filenames, String sourceIncludes, String sourceExcludes,
+            String finalFilename, int linebreak) {
+        super(log, bufferSize, webappSourceDir, webappTargetDir, filesDir, filenames, sourceIncludes, sourceExcludes,
+                finalFilename, linebreak);
     }
 
     /**
@@ -44,9 +48,9 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
         if (finalFile.exists()) {
             String name = finalFile.getName();
             String extension = name.substring(name.lastIndexOf('.'));
-            File destFile = new File(targetDir, name.replace(extension, suffix.concat(extension)));
+            File destFile = new File(targetDir, name.replace(extension, SUFFIX.concat(extension)));
 
-            log.info("Minifying file " + name);
+            log.info("Minifying file [" + name + "]");
             try {
                 Reader reader = new FileReader(finalFile);
                 Writer writer = new FileWriter(destFile);

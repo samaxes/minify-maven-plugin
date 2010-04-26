@@ -28,16 +28,16 @@ Usage
         <artifactId>maven-minify-plugin</artifactId>
         <version>1.2-SNAPSHOT</version>
         <configuration>
-          <cssFiles>
+          <cssSourceFiles>
             <param>file-1.css</param>
             ...
             <param>file-n.css</param>
-          </cssFiles>
-          <jsFiles>
+          </cssSourceFiles>
+          <jsSourceFiles>
             <param>file-1.js</param>
             ...
             <param>file-n.js</param>
-          </jsFiles>
+          </jsSourceFiles>
         </configuration>
       </plugin>
       ...
@@ -64,18 +64,22 @@ Usage
         <configuration>
           <webappSourceDir>${basedir}/src/main/webapp</webappSourceDir>
           <webappTargetDir>${project.build.directory}/${project.build.finalName}</webappTargetDir>
-          <cssDir>css</cssDir>
-          <jsDir>js</jsDir>
-          <cssFiles>
+          <cssSourceDir>css</cssSourceDir>
+          <jsSourceDir>js</jsSourceDir>
+          <cssSourceFiles>
             <param>file-1.css</param>
             ...
             <param>file-n.css</param>
-          </cssFiles>
-          <jsFiles>
+          </cssSourceFiles>
+          <jsSourceFiles>
             <param>file-1.js</param>
             ...
             <param>file-n.js</param>
-          </jsFiles>
+          </jsSourceFiles>
+          <cssSourceIncludes>**</cssSourceIncludes>
+          <cssSourceExcludes>fileToExclude.css</cssSourceExcludes>
+          <jsSourceIncludes>**</jsSourceIncludes>
+          <jsSourceExcludes>fileToExclude.js</jsSourceExcludes>
           <cssFinalFile>style.css</cssFinalFile>
           <jsFinalFile>script.js</jsFinalFile>
           <linebreak>-1</linebreak>

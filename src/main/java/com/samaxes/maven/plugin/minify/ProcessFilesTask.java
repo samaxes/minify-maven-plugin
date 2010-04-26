@@ -29,13 +29,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.maven.plugin.logging.Log;
+import org.codehaus.plexus.util.DirectoryScanner;
+import org.codehaus.plexus.util.StringUtils;
+
+import com.samaxes.maven.plugin.common.ListOfFiles;
 
 /**
  * Abstract class for merging and compressing a files list.
  */
 public abstract class ProcessFilesTask implements Runnable {
 
-    protected final static String suffix = ".min";
+    protected static final String SUFFIX = ".min";
+
+    private static final String[] EMPTY_STRING_ARRAY = {};
 
     protected Log log;
 
@@ -60,19 +66,34 @@ public abstract class ProcessFilesTask implements Runnable {
      * @param webappTargetDir web resources target directory
      * @param filesDir directory containing input files
      * @param filenames filenames list
+     * @param sourceIncludes comma separated list of source files to include
+     * @param sourceExcludes comma separated list of source files to exclude
      * @param finalFilename final filename
      * @param linebreak split long lines after a specific column
      */
     public ProcessFilesTask(Log log, Integer bufferSize, String webappSourceDir, String webappTargetDir,
-            String filesDir, List<String> filenames, String finalFilename, int linebreak) {
+            String filesDir, List<String> filenames, String sourceIncludes, String sourceExcludes,
+            String finalFilename, int linebreak) {
         this.log = log;
         this.bufferSize = bufferSize;
+        this.linebreak = linebreak;
         this.sourceDir = new File(webappSourceDir.concat(File.separator).concat(filesDir));
         this.targetDir = new File(webappTargetDir.concat(File.separator).concat(filesDir));
-        this.linebreak = linebreak;
+
+        List<File> includedFiles = (sourceIncludes != null && !"".equals(sourceIncludes)) ? getFilesToInclude(
+                sourceDir, sourceIncludes, sourceExcludes) : new ArrayList<File>();
         for (String filename : filenames) {
-            files.add(new File(sourceDir, filename));
+            File sourceFile = new File(sourceDir, filename);
+            log.debug("Adding source file [" + sourceFile.getName() + "]");
+            files.add(sourceFile);
         }
+        for (File includedFile : includedFiles) {
+            if (!files.contains(includedFile)) {
+                log.debug("Adding source file [" + includedFile.getName() + "]");
+                files.add(includedFile);
+            }
+        }
+
         if (targetDir.exists() || targetDir.mkdirs()) {
             this.finalFile = new File(targetDir, finalFilename);
         }
@@ -84,6 +105,62 @@ public abstract class ProcessFilesTask implements Runnable {
     public void run() {
         mergeFiles();
         minify();
+    }
+
+    /**
+     * Returns a string array of the includes to be used when adding source files.
+     * 
+     * @param include comma separated list of source files to include
+     * @return an array of tokens to include
+     */
+    private String[] getIncludes(String include) {
+        return StringUtils.split(StringUtils.defaultString(include), ",");
+    }
+
+    /**
+     * Returns a string array of the excludes to be used when adding source files.
+     * 
+     * @param exclude comma separated list of source files to exclude
+     * @return an array of tokens to exclude
+     */
+    private String[] getExcludes(String exclude) {
+        return (StringUtils.isNotEmpty(exclude)) ? StringUtils.split(exclude, ",") : EMPTY_STRING_ARRAY;
+    }
+
+    /**
+     * Returns the files to copy. Even if the excludes are <code>null</code>, the default excludes are used.
+     * 
+     * @param baseDir the base directory to start from
+     * @param include comma separated list of source files to include
+     * @param exclude comma separated list of source files to exclude
+     * @return the files to copy
+     */
+    private List<File> getFilesToInclude(File baseDir, String include, String exclude) {
+        DirectoryScanner scanner = new DirectoryScanner();
+        List<File> includedFiles = new ArrayList<File>();
+        String[] includedFilenames;
+        String[] includes = getIncludes(include);
+        String[] excludes = getExcludes(exclude);
+
+        scanner.setBasedir(baseDir);
+
+        if (excludes != null) {
+            scanner.setExcludes(excludes);
+        }
+        scanner.addDefaultExcludes();
+
+        if (includes != null && includes.length > 0) {
+            scanner.setIncludes(includes);
+        }
+
+        scanner.scan();
+        includedFilenames = scanner.getIncludedFiles();
+
+        for (String includedFilename : includedFilenames) {
+            includedFiles.add(new File(baseDir, includedFilename));
+        }
+
+        return includedFiles;
     }
 
     /**

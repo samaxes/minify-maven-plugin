@@ -35,16 +35,16 @@ Exclude source files from the WAR package
             <id>default-minify</id>
             <phase>process-resources</phase>
             <configuration>
-              <cssFiles>
+              <cssSourceFiles>
                 <param>file-1.css</param>
                 ...
                 <param>file-n.css</param>
-              </cssFiles>
-              <jsFiles>
+              </cssSourceFiles>
+              <jsSourceFiles>
                 <param>file-1.js</param>
                 ...
                 <param>file-n.js</param>
-              </jsFiles>
+              </jsSourceFiles>
             </configuration>
             <goals>
               <goal>minify</goal>

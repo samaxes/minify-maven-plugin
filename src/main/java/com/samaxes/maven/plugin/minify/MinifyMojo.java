@@ -59,32 +59,64 @@ public class MinifyMojo extends AbstractMojo {
     /**
      * CSS source directory.
      * 
-     * @parameter expression="${minify.cssDir}" default-value="css"
+     * @parameter expression="${minify.cssSourceDir}" alias="cssDir" default-value="css"
      * @required
      */
-    private String cssDir;
+    private String cssSourceDir;
 
     /**
      * JavaScript source directory.
      * 
-     * @parameter expression="${minify.jsDir}" default-value="js"
+     * @parameter expression="${minify.jsSourceDir}" alias="jsDir" default-value="js"
      * @required
      */
-    private String jsDir;
+    private String jsSourceDir;
 
     /**
-     * CSS filenames list.
+     * CSS source filenames list.
      * 
-     * @parameter
+     * @parameter alias="cssFiles"
      */
-    private List<String> cssFiles = new ArrayList<String>();
+    private List<String> cssSourceFiles = new ArrayList<String>();
 
     /**
-     * JavaScript filenames list.
+     * JavaScript source filenames list.
      * 
-     * @parameter
+     * @parameter alias="jsFiles"
      */
-    private List<String> jsFiles = new ArrayList<String>();
+    private List<String> jsSourceFiles = new ArrayList<String>();
+
+    /**
+     * The comma separated list of CSS files to include.
+     * 
+     * @parameter expression="${minify.cssSourceIncludes}" alias="cssIncludes"
+     * @since 1.2
+     */
+    private String cssSourceIncludes;
+
+    /**
+     * The comma separated list of CSS files to exclude.
+     * 
+     * @parameter expression="${minify.cssSourceExcludes}" alias="cssExcludes"
+     * @since 1.2
+     */
+    private String cssSourceExcludes;
+
+    /**
+     * The comma separated list of JavaScript files to include.
+     * 
+     * @parameter expression="${minify.jsSourceIncludes}" alias="jsIncludes"
+     * @since 1.2
+     */
+    private String jsSourceIncludes;
+
+    /**
+     * The comma separated list of JavaScript files to exclude.
+     * 
+     * @parameter expression="${minify.jsSourceExcludes}" alias="jsExcludes"
+     * @since 1.2
+     */
+    private String jsSourceExcludes;
 
     /**
      * CSS output filename.
@@ -157,11 +189,12 @@ public class MinifyMojo extends AbstractMojo {
      */
     public void execute() throws MojoExecutionException, MojoFailureException {
         ExecutorService executor = Executors.newFixedThreadPool(2);
-        Future<?> processCSSFilesTask = (cssFiles.isEmpty()) ? null : executor.submit(new ProcessCSSFilesTask(getLog(),
-                bufferSize, webappSourceDir, webappTargetDir, cssDir, cssFiles, cssFinalFile, linebreak));
-        Future<?> processJSFilesTask = (jsFiles.isEmpty()) ? null : executor.submit(new ProcessJSFilesTask(getLog(),
-                bufferSize, webappSourceDir, webappTargetDir, jsDir, jsFiles, jsFinalFile, linebreak, !nomunge,
-                verbose, preserveAllSemiColons, disableOptimizations));
+        Future<?> processCSSFilesTask = executor.submit(new ProcessCSSFilesTask(getLog(), bufferSize, webappSourceDir,
+                webappTargetDir, cssSourceDir, cssSourceFiles, cssSourceIncludes, cssSourceExcludes, cssFinalFile,
+                linebreak));
+        Future<?> processJSFilesTask = executor.submit(new ProcessJSFilesTask(getLog(), bufferSize, webappSourceDir,
+                webappTargetDir, jsSourceDir, jsSourceFiles, jsSourceIncludes, jsSourceExcludes, jsFinalFile,
+                linebreak, !nomunge, verbose, preserveAllSemiColons, disableOptimizations));
 
         try {
             if (processCSSFilesTask != null) {
