@@ -7,7 +7,7 @@
 
     <groupId>com.samaxes.maven</groupId>
     <artifactId>maven-minify-plugin</artifactId>
-    <version>1.2</version>
+    <version>1.2.1-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <name>Maven Minify Plugin</name>
@@ -112,6 +112,11 @@
                 <artifactId>maven-gpg-plugin</artifactId>
                 <version>1.0</version>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>2.1</version>
+            </plugin>
         </plugins>
     </build>
 
@@ -127,8 +132,9 @@
             <url>http://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
         <site>
-            <id>maven-minify-plugin-site</id>
-            <url>svn:https://maven-samaxes-repo.googlecode.com/svn/sites/maven-minify-plugin</url>
+            <!-- Need to be local so it can be uploaded with the correct mime-type -->
+            <id>local</id>
+            <url>file://${basedir}/../sites/${project.artifactId}-${project.version}</url>
         </site>
     </distributionManagement>
 
