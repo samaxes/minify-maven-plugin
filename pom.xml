@@ -13,7 +13,7 @@
     <name>Maven Minify Plugin</name>
     <description>Combine and minimize JavaScript and CSS files for faster page loading.</description>
     <url>http://code.google.com/p/maven-samaxes-plugin/</url>
-    <inceptionYear>2010</inceptionYear>
+    <inceptionYear>2009</inceptionYear>
     <organization>
         <name>samaxes</name>
         <url>http://www.samaxes.com/</url>
