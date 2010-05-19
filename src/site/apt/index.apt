@@ -9,7 +9,7 @@
 Maven Minify Plugin
 
   This plugin combines and minimizes JavaScript and CSS files using
-  {{{http://www.julienlecomte.net/yuicompressor/}YUI Compressor}}  for faster page loading.
+  {{{http://developer.yahoo.com/yui/compressor/}YUI Compressor}}  for faster page loading.
 
 * Goals Overview
 
