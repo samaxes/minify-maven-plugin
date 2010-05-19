@@ -127,7 +127,7 @@
         <site>
             <!-- Need to be local so it can be uploaded with the correct mime-type -->
             <id>local</id>
-            <url>file://${basedir}/../sites/${project.artifactId}-${project.version}</url>
+            <url>file://${basedir}/../sites/${project.artifactId}</url>
         </site>
     </distributionManagement>
 
