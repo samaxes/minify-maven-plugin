@@ -167,11 +167,11 @@ public abstract class ProcessFilesTask implements Runnable {
      * Merges files list.
      */
     private void mergeFiles() {
-        ListOfFiles listOfFiles = new ListOfFiles(this.log, files);
+        ListOfFiles listOfFiles = new ListOfFiles(files);
 
-        log.info("Merging files " + listOfFiles.toString());
         if (listOfFiles.size() > 0) {
             try {
+                log.info("Merging files " + listOfFiles.toString());
                 SequenceInputStream sequence = new SequenceInputStream(listOfFiles);
                 OutputStream out = new FileOutputStream(finalFile);
                 byte[] buffer = new byte[bufferSize];

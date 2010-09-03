@@ -28,15 +28,11 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.apache.maven.plugin.logging.Log;
-
 /**
  * {@code ListOfFiles} is used to initialize the SequenceInputStream which uses {@code ListOfFiles} to get a new
  * InputStream for every file listed.
  */
 public class ListOfFiles implements Enumeration<InputStream> {
-
-    private Log log;
 
     private List<File> files;
 
@@ -45,11 +41,9 @@ public class ListOfFiles implements Enumeration<InputStream> {
     /**
      * ListOfFiles public constructor.
      * 
-     * @param log Maven plugin log
      * @param files list of files
      */
-    public ListOfFiles(Log log, List<File> files) {
-        this.log = log;
+    public ListOfFiles(List<File> files) {
         this.files = files;
     }
 
@@ -72,15 +66,16 @@ public class ListOfFiles implements Enumeration<InputStream> {
     public InputStream nextElement() {
         InputStream is = null;
 
-        if (!hasMoreElements())
-            throw new NoSuchElementException("No more files.");
-        else {
+        if (!hasMoreElements()) {
+            throw new NoSuchElementException("No more files!");
+        } else {
+            File nextElement = files.get(current);
+            current++;
+
             try {
-                File nextElement = files.get(current);
-                current++;
                 is = new FileInputStream(nextElement);
             } catch (FileNotFoundException e) {
-                log.error("The file [" + files.get(current).getName() + "] was not found.", e);
+                throw new NoSuchElementException("The path [" + nextElement.getPath() + "] cannot be found.");
             }
         }
 

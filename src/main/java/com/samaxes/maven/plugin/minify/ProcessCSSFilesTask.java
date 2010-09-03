@@ -50,8 +50,8 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
             String extension = name.substring(name.lastIndexOf('.'));
             File destFile = new File(targetDir, name.replace(extension, SUFFIX.concat(extension)));
 
-            log.info("Minifying file [" + name + "]");
             try {
+                log.info("Creating final file [" + name + "]");
                 Reader reader = new FileReader(finalFile);
                 Writer writer = new FileWriter(destFile);
                 CssCompressor compressor = new CssCompressor(reader);
