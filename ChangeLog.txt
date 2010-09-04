@@ -5,6 +5,7 @@
 == 1.2.1 ==
  * Doesn't crash anymore with an IndexOutOfBoundsException when a source file does not exist.
  * More accurate logging.
+ * Configure POM to inherit from Sonatype OSS Parent POM.
 
 == 1.2 ==
  * Exclude/include patterns added, with the caveat that the developer must name their source files so their
