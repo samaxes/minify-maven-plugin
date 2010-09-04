@@ -22,7 +22,7 @@ Basic Configuration
       <plugin>
         <groupId>com.samaxes.maven</groupId>
         <artifactId>maven-minify-plugin</artifactId>
-        <version>1.2</version>
+        <version>1.2.1</version>
         <configuration>
           <cssSourceFiles>
             <param>file-1.css</param>
