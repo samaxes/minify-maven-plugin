@@ -8,23 +8,24 @@
     <parent>
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
-        <version>4</version>
+        <version>5</version>
     </parent>
 
     <groupId>com.samaxes.maven</groupId>
     <artifactId>maven-minify-plugin-demo</artifactId>
-    <version>1.2.1</version>
+    <version>1.2.2-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>Maven Minify Plugin Demo</name>
-    <url>http://code.google.com/p/maven-samaxes-plugin/</url>
     <description>How to use the maven plugin maven-minify-plugin.</description>
+    <url>http://code.google.com/p/maven-samaxes-plugin/</url>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
                 <configuration>
                     <source>1.5</source>
                     <target>1.5</target>
@@ -34,6 +35,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
+                <version>2.4.3</version>
                 <configuration>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
@@ -41,6 +43,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
+                <version>2.1</version>
                 <configuration>
                     <warSourceExcludes>**/reset.css,**/fonts.css,**/base.css,**/samaxesjs.core.js,**/samaxesjs.toc.js</warSourceExcludes>
                     <archive>
@@ -56,6 +59,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.2</version>
                 <configuration>
                     <descriptorRefs>
                         <descriptorRef>src</descriptorRef>
@@ -65,7 +69,7 @@
             <plugin>
                 <groupId>com.samaxes.maven</groupId>
                 <artifactId>maven-minify-plugin</artifactId>
-                <version>1.2.1</version>
+                <version>1.2.2-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <id>default-minify</id>
