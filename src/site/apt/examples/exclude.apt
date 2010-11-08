@@ -1,31 +1,31 @@
  ------
- Exclude source files from the WAR package
+ Exclude source files from WAR package
  ------
  Samuel Santos
  ------
- 2009-09-21
+ 2010-11-08
  ------
 
-Exclude source files from the WAR package
+Exclude source files from WAR package
 
-* Configuring your Maven WAR Plugin
+* Configure Maven WAR Plugin
 
-  You can use the following configuration in your <<<pom.xml>>> to exclude source files from the WAR package.
+  Use the following configuration in your <<<pom.xml>>> plugin section to exclude source files from the WAR package.
 
 +---+
 <project>
-  ...
+  [...]
   <build>
     <plugins>
-      ...
+      [...]
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
-          <warSourceExcludes>**/file-1.css,...,**/file-n.css,**/file-1.js,...,**/file-n.js</warSourceExcludes>
+          <warSourceExcludes>**/file-1.css,[...],**/file-n.css,**/file-1.js,[...],**/file-n.js</warSourceExcludes>
         </configuration>
       </plugin>
-      ...
+      [...]
       <plugin>
         <groupId>com.samaxes.maven</groupId>
         <artifactId>maven-minify-plugin</artifactId>
@@ -37,12 +37,12 @@ Exclude source files from the WAR package
             <configuration>
               <cssSourceFiles>
                 <param>file-1.css</param>
-                ...
+                [...]
                 <param>file-n.css</param>
               </cssSourceFiles>
               <jsSourceFiles>
                 <param>file-1.js</param>
-                ...
+                [...]
                 <param>file-n.js</param>
               </jsSourceFiles>
             </configuration>
@@ -52,16 +52,16 @@ Exclude source files from the WAR package
           </execution>
         </executions>
       </plugin>
-      ...
+      [...]
     </plugins>
   </build>
-  ...
+  [...]
 </project>
 +---+
 
-* From the command-line
+* Invoke from the command-line
 
-  Only the merged and minified files will be included in your package:
+  Only merged and minified files will be included in your package.
 
 +---+
 mvn package

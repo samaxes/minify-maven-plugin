@@ -35,6 +35,6 @@ Maven Minify Plugin
 
   * {{{./examples/basic.html}Basic Configuration}}
 
-  * {{{./examples/binding.html}Binding to a Phase in the Project Build Cycle}}
+  * {{{./examples/ordering.html}Lexicographical ordering}}
 
   * {{{./examples/exclude.html}Exclude source files from the WAR package}}

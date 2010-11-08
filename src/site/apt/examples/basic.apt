@@ -3,22 +3,21 @@
  ------
  Samuel Santos
  ------
- 2009-09-21
+ 2010-11-08
  ------
 
 Basic Configuration
 
-* Configuring your <<<pom.xml>>>
+* Configure Maven Minify Plugin
 
-  You can use the following configuration in your <<<pom.xml>>> to run the Maven Minify Plugin
-  everytime the project is built.
+  This is the most basic configuration to run Maven Minify Plugin everytime the project is built.
 
 +---+
 <project>
-  ...
+  [...]
   <build>
     <plugins>
-      ...
+      [...]
       <plugin>
         <groupId>com.samaxes.maven</groupId>
         <artifactId>maven-minify-plugin</artifactId>
@@ -26,26 +25,27 @@ Basic Configuration
         <configuration>
           <cssSourceFiles>
             <param>file-1.css</param>
-            ...
+            [...]
             <param>file-n.css</param>
           </cssSourceFiles>
           <jsSourceFiles>
             <param>file-1.js</param>
-            ...
+            [...]
             <param>file-n.js</param>
           </jsSourceFiles>
         </configuration>
       </plugin>
-      ...
+      [...]
     </plugins>
   </build>
-  ...
+  [...]
 </project>
 +---+
 
-* From the command-line
+* Invoke from the command-line
 
-  Create a package containing the new files:
+  Since the <<<minify>>> goal is not bound to any phase in the build cycle, you need to explicitly invoke
+  <<<minify:minify>>> goal to create a package containing the new files.
 
 +---+
 mvn minify:minify package

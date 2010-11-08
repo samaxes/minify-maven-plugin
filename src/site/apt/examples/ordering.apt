@@ -1,0 +1,57 @@
+ ------
+ Lexicographical ordering
+ ------
+ Samuel Santos
+ ------
+ 2010-11-08
+ ------
+
+Lexicographical ordering
+
+* Configure Maven Minify Plugin
+
+  Since version 1.2 Maven Minify Plugin supports exclude/include patterns for lexicographical ordering.
+
++---+
+<project>
+  [...]
+  <build>
+    <plugins>
+      [...]
+      <plugin>
+        <groupId>com.samaxes.maven</groupId>
+        <artifactId>maven-minify-plugin</artifactId>
+        <version>1.2.1</version>
+        <executions>
+          <execution>
+            <id>default-minify</id>
+            <phase>process-resources</phase>
+            <configuration>
+              <cssSourceDir>css</cssSourceDir>
+              <cssSourceIncludes>**</cssSourceIncludes>
+              <cssSourceExcludes>**/*.min.css</cssSourceExcludes>
+              <jsSourceDir>js</jsSourceDir>
+              <jsSourceIncludes>**</jsSourceIncludes>
+              <jsSourceExcludes>**/*.min.js</jsSourceExcludes>
+              <jsFinalFile>script.js</jsFinalFile>
+            </configuration>
+            <goals>
+              <goal>minify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      [...]
+    </plugins>
+  </build>
+  [...]
+</project>
++---+
+
+* Invoke from the command-line
+
+  Create a package containing the new files.
+
++---+
+mvn package
++---+

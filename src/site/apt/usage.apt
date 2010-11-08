@@ -3,105 +3,75 @@
  ------
  Samuel Santos
  ------
- 2009-09-21
+ 2010-11-08
  ------
 
 Usage
 
-  This document is intended to provide instructions for using the
-  Maven Minify Plugin. In order for this discussion to be useful, it's
-  critical to cover two topics: Configuring your project's <<<pom.xml>>> to run
-  the plugin during the build and using the plugin from the command-line.
+  This document is intended to provide instructions for using the Maven Minify Plugin.\
+  In order for this discussion to be useful, it's critical to cover two topics:
 
-* Basic configuration
+    [[1]] Configuring your project's <<<pom.xml>>> to run the plugin during the project's build cycle
 
-  The recommended basic configuration.
+    [[2]] Invoking the plugin from the command-line
+
+* Configure Maven Minify Plugin
+
+  By tying the goals of the plugin to a phase in the build cycle, the specified goals will run each time that
+  phase of the build cycle is executed. Doing this can make it easier to add the plugin to your project, because it
+  eliminates the need to run the plugin standalone.
+
+  To bind the minify goal of the Maven Minify Plugin to a phase in the build cycle, you will need to add the
+  <<<execution>>> tag with the phase set to the build phase and the <<<goal>>> set to <<<minify>>>. For instance, using
+  <<<process-resources>>> in the phase will force the minify goal to run each time this phase of the build cycle occurs.
 
 +---+
 <project>
-  ...
+  [...]
   <build>
     <plugins>
-      ...
+      [...]
       <plugin>
         <groupId>com.samaxes.maven</groupId>
         <artifactId>maven-minify-plugin</artifactId>
         <version>1.2.1</version>
-        <configuration>
-          <cssSourceFiles>
-            <param>file-1.css</param>
-            ...
-            <param>file-n.css</param>
-          </cssSourceFiles>
-          <jsSourceFiles>
-            <param>file-1.js</param>
-            ...
-            <param>file-n.js</param>
-          </jsSourceFiles>
-        </configuration>
+        <executions>
+          <execution>
+            <id>default-minify</id>
+            <phase>process-resources</phase>
+            <configuration>
+              <cssSourceDir>css</cssSourceDir>
+              <cssSourceFiles>
+                <param>file-1.css</param>
+                [...]
+                <param>file-n.css</param>
+              </cssSourceFiles>
+              <cssFinalFile>style.css</cssFinalFile>
+              <jsSourceDir>js</jsSourceDir>
+              <jsSourceFiles>
+                <param>file-1.js</param>
+                [...]
+                <param>file-n.js</param>
+              </jsSourceFiles>
+              <jsFinalFile>script.js</jsFinalFile>
+            </configuration>
+            <goals>
+              <goal>minify</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
-      ...
+      [...]
     </plugins>
   </build>
-  ...
+  [...]
 </project>
 +---+
 
-* Complete configuration
+* Invoke from the command-line
 
-  In case you need more flexibility, this configuration shows all the possible configuration parameters.
-
-+---+
-<project>
-  ...
-  <build>
-    <plugins>
-      ...
-      <plugin>
-        <groupId>com.samaxes.maven</groupId>
-        <artifactId>maven-minify-plugin</artifactId>
-        <version>1.2.1</version>
-        <configuration>
-          <webappSourceDir>${basedir}/src/main/webapp</webappSourceDir>
-          <webappTargetDir>${project.build.directory}/${project.build.finalName}</webappTargetDir>
-          <cssSourceDir>css</cssSourceDir>
-          <jsSourceDir>js</jsSourceDir>
-          <cssSourceFiles>
-            <param>file-1.css</param>
-            ...
-            <param>file-n.css</param>
-          </cssSourceFiles>
-          <jsSourceFiles>
-            <param>file-1.js</param>
-            ...
-            <param>file-n.js</param>
-          </jsSourceFiles>
-          <cssSourceIncludes>**</cssSourceIncludes>
-          <cssSourceExcludes>fileToExclude.css</cssSourceExcludes>
-          <jsSourceIncludes>**</jsSourceIncludes>
-          <jsSourceExcludes>fileToExclude.js</jsSourceExcludes>
-          <cssFinalFile>style.css</cssFinalFile>
-          <jsFinalFile>script.js</jsFinalFile>
-          <linebreak>-1</linebreak>
-          <nomunge>false</nomunge>
-          <verbose>false</verbose>
-          <preserveAllSemiColons>false</preserveAllSemiColons>
-          <disableOptimizations>false</disableOptimizations>
-          <bufferSize>4096</bufferSize>
-        </configuration>
-      </plugin>
-      ...
-    </plugins>
-  </build>
-  ...
-</project>
-+---+
-
-* Using the plugin from the command-line
-
-  The Maven Minify Plugin is easily executed from the command line since it can run
-  without any parameter configuration.
+  Create a package containing the new files.
 
 +---+
-mvn minify:minify
+mvn package
 +---+

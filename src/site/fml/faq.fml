@@ -2,11 +2,10 @@
 <faqs id="FAQ" title="Frequently Asked Questions">
     <part id="General">
         <faq id="question">
-            <question>Question?</question>
+            <question>Is it possible to create multiple CSS &amp; JavaScript bundles?</question>
             <answer>
-                <p>
-                    Answer
-            	</p>
+                <p>Yes, it is. Just use multiple <code>&lt;execution></code> tags with different final names.</p>
+                <p>Note that execution id's have to be unique among all executions of a single plugin within a POM.</p>
             </answer>
         </faq>
     </part>
