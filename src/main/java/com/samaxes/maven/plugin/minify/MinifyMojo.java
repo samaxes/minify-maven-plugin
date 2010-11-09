@@ -43,7 +43,6 @@ public class MinifyMojo extends AbstractMojo {
      * Webapp source directory.
      * 
      * @parameter expression="${minify.webappSourceDir}" default-value="${basedir}/src/main/webapp"
-     * @required
      */
     private String webappSourceDir;
 
@@ -52,7 +51,6 @@ public class MinifyMojo extends AbstractMojo {
      * 
      * @parameter expression="${minify.webappTargetDir}"
      *            default-value="${project.build.directory}/${project.build.finalName}"
-     * @required
      */
     private String webappTargetDir;
 
@@ -60,7 +58,6 @@ public class MinifyMojo extends AbstractMojo {
      * CSS source directory.
      * 
      * @parameter expression="${minify.cssSourceDir}" alias="cssDir" default-value="css"
-     * @required
      */
     private String cssSourceDir;
 
@@ -68,7 +65,6 @@ public class MinifyMojo extends AbstractMojo {
      * JavaScript source directory.
      * 
      * @parameter expression="${minify.jsSourceDir}" alias="jsDir" default-value="js"
-     * @required
      */
     private String jsSourceDir;
 
@@ -139,7 +135,6 @@ public class MinifyMojo extends AbstractMojo {
      * semi-colon in JavaScript, and after each rule in CSS. Specify -1 to disallow line breaks.
      * 
      * @parameter expression="${minify.linebreak}" default-value="-1"
-     * @required
      */
     private int linebreak;
 
@@ -147,7 +142,6 @@ public class MinifyMojo extends AbstractMojo {
      * Minify only. Do not obfuscate local symbols.
      * 
      * @parameter expression="${minify.munge}" default-value="false"
-     * @required
      */
     private boolean nomunge;
 
@@ -155,7 +149,6 @@ public class MinifyMojo extends AbstractMojo {
      * Display informational messages and warnings.
      * 
      * @parameter expression="${minify.verbose}" default-value="false"
-     * @required
      */
     private boolean verbose;
 
@@ -164,7 +157,6 @@ public class MinifyMojo extends AbstractMojo {
      * be run through JSLint (which is the case of YUI for example).
      * 
      * @parameter expression="${minify.preserveAllSemiColons}" default-value="false"
-     * @required
      */
     private boolean preserveAllSemiColons;
 
@@ -172,7 +164,6 @@ public class MinifyMojo extends AbstractMojo {
      * Disable all the built-in micro optimizations.
      * 
      * @parameter expression="${minify.disableOptimizations}" default-value="false"
-     * @required
      */
     private boolean disableOptimizations;
 
@@ -180,7 +171,6 @@ public class MinifyMojo extends AbstractMojo {
      * Size of the buffer used to read source files.
      * 
      * @parameter expression="${minify.bufferSize}" default-value="4096"
-     * @required
      */
     private int bufferSize;
 

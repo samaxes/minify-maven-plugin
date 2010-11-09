@@ -94,7 +94,7 @@ public abstract class ProcessFilesTask implements Runnable {
             }
         }
 
-        if (targetDir.exists() || targetDir.mkdirs()) {
+        if (targetDir.exists() || targetDir.mkdirs()) { // TODO targetDir.exists() may return true
             this.finalFile = new File(targetDir, finalFilename);
         }
     }
