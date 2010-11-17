@@ -28,6 +28,8 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.apache.maven.plugin.logging.Log;
+
 /**
  * {@code ListOfFiles} is used to initialize the SequenceInputStream which uses {@code ListOfFiles} to get a new
  * InputStream for every file listed.
@@ -41,10 +43,13 @@ public class ListOfFiles implements Enumeration<InputStream> {
     /**
      * ListOfFiles public constructor.
      * 
+     * @param log Maven plugin log
      * @param files list of files
      */
-    public ListOfFiles(List<File> files) {
+    public ListOfFiles(Log log, List<File> files) {
         this.files = files;
+
+        log.info("Merging source files " + this.toString());
     }
 
     /**
@@ -97,14 +102,5 @@ public class ListOfFiles implements Enumeration<InputStream> {
         }
 
         return stringBuilder.append("]").toString();
-    }
-
-    /**
-     * Returns the number of elements in this list.
-     * 
-     * @return the number of elements in this list
-     */
-    public int size() {
-        return files.size();
     }
 }

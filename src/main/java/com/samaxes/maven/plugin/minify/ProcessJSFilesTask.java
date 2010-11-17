@@ -12,6 +12,7 @@ import java.io.Writer;
 import java.util.List;
 
 import org.apache.maven.plugin.logging.Log;
+import org.codehaus.plexus.util.FileUtils;
 
 import com.samaxes.maven.plugin.common.JavaScriptErrorReporter;
 import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
@@ -38,8 +39,8 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      * @param webappTargetDir web resources target directory
      * @param filesDir directory containing input files
      * @param filenames filenames list
-     * @param sourceIncludes comma separated list of source files to include
-     * @param sourceExcludes comma separated list of source files to exclude
+     * @param sourceIncludes list of source files to include
+     * @param sourceExcludes list of source files to exclude
      * @param finalFilename final filename
      * @param linebreak split long lines after a specific column
      * @param munge minify only
@@ -48,7 +49,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      * @param disableOptimizations disable all the built-in micro optimizations
      */
     public ProcessJSFilesTask(Log log, Integer bufferSize, String webappSourceDir, String webappTargetDir,
-            String filesDir, List<String> filenames, String sourceIncludes, String sourceExcludes,
+            String filesDir, List<String> filenames, List<String> sourceIncludes, List<String> sourceExcludes,
             String finalFilename, int linebreak, boolean munge, boolean verbose, boolean preserveAllSemiColons,
             boolean disableOptimizations) {
         super(log, bufferSize, webappSourceDir, webappTargetDir, filesDir, filenames, sourceIncludes, sourceExcludes,
@@ -64,17 +65,16 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      * Minifies JavaScript file.
      */
     protected void minify() {
-        if (finalFile.exists()) {
-            String name = finalFile.getName();
-            String extension = name.substring(name.lastIndexOf('.'));
-            File destFile = new File(targetDir, name.replace(extension, SUFFIX.concat(extension)));
+        if (finalFile != null) {
+            String extension = FileUtils.getExtension(finalFile.getName());
+            File destFile = new File(targetDir, finalFile.getName().replace(extension, SUFFIX.concat(extension)));
 
             try {
-                log.info("Creating final file [" + name + "]");
+                log.info("Minifying final file [" + destFile.getName() + "]");
                 Reader reader = new FileReader(finalFile);
                 Writer writer = new FileWriter(destFile);
                 JavaScriptCompressor compressor = new JavaScriptCompressor(reader, new JavaScriptErrorReporter(log,
-                        name));
+                        finalFile.getName()));
 
                 compressor.compress(writer, linebreak, munge, verbose, preserveAllSemiColons, disableOptimizations);
                 reader.close();

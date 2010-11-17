@@ -42,16 +42,16 @@ Usage
             <configuration>
               <cssSourceDir>css</cssSourceDir>
               <cssSourceFiles>
-                <param>file-1.css</param>
+                <cssSourceFile>file-1.css</cssSourceFile>
                 [...]
-                <param>file-n.css</param>
+                <cssSourceFile>file-n.css</cssSourceFile>
               </cssSourceFiles>
               <cssFinalFile>style.css</cssFinalFile>
               <jsSourceDir>js</jsSourceDir>
               <jsSourceFiles>
-                <param>file-1.js</param>
+                <jsSourceFile>file-1.js</jsSourceFile>
                 [...]
-                <param>file-n.js</param>
+                <jsSourceFile>file-n.js</jsSourceFile>
               </jsSourceFiles>
               <jsFinalFile>script.js</jsFinalFile>
             </configuration>

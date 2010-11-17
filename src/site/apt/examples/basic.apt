@@ -24,14 +24,14 @@ Basic Configuration
         <version>1.2.1</version>
         <configuration>
           <cssSourceFiles>
-            <param>file-1.css</param>
+            <cssSourceFile>file-1.css</cssSourceFile>
             [...]
-            <param>file-n.css</param>
+            <cssSourceFile>file-n.css</cssSourceFile>
           </cssSourceFiles>
           <jsSourceFiles>
-            <param>file-1.js</param>
+            <jsSourceFile>file-1.js</jsSourceFile>
             [...]
-            <param>file-n.js</param>
+            <jsSourceFile>file-n.js</jsSourceFile>
           </jsSourceFiles>
         </configuration>
       </plugin>

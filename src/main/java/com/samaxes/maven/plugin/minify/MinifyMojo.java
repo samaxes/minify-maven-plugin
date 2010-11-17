@@ -71,48 +71,48 @@ public class MinifyMojo extends AbstractMojo {
     /**
      * CSS source filenames list.
      * 
-     * @parameter alias="cssFiles"
+     * @parameter expression="${minify.cssSourceFiles}" alias="cssFiles"
      */
     private List<String> cssSourceFiles = new ArrayList<String>();
 
     /**
      * JavaScript source filenames list.
      * 
-     * @parameter alias="jsFiles"
+     * @parameter expression="${minify.jsSourceFiles}" alias="jsFiles"
      */
     private List<String> jsSourceFiles = new ArrayList<String>();
 
     /**
-     * The comma separated list of CSS files to include.
+     * CSS files to include. Specified as fileset patterns which are relative to the CSS source directory.
      * 
      * @parameter expression="${minify.cssSourceIncludes}" alias="cssIncludes"
      * @since 1.2
      */
-    private String cssSourceIncludes;
+    private List<String> cssSourceIncludes = new ArrayList<String>();
 
     /**
-     * The comma separated list of CSS files to exclude.
-     * 
-     * @parameter expression="${minify.cssSourceExcludes}" alias="cssExcludes"
-     * @since 1.2
-     */
-    private String cssSourceExcludes;
-
-    /**
-     * The comma separated list of JavaScript files to include.
+     * JavaScript files to include. Specified as fileset patterns which are relative to the JavaScript source directory.
      * 
      * @parameter expression="${minify.jsSourceIncludes}" alias="jsIncludes"
      * @since 1.2
      */
-    private String jsSourceIncludes;
+    private List<String> jsSourceIncludes = new ArrayList<String>();
 
     /**
-     * The comma separated list of JavaScript files to exclude.
+     * CSS files to exclude. Specified as fileset patterns which are relative to the CSS source directory.
+     * 
+     * @parameter expression="${minify.cssSourceExcludes}" alias="cssExcludes"
+     * @since 1.2
+     */
+    private List<String> cssSourceExcludes = new ArrayList<String>();
+
+    /**
+     * JavaScript files to exclude. Specified as fileset patterns which are relative to the JavaScript source directory.
      * 
      * @parameter expression="${minify.jsSourceExcludes}" alias="jsExcludes"
      * @since 1.2
      */
-    private String jsSourceExcludes;
+    private List<String> jsSourceExcludes = new ArrayList<String>();
 
     /**
      * CSS output filename.

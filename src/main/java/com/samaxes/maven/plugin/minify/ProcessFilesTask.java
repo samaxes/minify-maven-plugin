@@ -23,15 +23,18 @@ package com.samaxes.maven.plugin.minify;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.SequenceInputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.DirectoryScanner;
-import org.codehaus.plexus.util.StringUtils;
+import org.codehaus.plexus.util.IOUtil;
 
+import com.samaxes.maven.plugin.common.FilenameComparator;
 import com.samaxes.maven.plugin.common.ListOfFiles;
 
 /**
@@ -39,9 +42,7 @@ import com.samaxes.maven.plugin.common.ListOfFiles;
  */
 public abstract class ProcessFilesTask implements Runnable {
 
-    protected static final String SUFFIX = ".min";
-
-    private static final String[] EMPTY_STRING_ARRAY = {};
+    protected static final String SUFFIX = "min.";
 
     protected Log log;
 
@@ -65,37 +66,35 @@ public abstract class ProcessFilesTask implements Runnable {
      * @param webappSourceDir web resources source directory
      * @param webappTargetDir web resources target directory
      * @param filesDir directory containing input files
-     * @param filenames filenames list
-     * @param sourceIncludes comma separated list of source files to include
-     * @param sourceExcludes comma separated list of source files to exclude
-     * @param finalFilename final filename
+     * @param sourceFiles list of source files to include
+     * @param sourceIncludes list of source files to include
+     * @param sourceExcludes list of source files to exclude
+     * @param finalFile final filename
      * @param linebreak split long lines after a specific column
      */
     public ProcessFilesTask(Log log, Integer bufferSize, String webappSourceDir, String webappTargetDir,
-            String filesDir, List<String> filenames, String sourceIncludes, String sourceExcludes,
-            String finalFilename, int linebreak) {
+            String filesDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
+            String finalFile, int linebreak) {
         this.log = log;
         this.bufferSize = bufferSize;
         this.linebreak = linebreak;
         this.sourceDir = new File(webappSourceDir.concat(File.separator).concat(filesDir));
         this.targetDir = new File(webappTargetDir.concat(File.separator).concat(filesDir));
 
-        List<File> includedFiles = (sourceIncludes != null && !"".equals(sourceIncludes)) ? getFilesToInclude(
-                sourceDir, sourceIncludes, sourceExcludes) : new ArrayList<File>();
-        for (String filename : filenames) {
-            File sourceFile = new File(sourceDir, filename);
-            log.debug("Adding source file [" + sourceFile.getName() + "]");
-            files.add(sourceFile);
+        for (String sourceFile : sourceFiles) {
+            logNewSourceFile(finalFile, sourceFile);
+            files.add(new File(sourceDir, sourceFile));
         }
-        for (File includedFile : includedFiles) {
-            if (!files.contains(includedFile)) {
-                log.debug("Adding source file [" + includedFile.getName() + "]");
-                files.add(includedFile);
+
+        for (File sourceInclude : getFilesToInclude(sourceDir, sourceIncludes, sourceExcludes)) {
+            if (!files.contains(sourceInclude)) {
+                logNewSourceFile(finalFile, sourceInclude.getName());
+                files.add(sourceInclude);
             }
         }
 
-        if (targetDir.exists() || targetDir.mkdirs()) { // TODO targetDir.exists() may return true
-            this.finalFile = new File(targetDir, finalFilename);
+        if (!files.isEmpty() && (targetDir.exists() || targetDir.mkdirs())) {
+            this.finalFile = new File(targetDir, finalFile);
         }
     }
 
@@ -108,56 +107,45 @@ public abstract class ProcessFilesTask implements Runnable {
     }
 
     /**
-     * Returns a string array of the includes to be used when adding source files.
+     * Logs an addition of a new source file.
      * 
-     * @param include comma separated list of source files to include
-     * @return an array of tokens to include
+     * @param finalFilename the final file name
+     * @param sourceFilename the source file name
      */
-    private String[] getIncludes(String include) {
-        return StringUtils.split(StringUtils.defaultString(include), ",");
+    private void logNewSourceFile(String finalFilename, String sourceFilename) {
+        if (finalFilename.equalsIgnoreCase(sourceFilename)) {
+            throw new IllegalArgumentException("Source file should not have the same name as final file ["
+                    + sourceFilename + "]");
+        } else {
+            log.debug("Adding source file [" + sourceFilename + "]");
+        }
     }
 
     /**
-     * Returns a string array of the excludes to be used when adding source files.
-     * 
-     * @param exclude comma separated list of source files to exclude
-     * @return an array of tokens to exclude
-     */
-    private String[] getExcludes(String exclude) {
-        return (StringUtils.isNotEmpty(exclude)) ? StringUtils.split(exclude, ",") : EMPTY_STRING_ARRAY;
-    }
-
-    /**
-     * Returns the files to copy. Even if the excludes are <code>null</code>, the default excludes are used.
+     * Returns the files to copy. Default exclusions are used when the excludes list is empty.
      * 
      * @param baseDir the base directory to start from
-     * @param include comma separated list of source files to include
-     * @param exclude comma separated list of source files to exclude
+     * @param includes list of source files to include
+     * @param excludes list of source files to exclude
      * @return the files to copy
      */
-    private List<File> getFilesToInclude(File baseDir, String include, String exclude) {
-        DirectoryScanner scanner = new DirectoryScanner();
+    private List<File> getFilesToInclude(File baseDir, List<String> includes, List<String> excludes) {
         List<File> includedFiles = new ArrayList<File>();
-        String[] includedFilenames;
-        String[] includes = getIncludes(include);
-        String[] excludes = getExcludes(exclude);
 
-        scanner.setBasedir(baseDir);
+        if (includes != null && !includes.isEmpty()) {
+            DirectoryScanner scanner = new DirectoryScanner();
 
-        if (excludes != null) {
-            scanner.setExcludes(excludes);
-        }
-        scanner.addDefaultExcludes();
+            scanner.setIncludes(includes.toArray(new String[] {}));
+            scanner.setExcludes(excludes.toArray(new String[] {}));
+            scanner.addDefaultExcludes();
+            scanner.setBasedir(baseDir);
+            scanner.scan();
 
-        if (includes != null && includes.length > 0) {
-            scanner.setIncludes(includes);
-        }
+            for (String includedFilename : scanner.getIncludedFiles()) {
+                includedFiles.add(new File(baseDir, includedFilename));
+            }
 
-        scanner.scan();
-        includedFilenames = scanner.getIncludedFiles();
-
-        for (String includedFilename : includedFilenames) {
-            includedFiles.add(new File(baseDir, includedFilename));
+            Collections.sort(includedFiles, new FilenameComparator());
         }
 
         return includedFiles;
@@ -167,21 +155,17 @@ public abstract class ProcessFilesTask implements Runnable {
      * Merges files list.
      */
     private void mergeFiles() {
-        ListOfFiles listOfFiles = new ListOfFiles(files);
+        if (!files.isEmpty()) {
+            ListOfFiles listOfFiles = new ListOfFiles(log, files);
 
-        if (listOfFiles.size() > 0) {
             try {
-                log.info("Merging files " + listOfFiles.toString());
-                SequenceInputStream sequence = new SequenceInputStream(listOfFiles);
+                log.info("Creating final file [" + finalFile.getName() + "]");
+                InputStream sequence = new SequenceInputStream(listOfFiles);
                 OutputStream out = new FileOutputStream(finalFile);
-                byte[] buffer = new byte[bufferSize];
-                int length;
-                while ((length = sequence.read(buffer)) > 0) {
-                    out.write(buffer, 0, length);
-                }
 
-                sequence.close();
-                out.close();
+                IOUtil.copy(sequence, out, bufferSize);
+                IOUtil.close(sequence);
+                IOUtil.close(out);
             } catch (IOException e) {
                 log.error("An error has occurred while concatenating files.", e);
             }
