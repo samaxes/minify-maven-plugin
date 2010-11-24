@@ -71,21 +71,21 @@ public class MinifyMojo extends AbstractMojo {
     /**
      * CSS source filenames list.
      * 
-     * @parameter expression="${minify.cssSourceFiles}" alias="cssFiles"
+     * @parameter alias="cssFiles"
      */
     private List<String> cssSourceFiles = new ArrayList<String>();
 
     /**
      * JavaScript source filenames list.
      * 
-     * @parameter expression="${minify.jsSourceFiles}" alias="jsFiles"
+     * @parameter alias="jsFiles"
      */
     private List<String> jsSourceFiles = new ArrayList<String>();
 
     /**
      * CSS files to include. Specified as fileset patterns which are relative to the CSS source directory.
      * 
-     * @parameter expression="${minify.cssSourceIncludes}" alias="cssIncludes"
+     * @parameter alias="cssIncludes"
      * @since 1.2
      */
     private List<String> cssSourceIncludes = new ArrayList<String>();
@@ -93,7 +93,7 @@ public class MinifyMojo extends AbstractMojo {
     /**
      * JavaScript files to include. Specified as fileset patterns which are relative to the JavaScript source directory.
      * 
-     * @parameter expression="${minify.jsSourceIncludes}" alias="jsIncludes"
+     * @parameter alias="jsIncludes"
      * @since 1.2
      */
     private List<String> jsSourceIncludes = new ArrayList<String>();
@@ -101,7 +101,7 @@ public class MinifyMojo extends AbstractMojo {
     /**
      * CSS files to exclude. Specified as fileset patterns which are relative to the CSS source directory.
      * 
-     * @parameter expression="${minify.cssSourceExcludes}" alias="cssExcludes"
+     * @parameter alias="cssExcludes"
      * @since 1.2
      */
     private List<String> cssSourceExcludes = new ArrayList<String>();
@@ -109,7 +109,7 @@ public class MinifyMojo extends AbstractMojo {
     /**
      * JavaScript files to exclude. Specified as fileset patterns which are relative to the JavaScript source directory.
      * 
-     * @parameter expression="${minify.jsSourceExcludes}" alias="jsExcludes"
+     * @parameter alias="jsExcludes"
      * @since 1.2
      */
     private List<String> jsSourceExcludes = new ArrayList<String>();
