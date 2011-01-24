@@ -65,21 +65,22 @@ public abstract class ProcessFilesTask implements Runnable {
      * @param bufferSize size of the buffer used to read source files.
      * @param webappSourceDir web resources source directory
      * @param webappTargetDir web resources target directory
-     * @param filesDir directory containing input files
+     * @param inputDir directory containing source files
      * @param sourceFiles list of source files to include
      * @param sourceIncludes list of source files to include
      * @param sourceExcludes list of source files to exclude
+     * @param outputDir directory to write the final file
      * @param finalFile final filename
      * @param linebreak split long lines after a specific column
      */
     public ProcessFilesTask(Log log, Integer bufferSize, String webappSourceDir, String webappTargetDir,
-            String filesDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
-            String finalFile, int linebreak) {
+            String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
+            String outputDir, String finalFile, int linebreak) {
         this.log = log;
         this.bufferSize = bufferSize;
         this.linebreak = linebreak;
-        this.sourceDir = new File(webappSourceDir.concat(File.separator).concat(filesDir));
-        this.targetDir = new File(webappTargetDir.concat(File.separator).concat(filesDir));
+        this.sourceDir = new File(webappSourceDir.concat(File.separator).concat(inputDir));
+        this.targetDir = new File(webappTargetDir.concat(File.separator).concat(outputDir));
 
         for (String sourceFile : sourceFiles) {
             logNewSourceFile(finalFile, sourceFile);

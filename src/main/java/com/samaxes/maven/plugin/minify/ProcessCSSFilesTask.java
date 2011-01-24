@@ -28,18 +28,19 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
      * @param bufferSize size of the buffer used to read source files.
      * @param webappSourceDir web resources source directory
      * @param webappTargetDir web resources target directory
-     * @param filesDir directory containing input files
-     * @param filenames filenames list
+     * @param inputDir directory containing source files
+     * @param sourceFiles list of source files to include
      * @param sourceIncludes list of source files to include
      * @param sourceExcludes list of source files to exclude
-     * @param finalFilename final filename
+     * @param outputDir directory to write the final file
+     * @param finalFile final filename
      * @param linebreak split long lines after a specific column
      */
     public ProcessCSSFilesTask(Log log, Integer bufferSize, String webappSourceDir, String webappTargetDir,
-            String filesDir, List<String> filenames, List<String> sourceIncludes, List<String> sourceExcludes,
-            String finalFilename, int linebreak) {
-        super(log, bufferSize, webappSourceDir, webappTargetDir, filesDir, filenames, sourceIncludes, sourceExcludes,
-                finalFilename, linebreak);
+            String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
+            String outputDir, String finalFile, int linebreak) {
+        super(log, bufferSize, webappSourceDir, webappTargetDir, inputDir, sourceFiles, sourceIncludes, sourceExcludes,
+                outputDir, finalFile, linebreak);
     }
 
     /**

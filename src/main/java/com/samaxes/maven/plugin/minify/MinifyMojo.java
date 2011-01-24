@@ -57,14 +57,14 @@ public class MinifyMojo extends AbstractMojo {
     /**
      * CSS source directory.
      * 
-     * @parameter expression="${minify.cssSourceDir}" alias="cssDir" default-value="css"
+     * @parameter expression="${minify.cssSourceDir}" default-value="css"
      */
     private String cssSourceDir;
 
     /**
      * JavaScript source directory.
      * 
-     * @parameter expression="${minify.jsSourceDir}" alias="jsDir" default-value="js"
+     * @parameter expression="${minify.jsSourceDir}" default-value="js"
      */
     private String jsSourceDir;
 
@@ -113,6 +113,20 @@ public class MinifyMojo extends AbstractMojo {
      * @since 1.2
      */
     private List<String> jsSourceExcludes = new ArrayList<String>();
+
+    /**
+     * CSS target directory.
+     * 
+     * @parameter expression="${minify.cssTargetDir}" default-value="css"
+     */
+    private String cssTargetDir;
+
+    /**
+     * JavaScript target directory.
+     * 
+     * @parameter expression="${minify.jsTargetDir}" default-value="js"
+     */
+    private String jsTargetDir;
 
     /**
      * CSS output filename.
@@ -180,11 +194,11 @@ public class MinifyMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         ExecutorService executor = Executors.newFixedThreadPool(2);
         Future<?> processCSSFilesTask = executor.submit(new ProcessCSSFilesTask(getLog(), bufferSize, webappSourceDir,
-                webappTargetDir, cssSourceDir, cssSourceFiles, cssSourceIncludes, cssSourceExcludes, cssFinalFile,
-                linebreak));
+                webappTargetDir, cssSourceDir, cssSourceFiles, cssSourceIncludes, cssSourceExcludes, cssTargetDir,
+                cssFinalFile, linebreak));
         Future<?> processJSFilesTask = executor.submit(new ProcessJSFilesTask(getLog(), bufferSize, webappSourceDir,
-                webappTargetDir, jsSourceDir, jsSourceFiles, jsSourceIncludes, jsSourceExcludes, jsFinalFile,
-                linebreak, !nomunge, verbose, preserveAllSemiColons, disableOptimizations));
+                webappTargetDir, jsSourceDir, jsSourceFiles, jsSourceIncludes, jsSourceExcludes, jsTargetDir,
+                jsFinalFile, linebreak, !nomunge, verbose, preserveAllSemiColons, disableOptimizations));
 
         try {
             if (processCSSFilesTask != null) {
