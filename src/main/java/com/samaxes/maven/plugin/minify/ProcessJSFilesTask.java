@@ -43,6 +43,8 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      * @param sourceExcludes list of source files to exclude
      * @param outputDir directory to write the final file
      * @param finalFile final filename
+     * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.
+     *        Otherwise, only byte-to-byte operations are used
      * @param linebreak split long lines after a specific column
      * @param munge minify only
      * @param verbose display informational messages and warnings
@@ -51,10 +53,10 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      */
     public ProcessJSFilesTask(Log log, Integer bufferSize, String webappSourceDir, String webappTargetDir,
             String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
-            String outputDir, String finalFile, int linebreak, boolean munge, boolean verbose,
+            String outputDir, String finalFile, String charset, int linebreak, boolean munge, boolean verbose,
             boolean preserveAllSemiColons, boolean disableOptimizations) {
         super(log, bufferSize, webappSourceDir, webappTargetDir, inputDir, sourceFiles, sourceIncludes, sourceExcludes,
-                outputDir, finalFile, linebreak);
+                outputDir, finalFile, charset, linebreak);
 
         this.munge = munge;
         this.verbose = verbose;

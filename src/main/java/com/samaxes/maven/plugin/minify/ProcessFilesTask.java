@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.SequenceInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,6 +51,8 @@ public abstract class ProcessFilesTask implements Runnable {
 
     protected File finalFile;
 
+    protected String charset;
+
     protected int linebreak;
 
     private Integer bufferSize;
@@ -71,13 +74,16 @@ public abstract class ProcessFilesTask implements Runnable {
      * @param sourceExcludes list of source files to exclude
      * @param outputDir directory to write the final file
      * @param finalFile final filename
+     * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.
+     *        Otherwise, only byte-to-byte operations are used
      * @param linebreak split long lines after a specific column
      */
     public ProcessFilesTask(Log log, Integer bufferSize, String webappSourceDir, String webappTargetDir,
             String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
-            String outputDir, String finalFile, int linebreak) {
+            String outputDir, String finalFile, String charset, int linebreak) {
         this.log = log;
         this.bufferSize = bufferSize;
+        this.charset = charset;
         this.linebreak = linebreak;
         this.sourceDir = new File(webappSourceDir.concat(File.separator).concat(inputDir));
         this.targetDir = new File(webappTargetDir.concat(File.separator).concat(outputDir));
@@ -164,7 +170,14 @@ public abstract class ProcessFilesTask implements Runnable {
                 InputStream sequence = new SequenceInputStream(listOfFiles);
                 OutputStream out = new FileOutputStream(finalFile);
 
-                IOUtil.copy(sequence, out, bufferSize);
+                if (charset == null) {
+                    IOUtil.copy(sequence, out, bufferSize);
+                } else {
+                    OutputStreamWriter outWriter = new OutputStreamWriter(out);
+                    IOUtil.copy(sequence, outWriter, charset, bufferSize);
+                    IOUtil.close(outWriter);
+                }
+
                 IOUtil.close(sequence);
                 IOUtil.close(out);
             } catch (IOException e) {

@@ -143,6 +143,20 @@ public class MinifyMojo extends AbstractMojo {
     private String jsFinalFile;
 
     /**
+     * If a supported character set is specified, copy and convert bytes from an {@code InputStream} to chars on a
+     * {@code Writer}, using the specified encoding. Otherwise, copy bytes from an {@code InputStream} to an {@code
+     * OutputStream}.
+     * 
+     * <p>
+     * See the <a href="http://www.iana.org/assignments/character-sets">IANA Charset Registry</a> for a list of valid
+     * encoding types.
+     * </p>
+     * 
+     * @parameter expression="${minify.charset}"
+     */
+    private String charset;
+
+    /**
      * Some source control tools don't like files containing lines longer than, say 8000 characters. The linebreak
      * option is used in that case to split long lines after a specific column. It can also be used to make the code
      * more readable, easier to debug (especially with the MS Script Debugger). Specify 0 to get a line break after each
@@ -195,10 +209,10 @@ public class MinifyMojo extends AbstractMojo {
         ExecutorService executor = Executors.newFixedThreadPool(2);
         Future<?> processCSSFilesTask = executor.submit(new ProcessCSSFilesTask(getLog(), bufferSize, webappSourceDir,
                 webappTargetDir, cssSourceDir, cssSourceFiles, cssSourceIncludes, cssSourceExcludes, cssTargetDir,
-                cssFinalFile, linebreak));
+                cssFinalFile, charset, linebreak));
         Future<?> processJSFilesTask = executor.submit(new ProcessJSFilesTask(getLog(), bufferSize, webappSourceDir,
                 webappTargetDir, jsSourceDir, jsSourceFiles, jsSourceIncludes, jsSourceExcludes, jsTargetDir,
-                jsFinalFile, linebreak, !nomunge, verbose, preserveAllSemiColons, disableOptimizations));
+                jsFinalFile, charset, linebreak, !nomunge, verbose, preserveAllSemiColons, disableOptimizations));
 
         try {
             if (processCSSFilesTask != null) {
