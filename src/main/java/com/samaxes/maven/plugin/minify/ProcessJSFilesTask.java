@@ -3,7 +3,6 @@
  */
 package com.samaxes.maven.plugin.minify;
 
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,7 +11,6 @@ import java.io.Writer;
 import java.util.List;
 
 import org.apache.maven.plugin.logging.Log;
-import org.codehaus.plexus.util.FileUtils;
 
 import com.samaxes.maven.plugin.common.JavaScriptErrorReporter;
 import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
@@ -42,7 +40,8 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      * @param sourceIncludes list of source files to include
      * @param sourceExcludes list of source files to exclude
      * @param outputDir directory to write the final file
-     * @param finalFile final filename
+     * @param finalFilename final filename
+     * @param suffix final filename suffix
      * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.
      *        Otherwise, only byte-to-byte operations are used
      * @param linebreak split long lines after a specific column
@@ -53,10 +52,10 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      */
     public ProcessJSFilesTask(Log log, Integer bufferSize, String webappSourceDir, String webappTargetDir,
             String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
-            String outputDir, String finalFile, String charset, int linebreak, boolean munge, boolean verbose,
-            boolean preserveAllSemiColons, boolean disableOptimizations) {
+            String outputDir, String finalFilename, String suffix, String charset, int linebreak, boolean munge,
+            boolean verbose, boolean preserveAllSemiColons, boolean disableOptimizations) {
         super(log, bufferSize, webappSourceDir, webappTargetDir, inputDir, sourceFiles, sourceIncludes, sourceExcludes,
-                outputDir, finalFile, charset, linebreak);
+                outputDir, finalFilename, suffix, charset, linebreak);
 
         this.munge = munge;
         this.verbose = verbose;
@@ -68,16 +67,13 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      * Minifies JavaScript file.
      */
     protected void minify() {
-        if (finalFile != null) {
-            String extension = FileUtils.getExtension(finalFile.getName());
-            File destFile = new File(targetDir, finalFile.getName().replace(extension, SUFFIX.concat(extension)));
-
+        if (mergedFile != null) {
             try {
-                log.info("Minifying final file [" + destFile.getName() + "]");
-                Reader reader = new FileReader(finalFile);
-                Writer writer = new FileWriter(destFile);
+                log.info("Creating minified file [" + minifiedFile.getName() + "]");
+                Reader reader = new FileReader(mergedFile);
+                Writer writer = new FileWriter(minifiedFile);
                 JavaScriptCompressor compressor = new JavaScriptCompressor(reader, new JavaScriptErrorReporter(log,
-                        finalFile.getName()));
+                        mergedFile.getName()));
 
                 compressor.compress(writer, linebreak, munge, verbose, preserveAllSemiColons, disableOptimizations);
                 reader.close();

@@ -34,6 +34,7 @@ import java.util.List;
 
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.DirectoryScanner;
+import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 
 import com.samaxes.maven.plugin.common.FilenameComparator;
@@ -44,21 +45,17 @@ import com.samaxes.maven.plugin.common.ListOfFiles;
  */
 public abstract class ProcessFilesTask implements Runnable {
 
-    protected static final String SUFFIX = "min.";
-
     protected Log log;
-
-    protected File targetDir;
-
-    protected File finalFile;
-
-    protected String charset;
 
     protected int linebreak;
 
+    protected File mergedFile;
+
+    protected File minifiedFile;
+
     private Integer bufferSize;
 
-    private File sourceDir;
+    private String charset;
 
     private List<File> files = new ArrayList<File>();
 
@@ -74,36 +71,41 @@ public abstract class ProcessFilesTask implements Runnable {
      * @param sourceIncludes list of source files to include
      * @param sourceExcludes list of source files to exclude
      * @param outputDir directory to write the final file
-     * @param finalFile final filename
+     * @param finalFilename final filename
+     * @param suffix final filename suffix
      * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.
      *        Otherwise, only byte-to-byte operations are used
      * @param linebreak split long lines after a specific column
      */
     public ProcessFilesTask(Log log, Integer bufferSize, String webappSourceDir, String webappTargetDir,
             String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
-            String outputDir, String finalFile, String charset, int linebreak) {
+            String outputDir, String finalFilename, String suffix, String charset, int linebreak) {
         this.log = log;
+        this.linebreak = linebreak;
         this.bufferSize = bufferSize;
         this.charset = charset;
-        this.linebreak = linebreak;
-        this.sourceDir = new File(webappSourceDir.concat(File.separator).concat(inputDir));
-        this.targetDir = new File(webappTargetDir.concat(File.separator).concat(outputDir));
+
+        File sourceDir = new File(webappSourceDir.concat(File.separator).concat(inputDir));
+        File targetDir = new File(webappTargetDir.concat(File.separator).concat(outputDir));
 
         for (String sourceFile : sourceFiles) {
-            logNewSourceFile(finalFile, sourceFile);
+            logNewSourceFile(finalFilename, sourceFile);
             files.add(new File(sourceDir, sourceFile));
         }
 
         for (File sourceInclude : getFilesToInclude(sourceDir, sourceIncludes, sourceExcludes)) {
             if (!files.contains(sourceInclude)) {
-                logNewSourceFile(finalFile, sourceInclude.getName());
+                logNewSourceFile(finalFilename, sourceInclude.getName());
                 files.add(sourceInclude);
             }
         }
 
         if (!files.isEmpty() && (targetDir.exists() || targetDir.mkdirs())) {
-            this.finalFile = new File(targetDir, finalFile);
+            this.mergedFile = new File(targetDir, finalFilename);
         }
+
+        String extension = ".".concat(FileUtils.getExtension(this.mergedFile.getName()));
+        this.minifiedFile = new File(targetDir, this.mergedFile.getName().replace(extension, suffix.concat(extension)));
     }
 
     /**
@@ -167,9 +169,9 @@ public abstract class ProcessFilesTask implements Runnable {
             ListOfFiles listOfFiles = new ListOfFiles(log, files);
 
             try {
-                log.info("Creating final file [" + finalFile.getName() + "]");
+                log.info("Creating merged file [" + mergedFile.getName() + "]");
                 InputStream sequence = new SequenceInputStream(listOfFiles);
-                OutputStream out = new FileOutputStream(finalFile);
+                OutputStream out = new FileOutputStream(mergedFile);
 
                 if (charset == null) {
                     IOUtil.copy(sequence, out, bufferSize);

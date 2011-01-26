@@ -118,6 +118,7 @@ public class MinifyMojo extends AbstractMojo {
      * CSS target directory.
      * 
      * @parameter expression="${minify.cssTargetDir}" default-value="css"
+     * @since 1.3.2
      */
     private String cssTargetDir;
 
@@ -125,6 +126,7 @@ public class MinifyMojo extends AbstractMojo {
      * JavaScript target directory.
      * 
      * @parameter expression="${minify.jsTargetDir}" default-value="js"
+     * @since 1.3.2
      */
     private String jsTargetDir;
 
@@ -143,9 +145,17 @@ public class MinifyMojo extends AbstractMojo {
     private String jsFinalFile;
 
     /**
-     * If a supported character set is specified, copy and convert bytes from an {@code InputStream} to chars on a
-     * {@code Writer}, using the specified encoding. Otherwise, copy bytes from an {@code InputStream} to an {@code
-     * OutputStream}.
+     * The output filename suffix.
+     * 
+     * @parameter expression="${minify.suffix}" default-value=".min"
+     * @since 1.3.2
+     */
+    private String suffix;
+
+    /**
+     * If a supported character set is specified, do a byte-to-char copy operation from an {@code InputStreamReader} to
+     * an {@code OutputStreamWriter} using the specified charset. Otherwise, do a byte-to-byte copy operation from an
+     * {@code InputStream} to an {@code OutputStream}, keeping the original file encoding.
      * 
      * <p>
      * See the <a href="http://www.iana.org/assignments/character-sets">IANA Charset Registry</a> for a list of valid
@@ -153,6 +163,7 @@ public class MinifyMojo extends AbstractMojo {
      * </p>
      * 
      * @parameter expression="${minify.charset}"
+     * @since 1.3.2
      */
     private String charset;
 
@@ -167,6 +178,7 @@ public class MinifyMojo extends AbstractMojo {
     private int linebreak;
 
     /**
+     * JAVASCRIPT ONLY OPTION!<br/>
      * Minify only. Do not obfuscate local symbols.
      * 
      * @parameter expression="${minify.munge}" default-value="false"
@@ -174,6 +186,7 @@ public class MinifyMojo extends AbstractMojo {
     private boolean nomunge;
 
     /**
+     * JAVASCRIPT ONLY OPTION!<br/>
      * Display informational messages and warnings.
      * 
      * @parameter expression="${minify.verbose}" default-value="false"
@@ -181,6 +194,7 @@ public class MinifyMojo extends AbstractMojo {
     private boolean verbose;
 
     /**
+     * JAVASCRIPT ONLY OPTION!<br/>
      * Preserve unnecessary semicolons (such as right before a '}'). This option is useful when compressed code has to
      * be run through JSLint (which is the case of YUI for example).
      * 
@@ -189,6 +203,7 @@ public class MinifyMojo extends AbstractMojo {
     private boolean preserveAllSemiColons;
 
     /**
+     * JAVASCRIPT ONLY OPTION!<br/>
      * Disable all the built-in micro optimizations.
      * 
      * @parameter expression="${minify.disableOptimizations}" default-value="false"
@@ -209,10 +224,11 @@ public class MinifyMojo extends AbstractMojo {
         ExecutorService executor = Executors.newFixedThreadPool(2);
         Future<?> processCSSFilesTask = executor.submit(new ProcessCSSFilesTask(getLog(), bufferSize, webappSourceDir,
                 webappTargetDir, cssSourceDir, cssSourceFiles, cssSourceIncludes, cssSourceExcludes, cssTargetDir,
-                cssFinalFile, charset, linebreak));
-        Future<?> processJSFilesTask = executor.submit(new ProcessJSFilesTask(getLog(), bufferSize, webappSourceDir,
-                webappTargetDir, jsSourceDir, jsSourceFiles, jsSourceIncludes, jsSourceExcludes, jsTargetDir,
-                jsFinalFile, charset, linebreak, !nomunge, verbose, preserveAllSemiColons, disableOptimizations));
+                cssFinalFile, suffix, charset, linebreak));
+        Future<?> processJSFilesTask = executor
+                .submit(new ProcessJSFilesTask(getLog(), bufferSize, webappSourceDir, webappTargetDir, jsSourceDir,
+                        jsSourceFiles, jsSourceIncludes, jsSourceExcludes, jsTargetDir, jsFinalFile, suffix, charset,
+                        linebreak, !nomunge, verbose, preserveAllSemiColons, disableOptimizations));
 
         try {
             if (processCSSFilesTask != null) {
