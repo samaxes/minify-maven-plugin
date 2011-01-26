@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.SequenceInputStream;
@@ -173,8 +174,11 @@ public abstract class ProcessFilesTask implements Runnable {
                 if (charset == null) {
                     IOUtil.copy(sequence, out, bufferSize);
                 } else {
-                    OutputStreamWriter outWriter = new OutputStreamWriter(out);
-                    IOUtil.copy(sequence, outWriter, charset, bufferSize);
+                    InputStreamReader sequenceReader = new InputStreamReader(sequence, charset);
+                    OutputStreamWriter outWriter = new OutputStreamWriter(out, charset);
+
+                    IOUtil.copy(sequenceReader, outWriter, bufferSize);
+                    IOUtil.close(sequenceReader);
                     IOUtil.close(outWriter);
                 }
 
