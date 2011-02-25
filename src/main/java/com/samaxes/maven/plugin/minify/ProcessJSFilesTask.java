@@ -67,7 +67,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      * Minifies JavaScript file.
      */
     protected void minify() {
-        if (mergedFile != null) {
+        if (minifiedFile != null) {
             try {
                 log.info("Creating minified file [" + minifiedFile.getName() + "]");
                 Reader reader = new FileReader(mergedFile);

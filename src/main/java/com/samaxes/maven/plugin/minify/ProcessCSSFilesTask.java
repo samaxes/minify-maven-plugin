@@ -48,7 +48,7 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
      * Minifies CSS file.
      */
     protected void minify() {
-        if (mergedFile != null) {
+        if (minifiedFile != null) {
             try {
                 log.info("Creating minified file [" + minifiedFile.getName() + "]");
                 Reader reader = new FileReader(mergedFile);

@@ -102,10 +102,15 @@ public abstract class ProcessFilesTask implements Runnable {
 
         if (!files.isEmpty() && (targetDir.exists() || targetDir.mkdirs())) {
             this.mergedFile = new File(targetDir, finalFilename);
-        }
 
-        String extension = ".".concat(FileUtils.getExtension(this.mergedFile.getName()));
-        this.minifiedFile = new File(targetDir, this.mergedFile.getName().replace(extension, suffix.concat(extension)));
+            String extension = ".".concat(FileUtils.getExtension(this.mergedFile.getName()));
+            this.minifiedFile = new File(targetDir, this.mergedFile.getName().replace(extension,
+                    suffix.concat(extension)));
+        } else if (!sourceFiles.isEmpty() || !sourceIncludes.isEmpty()) {
+            // The 'files' list will be empty if the source file paths or names added to the project's POM are wrong.
+            log.error("An error has occurred while loading source files."
+                    + " Please check your source directory path and source file names.");
+        }
     }
 
     /**
@@ -165,7 +170,7 @@ public abstract class ProcessFilesTask implements Runnable {
      * Merges files list.
      */
     private void mergeFiles() {
-        if (!files.isEmpty()) {
+        if (mergedFile != null) {
             ListOfFiles listOfFiles = new ListOfFiles(log, files);
 
             try {
