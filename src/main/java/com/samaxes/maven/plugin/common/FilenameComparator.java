@@ -1,7 +1,10 @@
 /*
  * $Id$
  *
- * Copyright 2010 samaxes.com
+ * MinifyMojo Maven Plugin
+ * http://code.google.com/p/maven-samaxes-plugin/
+ *
+ * Copyright (c) 2010 samaxes.com
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +25,6 @@ import java.util.Comparator;
 
 /**
  * Custom filename comparator. Compares file name instead of file path.
- * 
- * @author Samuel Santos
- * @version $Revision$
  */
 public class FilenameComparator implements Comparator<File> {
 
