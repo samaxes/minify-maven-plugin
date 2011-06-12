@@ -129,11 +129,11 @@ public abstract class ProcessFilesTask implements Runnable {
      */
     private void logNewSourceFile(String finalFilename, String sourceFilename) {
         if (finalFilename.equalsIgnoreCase(sourceFilename)) {
-            throw new IllegalArgumentException("Source file should not have the same name as final file ["
-                    + sourceFilename + "]");
-        } else {
-            log.debug("Adding source file [" + sourceFilename + "]");
+            log.info("Please be cautious when using the source file name for the final file.");
+            // throw new IllegalArgumentException("Source file should not have the same name as final file ["
+            // + sourceFilename + "]");
         }
+        log.debug("Adding source file [" + sourceFilename + "]");
     }
 
     /**
