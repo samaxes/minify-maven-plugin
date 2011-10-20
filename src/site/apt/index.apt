@@ -35,6 +35,6 @@ Maven Minify Plugin
 
   * {{{./examples/basic.html}Basic Configuration}}
 
-  * {{{./examples/ordering.html}Lexicographical ordering}}
+  * {{{./examples/ordering.html}Lexicographical ordering (exclude/include patterns)}}
 
-  * {{{./examples/exclude.html}Exclude source files from the WAR package}}
+  * {{{./examples/exclude.html}Exclude source files from WAR package}}

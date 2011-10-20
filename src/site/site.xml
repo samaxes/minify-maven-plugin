@@ -9,7 +9,7 @@
         </menu>
         <menu name="Examples">
             <item name="Basic Configuration" href="examples/basic.html" />
-            <item name="Lexicographical ordering" href="examples/ordering.html" />
+            <item name="Lexicographical ordering (exclude/include patterns)" href="examples/ordering.html" />
             <item name="Exclude source files from WAR package" href="examples/exclude.html" />
         </menu>
         ${reports}

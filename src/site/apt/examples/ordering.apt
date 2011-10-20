@@ -1,12 +1,12 @@
  ------
- Lexicographical ordering
+ Lexicographical ordering (exclude/include patterns)
  ------
  Samuel Santos
  ------
  2010-11-08
  ------
 
-Lexicographical ordering
+Lexicographical ordering (exclude/include patterns)
 
 * Configure Maven Minify Plugin
 
