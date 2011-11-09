@@ -3,10 +3,17 @@
  ------
  Samuel Santos
  ------
- 2010-11-08
+ 2011-11-09
  ------
 
 Exclude source files from WAR package
+
+  Sometimes we need to exclude the original source files from the final WAR package.
+
+  A possible scenario is when you do not want to make them publicly available via your site for security reasons,
+  or simply want to include only the minified (obfuscated) file resulting from the Maven Minify Plugin execution.
+
+  This example shows how that can be done.
 
 * Configure Maven WAR Plugin
 
