@@ -143,17 +143,6 @@
                 <artifactId>maven-release-plugin</artifactId>
             </plugin>
             <plugin>
-                <!-- mvn clean install ghDownloads:upload -->
-                <groupId>com.github.github</groupId>
-                <artifactId>downloads-maven-plugin</artifactId>
-                <version>0.5</version>
-                <configuration>
-                    <description>${project.version} release of ${project.name}</description>
-                    <includeAttached>true</includeAttached>
-                    <override>true</override>
-                </configuration>
-            </plugin>
-            <plugin>
                 <!-- mvn site ghSite:site -->
                 <groupId>com.github.github</groupId>
                 <artifactId>site-maven-plugin</artifactId>
