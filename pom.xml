@@ -10,7 +10,7 @@
 
     <groupId>com.samaxes.maven</groupId>
     <artifactId>minify-maven-plugin</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4</version>
     <packaging>maven-plugin</packaging>
 
     <name>Minify Maven Plugin</name>
@@ -46,7 +46,8 @@
         <connection>scm:git:git://github.com/samaxes/minify-maven-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:samaxes/minify-maven-plugin.git</developerConnection>
         <url>https://github.com/samaxes/minify-maven-plugin</url>
-    </scm>
+      <tag>minify-maven-plugin-1.4</tag>
+  </scm>
     <issueManagement>
         <system>GitHub</system>
         <url>https://github.com/samaxes/minify-maven-plugin/issues</url>
