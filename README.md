@@ -41,7 +41,7 @@ Configure your project's `pom.xml` to run the plugin during the project's build 
         </plugins>
     </build>
 
-For more information, check the plugin [Maven site](http://samaxes.github.com/minify-maven-plugin/) or the [demo application]([https://github.com/downloads/samaxes/minify-maven-plugin/minify-maven-plugin-demo-1.4-src.zip).
+For more information, check the plugin [Maven site](http://samaxes.github.com/minify-maven-plugin/) or the [demo application](https://github.com/downloads/samaxes/minify-maven-plugin/minify-maven-plugin-demo-1.4-src.zip).
 
 ## Features
 
