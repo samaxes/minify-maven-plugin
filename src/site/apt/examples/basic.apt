@@ -8,9 +8,9 @@
 
 Basic Configuration
 
-* Configure Maven Minify Plugin
+* Configure Minify Maven Plugin
 
-  This is the most basic configuration to run Maven Minify Plugin everytime the project is built.
+  This is the most basic configuration to run Minify Maven Plugin everytime the project is built.
 
 +---+
 <project>
@@ -20,8 +20,8 @@ Basic Configuration
       [...]
       <plugin>
         <groupId>com.samaxes.maven</groupId>
-        <artifactId>maven-minify-plugin</artifactId>
-        <version>1.3.5</version>
+        <artifactId>minify-maven-plugin</artifactId>
+        <version>1.4</version>
         <configuration>
           <cssSourceFiles>
             <cssSourceFile>file-1.css</cssSourceFile>

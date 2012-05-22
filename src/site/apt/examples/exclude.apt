@@ -11,7 +11,7 @@ Exclude source files from WAR package
   Sometimes we need to exclude the original source files from the final WAR package.
 
   A possible scenario is when you do not want to make them publicly available via your site for security reasons,
-  or simply want to include only the minified (obfuscated) file resulting from the Maven Minify Plugin execution.
+  or simply want to include only the minified (obfuscated) file resulting from the Minify Maven Plugin execution.
 
   This example shows how that can be done.
 
@@ -35,8 +35,8 @@ Exclude source files from WAR package
       [...]
       <plugin>
         <groupId>com.samaxes.maven</groupId>
-        <artifactId>maven-minify-plugin</artifactId>
-        <version>1.3.5</version>
+        <artifactId>minify-maven-plugin</artifactId>
+        <version>1.4</version>
         <executions>
           <execution>
             <id>default-minify</id>

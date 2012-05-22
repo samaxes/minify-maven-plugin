@@ -1,0 +1,46 @@
+# Minify Maven Plugin
+
+## 1.4
+
+* Moved from http://code.google.com/p/maven-samaxes-plugin/ to https://github.com/samaxes/minify-maven-plugin.
+* Renamed project from Maven Minify Plugin to Minify Maven Plugin.
+* Added Maven Integration for Eclipse (M2E) lifecycle mapping metadata.
+
+## 1.3.5
+
+* Lifted restriction that prevented the final filename to be the same as an existing source filename.
+
+## 1.3.4
+
+* Updated YUI Compressor to version 2.4.6.
+
+## 1.3.3
+
+* Added debug messages for wrong source file names and source directory paths.
+
+## 1.3.2
+
+* Added cssTargetDir, jsTargetDir, suffix, and charset parameters.
+
+## 1.3.1
+
+* Maven Plugin API does not support expression="${value}" on @parameter tag with Maven versions < 3.0.
+
+## 1.3
+
+* Exclude/include patterns changed from a comma separated String to List<String>. Also included a custom file comparator that only compares the file name instead of the full file path.
+* Updated YUI Compressor dependency to version 2.4.2.
+
+## 1.2.1
+
+* Doesn't crash anymore with an IndexOutOfBoundsException when a source file does not exist.
+* More accurate logging.
+* Configure POM to inherit from Sonatype OSS Parent POM.
+
+## 1.2
+
+* Exclude/include patterns added, with the caveat that the developer must name their source files so their lexicographical order is correct for minifying.
+* Don't minify a file type if the list of files to process is empty.
+* Make JavaScript minify error messages clearer.
+* Make file extensions configurable (e.g. it's now possible to save a JavaScript file as *.jsp or *.php).
+* Compiled against JDK 1.5 instead of JDK 1.6.

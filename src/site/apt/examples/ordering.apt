@@ -8,9 +8,9 @@
 
 Lexicographical ordering (exclude/include patterns)
 
-* Configure Maven Minify Plugin
+* Configure Minify Maven Plugin
 
-  Since version 1.2, Maven Minify Plugin supports exclude/include patterns for lexicographical ordering.
+  Since version 1.2, Minify Maven Plugin supports exclude/include patterns for lexicographical ordering.
 
 +---+
 <project>
@@ -20,8 +20,8 @@ Lexicographical ordering (exclude/include patterns)
       [...]
       <plugin>
         <groupId>com.samaxes.maven</groupId>
-        <artifactId>maven-minify-plugin</artifactId>
-        <version>1.3.5</version>
+        <artifactId>minify-maven-plugin</artifactId>
+        <version>1.4</version>
         <executions>
           <execution>
             <id>default-minify</id>

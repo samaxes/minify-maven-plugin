@@ -6,23 +6,23 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.samaxes.maven</groupId>
-    <artifactId>maven-minify-plugin-demo</artifactId>
-    <version>1.3.5</version>
+    <artifactId>minify-maven-plugin-demo</artifactId>
+    <version>1.4</version>
     <packaging>war</packaging>
 
-    <name>Maven Minify Plugin Demo</name>
-    <description>How to use the maven plugin maven-minify-plugin.</description>
-    <url>http://code.google.com/p/maven-samaxes-plugin/</url>
+    <name>Minify Maven Plugin Demo</name>
+    <description>How to use the maven plugin minify-maven-plugin.</description>
+    <url>https://github.com/samaxes/minify-maven-plugin</url>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>2.4</version>
                 <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.source}</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
@@ -37,7 +37,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.2.1</version>
+                <version>2.3</version>
                 <configuration>
                     <descriptorRefs>
                         <descriptorRef>src</descriptorRef>
@@ -47,14 +47,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.1.1</version>
+                <version>2.2</version>
                 <configuration>
                     <warSourceExcludes>**/reset.css,**/fonts.css,**/base.css,**/toc.css,**/samaxesjs.core.js,**/samaxesjs.toc.js</warSourceExcludes>
                     <archive>
                         <manifest>
-                            <addDefaultSpecificationEntries>false</addDefaultSpecificationEntries>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            <addClasspath>false</addClasspath>
                         </manifest>
                         <addMavenDescriptor>false</addMavenDescriptor>
                     </archive>
@@ -62,8 +60,8 @@
             </plugin>
             <plugin>
                 <groupId>com.samaxes.maven</groupId>
-                <artifactId>maven-minify-plugin</artifactId>
-                <version>1.3.5</version>
+                <artifactId>minify-maven-plugin</artifactId>
+                <version>1.4</version>
                 <executions>
                     <execution>
                         <id>default-minify</id>
@@ -88,4 +86,11 @@
             </plugin>
         </plugins>
     </build>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.resourceEncoding>ISO-8859-1</project.build.resourceEncoding>
+        <maven.compiler.target>1.5</maven.compiler.target>
+        <maven.compiler.source>1.5</maven.compiler.source>
+    </properties>
 </project>

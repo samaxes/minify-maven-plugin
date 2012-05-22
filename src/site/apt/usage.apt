@@ -8,20 +8,20 @@
 
 Usage
 
-  This document is intended to provide instructions for using the Maven Minify Plugin.\
+  This document is intended to provide instructions for using the Minify Maven Plugin.\
   In order for this discussion to be useful, it's critical to cover two topics:
 
     [[1]] Configuring your project's <<<pom.xml>>> to run the plugin during the project's build cycle
 
     [[2]] Invoking the plugin from the command-line
 
-* Configure Maven Minify Plugin
+* Configure Minify Maven Plugin
 
   By tying the goals of the plugin to a phase in the build cycle, the specified goals will run each time that
   phase of the build cycle is executed. Doing this can make it easier to add the plugin to your project, because it
   eliminates the need to run the plugin standalone.
 
-  To bind the minify goal of the Maven Minify Plugin to a phase in the build cycle, you will need to add the
+  To bind the minify goal of the Minify Maven Plugin to a phase in the build cycle, you will need to add the
   <<<execution>>> tag with the phase set to the build phase and the <<<goal>>> set to <<<minify>>>. For instance, using
   <<<process-resources>>> in the phase will force the minify goal to run each time this phase of the build cycle occurs.
 
@@ -33,8 +33,8 @@ Usage
       [...]
       <plugin>
         <groupId>com.samaxes.maven</groupId>
-        <artifactId>maven-minify-plugin</artifactId>
-        <version>1.3.5</version>
+        <artifactId>minify-maven-plugin</artifactId>
+        <version>1.4</version>
         <executions>
           <execution>
             <id>default-minify</id>

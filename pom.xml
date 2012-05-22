@@ -9,13 +9,13 @@
     </parent>
 
     <groupId>com.samaxes.maven</groupId>
-    <artifactId>maven-minify-plugin</artifactId>
+    <artifactId>minify-maven-plugin</artifactId>
     <version>1.4-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
-    <name>Maven Minify Plugin</name>
+    <name>Minify Maven Plugin</name>
     <description>Combine and minimize JavaScript and CSS files for faster page loading.</description>
-    <url>http://code.google.com/p/maven-samaxes-plugin/</url>
+    <url>https://github.com/samaxes/minify-maven-plugin</url>
     <inceptionYear>2009</inceptionYear>
     <organization>
         <name>samaxes</name>
@@ -43,27 +43,52 @@
     </developers>
 
     <scm>
-        <connection>scm:svn:http://maven-samaxes-plugin.googlecode.com/svn/trunk/maven-minify-plugin</connection>
-        <developerConnection>scm:svn:https://maven-samaxes-plugin.googlecode.com/svn/trunk/maven-minify-plugin</developerConnection>
-        <url>http://maven-samaxes-plugin.googlecode.com/svn/trunk/maven-minify-plugin</url>
+        <connection>scm:git:git://github.com/samaxes/minify-maven-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:samaxes/minify-maven-plugin.git</developerConnection>
+        <url>https://github.com/samaxes/minify-maven-plugin</url>
     </scm>
     <issueManagement>
-        <system>Google Code</system>
-        <url>http://code.google.com/p/maven-samaxes-plugin/issues/list</url>
+        <system>GitHub</system>
+        <url>https://github.com/samaxes/minify-maven-plugin/issues</url>
     </issueManagement>
-    <distributionManagement>
-        <site>
-            <!-- Need to be local so it can be uploaded with the correct mime-type -->
-            <id>local</id>
-            <url>${project.baseUri}/../sites/${project.artifactId}</url>
-        </site>
-    </distributionManagement>
 
     <prerequisites>
         <maven>3.0</maven>
     </prerequisites>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <!--
+                    This plugin's configuration is used to store Eclipse m2e settings only.
+                    It has no influence on the Maven build itself.
+                -->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.apache.maven.plugins</groupId>
+                                        <artifactId>maven-docck-plugin</artifactId>
+                                        <versionRange>[1.0,)</versionRange>
+                                        <goals>
+                                            <goal>check</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore />
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -116,6 +141,27 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <!-- mvn clean install ghDownloads:upload -->
+                <groupId>com.github.github</groupId>
+                <artifactId>downloads-maven-plugin</artifactId>
+                <version>0.5</version>
+                <configuration>
+                    <description>${project.version} release of ${project.name}</description>
+                    <includeAttached>true</includeAttached>
+                    <override>true</override>
+                </configuration>
+            </plugin>
+            <plugin>
+                <!-- mvn site ghSite:site -->
+                <groupId>com.github.github</groupId>
+                <artifactId>site-maven-plugin</artifactId>
+                <version>0.6</version>
+                <configuration>
+                    <message>Creating site for ${project.version}</message>
+                    <noJekyll>true</noJekyll>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -196,6 +242,7 @@
     </reporting>
 
     <properties>
+        <github.global.server>github</github.global.server>
         <project.build.resourceEncoding>ISO-8859-1</project.build.resourceEncoding>
         <maven.compiler.target>1.5</maven.compiler.target>
         <maven.compiler.source>1.5</maven.compiler.source>
