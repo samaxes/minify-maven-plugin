@@ -42,15 +42,15 @@
         </developer>
     </developers>
 
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/samaxes/minify-maven-plugin/issues</url>
+    </issueManagement>
     <scm>
         <connection>scm:git:git://github.com/samaxes/minify-maven-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:samaxes/minify-maven-plugin.git</developerConnection>
         <url>https://github.com/samaxes/minify-maven-plugin</url>
     </scm>
-    <issueManagement>
-        <system>GitHub</system>
-        <url>https://github.com/samaxes/minify-maven-plugin/issues</url>
-    </issueManagement>
 
     <prerequisites>
         <maven>3.0</maven>
