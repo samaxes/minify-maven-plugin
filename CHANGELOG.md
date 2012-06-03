@@ -1,5 +1,9 @@
 # Minify Maven Plugin
 
+## 1.4.1
+
+* Updated Maven site skin.
+
 ## 1.4
 
 * Moved from http://code.google.com/p/maven-samaxes-plugin/ to https://github.com/samaxes/minify-maven-plugin.

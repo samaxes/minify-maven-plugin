@@ -14,10 +14,10 @@ Lexicographical ordering (exclude/include patterns)
 
 +---+
 <project>
-  [...]
+  <!-- ... -->
   <build>
     <plugins>
-      [...]
+      <!-- ... -->
       <plugin>
         <groupId>com.samaxes.maven</groupId>
         <artifactId>minify-maven-plugin</artifactId>
@@ -50,10 +50,10 @@ Lexicographical ordering (exclude/include patterns)
           </execution>
         </executions>
       </plugin>
-      [...]
+      <!-- ... -->
     </plugins>
   </build>
-  [...]
+  <!-- ... -->
 </project>
 +---+
 

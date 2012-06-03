@@ -27,10 +27,10 @@ Usage
 
 +---+
 <project>
-  [...]
+  <!-- ... -->
   <build>
     <plugins>
-      [...]
+      <!-- ... -->
       <plugin>
         <groupId>com.samaxes.maven</groupId>
         <artifactId>minify-maven-plugin</artifactId>
@@ -43,14 +43,14 @@ Usage
               <cssSourceDir>css</cssSourceDir>
               <cssSourceFiles>
                 <cssSourceFile>file-1.css</cssSourceFile>
-                [...]
+                <!-- ... -->
                 <cssSourceFile>file-n.css</cssSourceFile>
               </cssSourceFiles>
               <cssFinalFile>style.css</cssFinalFile>
               <jsSourceDir>js</jsSourceDir>
               <jsSourceFiles>
                 <jsSourceFile>file-1.js</jsSourceFile>
-                [...]
+                <!-- ... -->
                 <jsSourceFile>file-n.js</jsSourceFile>
               </jsSourceFiles>
               <jsFinalFile>script.js</jsFinalFile>
@@ -61,10 +61,10 @@ Usage
           </execution>
         </executions>
       </plugin>
-      [...]
+      <!-- ... -->
     </plugins>
   </build>
-  [...]
+  <!-- ... -->
 </project>
 +---+
 

@@ -21,18 +21,18 @@ Exclude source files from WAR package
 
 +---+
 <project>
-  [...]
+  <!-- ... -->
   <build>
     <plugins>
-      [...]
+      <!-- ... -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
-          <warSourceExcludes>**/file-1.css,[...],**/file-n.css,**/file-1.js,[...],**/file-n.js</warSourceExcludes>
+          <warSourceExcludes>**/file-1.css,...,**/file-n.css,**/file-1.js,...,**/file-n.js</warSourceExcludes>
         </configuration>
       </plugin>
-      [...]
+      <!-- ... -->
       <plugin>
         <groupId>com.samaxes.maven</groupId>
         <artifactId>minify-maven-plugin</artifactId>
@@ -44,12 +44,12 @@ Exclude source files from WAR package
             <configuration>
               <cssSourceFiles>
                 <cssSourceFile>file-1.css</cssSourceFile>
-                [...]
+                <!-- ... -->
                 <cssSourceFile>file-n.css</cssSourceFile>
               </cssSourceFiles>
               <jsSourceFiles>
                 <jsSourceFile>file-1.js</jsSourceFile>
-                [...]
+                <!-- ... -->
                 <jsSourceFile>file-n.js</jsSourceFile>
               </jsSourceFiles>
             </configuration>
@@ -59,10 +59,10 @@ Exclude source files from WAR package
           </execution>
         </executions>
       </plugin>
-      [...]
+      <!-- ... -->
     </plugins>
   </build>
-  [...]
+  <!-- ... -->
 </project>
 +---+
 

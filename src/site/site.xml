@@ -14,4 +14,23 @@
         </menu>
         ${reports}
     </body>
+    <skin>
+        <groupId>org.apache.maven.skins</groupId>
+        <artifactId>maven-fluido-skin</artifactId>
+        <version>1.2.1</version>
+    </skin>
+    <custom>
+        <fluidoSkin>
+            <gitHub>
+                <projectId>samaxes/minify-maven-plugin</projectId>
+                <ribbonOrientation>right</ribbonOrientation>
+                <ribbonColor>black</ribbonColor>
+            </gitHub>
+            <twitter>
+                <user>samaxes</user>
+            </twitter>
+            <facebookLike />
+            <googlePlusOne />
+        </fluidoSkin>
+    </custom>
 </project>

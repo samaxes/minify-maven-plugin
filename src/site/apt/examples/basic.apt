@@ -14,10 +14,10 @@ Basic Configuration
 
 +---+
 <project>
-  [...]
+  <!-- ... -->
   <build>
     <plugins>
-      [...]
+      <!-- ... -->
       <plugin>
         <groupId>com.samaxes.maven</groupId>
         <artifactId>minify-maven-plugin</artifactId>
@@ -25,20 +25,20 @@ Basic Configuration
         <configuration>
           <cssSourceFiles>
             <cssSourceFile>file-1.css</cssSourceFile>
-            [...]
+            <!-- ... -->
             <cssSourceFile>file-n.css</cssSourceFile>
           </cssSourceFiles>
           <jsSourceFiles>
             <jsSourceFile>file-1.js</jsSourceFile>
-            [...]
+            <!-- ... -->
             <jsSourceFile>file-n.js</jsSourceFile>
           </jsSourceFiles>
         </configuration>
       </plugin>
-      [...]
+      <!-- ... -->
     </plugins>
   </build>
-  [...]
+  <!-- ... -->
 </project>
 +---+
 
