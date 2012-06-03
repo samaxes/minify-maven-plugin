@@ -28,6 +28,7 @@
             </gitHub>
             <twitter>
                 <user>samaxes</user>
+                <showUser>true</showUser>
             </twitter>
             <facebookLike />
             <googlePlusOne />
