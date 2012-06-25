@@ -2,6 +2,7 @@
 
 ## 1.4.1
 
+* [MINIFY-1] Fixed charset issue.
 * Updated Maven site skin.
 
 ## 1.4

@@ -1,17 +1,17 @@
 /*
  * $Id$
  *
- * MinifyMojo Maven Plugin
- * http://code.google.com/p/maven-samaxes-plugin/
+ * Minify Maven Plugin
+ * https://github.com/samaxes/minify-maven-plugin
  *
  * Copyright (c) 2009 samaxes.com
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,14 +20,17 @@
  */
 package com.samaxes.maven.plugin.minify;
 
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.List;
 
 import org.apache.maven.plugin.logging.Log;
+import org.codehaus.plexus.util.IOUtil;
 
 import com.yahoo.platform.yui.compressor.CssCompressor;
 
@@ -38,7 +41,7 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
 
     /**
      * Task constructor.
-     * 
+     *
      * @param log Maven plugin log
      * @param bufferSize size of the buffer used to read source files.
      * @param webappSourceDir web resources source directory
@@ -64,17 +67,31 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
     /**
      * Minifies CSS file.
      */
+    @Override
     protected void minify() {
         if (minifiedFile != null) {
             try {
                 log.info("Creating minified file [" + minifiedFile.getName() + "]");
-                Reader reader = new FileReader(mergedFile);
-                Writer writer = new FileWriter(minifiedFile);
-                CssCompressor compressor = new CssCompressor(reader);
 
+                InputStream in = new FileInputStream(mergedFile);
+                OutputStream out = new FileOutputStream(minifiedFile);
+                InputStreamReader reader;
+                OutputStreamWriter writer;
+                if (charset == null) {
+                    reader = new InputStreamReader(in);
+                    writer = new OutputStreamWriter(out);
+                } else {
+                    reader = new InputStreamReader(in, charset);
+                    writer = new OutputStreamWriter(out, charset);
+                }
+
+                CssCompressor compressor = new CssCompressor(reader);
                 compressor.compress(writer, linebreak);
-                reader.close();
-                writer.close();
+
+                IOUtil.close(reader);
+                IOUtil.close(writer);
+                IOUtil.close(in);
+                IOUtil.close(out);
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
             }
