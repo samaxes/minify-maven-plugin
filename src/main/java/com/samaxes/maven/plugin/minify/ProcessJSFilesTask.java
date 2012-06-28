@@ -90,7 +90,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
     protected void minify() {
         if (minifiedFile != null) {
             try {
-                log.info("Creating minified file [" + minifiedFile.getName() + "]");
+                log.info("Creating minified file [" + minifiedFile.getName() + "].");
 
                 InputStream in = new FileInputStream(mergedFile);
                 OutputStream out = new FileOutputStream(minifiedFile);

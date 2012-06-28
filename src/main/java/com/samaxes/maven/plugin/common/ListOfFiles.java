@@ -49,7 +49,7 @@ public class ListOfFiles implements Enumeration<InputStream> {
     public ListOfFiles(Log log, List<File> files) {
         this.files = files;
 
-        log.info("Processing source files " + this.toString());
+        log.info("Processing source files " + this.toString() + ".");
     }
 
     /**

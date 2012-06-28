@@ -31,6 +31,7 @@ import java.io.SequenceInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.DirectoryScanner;
@@ -43,7 +44,7 @@ import com.samaxes.maven.plugin.common.ListOfFiles;
 /**
  * Abstract class for merging and compressing a files list.
  */
-public abstract class ProcessFilesTask implements Runnable {
+public abstract class ProcessFilesTask implements Callable<Object> {
 
     protected Log log;
 
@@ -85,55 +86,69 @@ public abstract class ProcessFilesTask implements Runnable {
         this.bufferSize = bufferSize;
         this.charset = charset;
 
-        File sourceDir = new File(webappSourceDir.concat(File.separator).concat(inputDir));
-        File targetDir = new File(webappTargetDir.concat(File.separator).concat(outputDir));
-
-        for (String sourceFile : sourceFiles) {
-            logNewSourceFile(finalFilename, sourceFile);
-            files.add(new File(sourceDir, sourceFile));
+        File sourceDir = new File(webappSourceDir + File.separator + inputDir);
+        for (String sourceFilename : sourceFiles) {
+            addNewSourceFile(finalFilename, sourceDir, sourceFilename);
         }
-
         for (File sourceInclude : getFilesToInclude(sourceDir, sourceIncludes, sourceExcludes)) {
             if (!files.contains(sourceInclude)) {
-                logNewSourceFile(finalFilename, sourceInclude.getName());
-                files.add(sourceInclude);
+                addNewSourceFile(finalFilename, sourceDir, sourceInclude.getName());
             }
         }
 
+        File targetDir = new File(webappTargetDir + File.separator + outputDir);
+        String extension = "." + FileUtils.getExtension(finalFilename);
         if (!files.isEmpty() && (targetDir.exists() || targetDir.mkdirs())) {
             this.mergedFile = new File(targetDir, finalFilename);
-
-            String extension = ".".concat(FileUtils.getExtension(this.mergedFile.getName()));
             this.minifiedFile = new File(targetDir, this.mergedFile.getName().replace(extension,
-                    suffix.concat(extension)));
+                    suffix + extension));
         } else if (!sourceFiles.isEmpty() || !sourceIncludes.isEmpty()) {
             // The 'files' list will be empty if the source file paths or names added to the project's POM are wrong.
-            log.error("An error has occurred while loading source files."
-                    + " Please check your source directory path and source file names.");
+            String fileType = ("CSS".equalsIgnoreCase(extension.substring(1))) ? "CSS" : "JavaScript";
+            log.error("No " + fileType + " source files found to process.");
         }
     }
 
     /**
      * Method executed by the thread.
      */
-    public void run() {
+    public Object call() {
         mergeFiles();
         minify();
+
+        return null;
     }
 
     /**
      * Logs an addition of a new source file.
      *
      * @param finalFilename the final file name
+     * @param sourceDir the sources directory
      * @param sourceFilename the source file name
      */
-    private void logNewSourceFile(String finalFilename, String sourceFilename) {
-        if (finalFilename.equalsIgnoreCase(sourceFilename)) {
-            log.info("Please be cautious when using the source file name for the final file.");
-            // throw new IllegalArgumentException("Source file should not have the same name as final file ["
-            // + sourceFilename + "]");
+    private void addNewSourceFile(String finalFilename, File sourceDir, String sourceFilename) {
+        File sourceFile = new File(sourceDir, sourceFilename);
+
+        addNewSourceFile(finalFilename, sourceDir, sourceFile);
+    }
+
+    /**
+     * Logs an addition of a new source file.
+     *
+     * @param finalFilename the final file name
+     * @param sourceDir the sources directory
+     * @param sourceFile the source file
+     */
+    private void addNewSourceFile(String finalFilename, File sourceDir, File sourceFile) {
+        if (sourceFile.exists()) {
+            if (finalFilename.equalsIgnoreCase(sourceFile.getName())) {
+                log.warn("Source file [" + sourceFile.getName() + "] has the same name as the final file.");
+            }
+            log.debug("Source file [" + sourceFile.getName() + "] added.");
+            files.add(sourceFile);
+        } else {
+            log.warn("Source file [" + sourceFile.getName() + "] was not included beacause it does not exist.");
         }
-        log.debug("Adding source file [" + sourceFilename + "]");
     }
 
     /**
@@ -150,8 +165,8 @@ public abstract class ProcessFilesTask implements Runnable {
         if (includes != null && !includes.isEmpty()) {
             DirectoryScanner scanner = new DirectoryScanner();
 
-            scanner.setIncludes(includes.toArray(new String[] {}));
-            scanner.setExcludes(excludes.toArray(new String[] {}));
+            scanner.setIncludes(includes.toArray(new String[0]));
+            scanner.setExcludes(excludes.toArray(new String[0]));
             scanner.addDefaultExcludes();
             scanner.setBasedir(baseDir);
             scanner.scan();
@@ -174,7 +189,7 @@ public abstract class ProcessFilesTask implements Runnable {
             ListOfFiles listOfFiles = new ListOfFiles(log, files);
 
             try {
-                log.info("Creating merged file [" + mergedFile.getName() + "]");
+                log.info("Creating merged file [" + mergedFile.getName() + "].");
                 InputStream sequence = new SequenceInputStream(listOfFiles);
                 OutputStream out = new FileOutputStream(mergedFile);
 

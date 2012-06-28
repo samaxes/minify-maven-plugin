@@ -1,9 +1,21 @@
 # Minify Maven Plugin
 
-## 1.4.1
+## 1.5
 
 * [MINIFY-1] Fixed charset issue.
 * Updated Maven site skin.
+* Use `ExecutorService` to wait for all tasks to finish.
+* Added support for CLI-based configuration and Maven 2.2.1. From [Configuring Plugin Goals in Maven 3](http://www.sonatype.com/people/2011/03/configuring-plugin-goals-in-maven-3/):
+  > For many plugin parameters it is occasionally convenient to specify their values from the command line via system properties. In the past, this was limited to parameters of simple types like `String` or `Boolean`. The latest Maven release finally allows plugin users to configure collections or arrays from the command line via comma-separated strings. Take for example a plugin parameter like this:
+  >
+  >     /** @parameter expression="${includes}" */
+  >     String[] includes;
+  >
+  > This can be configured from the command line as follows:
+  >
+  >     mvn <goal> -Dincludes=Foo,Bar
+  >
+  > Plugin authors that wish to enable CLI-based configuration of arrays/collections just need to add the `expression` tag to their parameter annotation. Note that if compatibility with older Maven versions is to be kept, the parameter type must not be an interface but a concrete collection class or an array to avoid another shortcoming in the old configurator.
 
 ## 1.4
 
@@ -29,7 +41,7 @@
 
 ## 1.3.1
 
-* Maven Plugin API does not support expression="${value}" on @parameter tag with Maven versions < 3.0.
+* Class 'java.util.List' cannot be instantiated while running minify goal with Maven versions before 3.
 
 ## 1.3
 

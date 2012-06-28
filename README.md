@@ -19,14 +19,14 @@ Minify Maven Plugin combines and minimizes JavaScript and CSS files using [YUI C
 ## Usage & Information
 
 Configure your project's `pom.xml` to run the plugin during the project's build cycle.  
-For more information, check the plugin [Maven site](http://samaxes.github.com/minify-maven-plugin/) or the [demo application](https://github.com/downloads/samaxes/minify-maven-plugin/minify-maven-plugin-demo-1.4-src.zip).
+For more information, check the plugin [Maven site](http://samaxes.github.com/minify-maven-plugin/) or the [demo application](https://github.com/downloads/samaxes/minify-maven-plugin/minify-maven-plugin-demo-1.5-src.zip).
 
     <build>
         <plugins>
             <plugin>
                 <groupId>com.samaxes.maven</groupId>
                 <artifactId>minify-maven-plugin</artifactId>
-                <version>1.4</version>
+                <version>1.5</version>
                 <executions>
                     <execution>
                         <id>default-minify</id>
