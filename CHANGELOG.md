@@ -6,6 +6,7 @@
 * Updated Maven site skin.
 * Use `ExecutorService` to wait for all tasks to finish.
 * Added support for CLI-based configuration and Maven 2.2.1. From [Configuring Plugin Goals in Maven 3](http://www.sonatype.com/people/2011/03/configuring-plugin-goals-in-maven-3/):
+
   > For many plugin parameters it is occasionally convenient to specify their values from the command line via system properties. In the past, this was limited to parameters of simple types like `String` or `Boolean`. The latest Maven release finally allows plugin users to configure collections or arrays from the command line via comma-separated strings. Take for example a plugin parameter like this:
   >
   >     /** @parameter expression="${includes}" */
