@@ -3,6 +3,7 @@
 ## 1.5.1
 
 * [MINIFY-2] Cannot process the same filename of files in different directories.
+* [MINIFY-3] CSS minification fails for base64 encoded background images.
 
 ## 1.5
 
