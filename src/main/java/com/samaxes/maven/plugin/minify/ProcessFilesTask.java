@@ -92,7 +92,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
         }
         for (File sourceInclude : getFilesToInclude(sourceDir, sourceIncludes, sourceExcludes)) {
             if (!files.contains(sourceInclude)) {
-                addNewSourceFile(finalFilename, sourceDir, sourceInclude.getName());
+                addNewSourceFile(finalFilename, sourceDir, sourceInclude);
             }
         }
 
