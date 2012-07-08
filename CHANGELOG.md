@@ -1,5 +1,9 @@
 # Minify Maven Plugin
 
+## 1.5.1
+
+* [MINIFY-2] Cannot process the same filename of files in different directories.
+
 ## 1.5
 
 * [MINIFY-1] Fixed charset issue.
