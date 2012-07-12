@@ -21,7 +21,7 @@ Lexicographical ordering (exclude/include patterns)
       <plugin>
         <groupId>com.samaxes.maven</groupId>
         <artifactId>minify-maven-plugin</artifactId>
-        <version>1.5</version>
+        <version>1.5.1</version>
         <executions>
           <execution>
             <id>default-minify</id>
