@@ -58,6 +58,8 @@ public abstract class ProcessFilesTask implements Callable<Object> {
 
     protected String charset;
 
+    private boolean debug;
+
     private List<File> files = new ArrayList<File>();
 
     /**
@@ -77,14 +79,16 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.
      *        Otherwise, only byte-to-byte operations are used
      * @param linebreak split long lines after a specific column
+     * @param debug show source file paths in log output
      */
     public ProcessFilesTask(Log log, Integer bufferSize, String webappSourceDir, String webappTargetDir,
             String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
-            String outputDir, String finalFilename, String suffix, String charset, int linebreak) {
+            String outputDir, String finalFilename, String suffix, String charset, int linebreak, boolean debug) {
         this.log = log;
         this.linebreak = linebreak;
         this.bufferSize = bufferSize;
         this.charset = charset;
+        this.debug = debug;
 
         File sourceDir = new File(webappSourceDir + File.separator + inputDir);
         for (String sourceFilename : sourceFiles) {
@@ -100,8 +104,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
         String extension = "." + FileUtils.getExtension(finalFilename);
         if (!files.isEmpty() && (targetDir.exists() || targetDir.mkdirs())) {
             this.mergedFile = new File(targetDir, finalFilename);
-            this.minifiedFile = new File(targetDir, this.mergedFile.getName().replace(extension,
-                    suffix + extension));
+            this.minifiedFile = new File(targetDir, this.mergedFile.getName().replace(extension, suffix + extension));
         } else if (!sourceFiles.isEmpty() || !sourceIncludes.isEmpty()) {
             // The 'files' list will be empty if the source file paths or names added to the project's POM are wrong.
             String fileType = ("CSS".equalsIgnoreCase(extension.substring(1))) ? "CSS" : "JavaScript";
@@ -186,10 +189,10 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      */
     private void mergeFiles() {
         if (mergedFile != null) {
-            ListOfFiles listOfFiles = new ListOfFiles(log, files);
+            ListOfFiles listOfFiles = new ListOfFiles(log, files, debug);
 
             try {
-                log.info("Creating merged file [" + mergedFile.getName() + "].");
+                log.info("Creating merged file [" + ((debug) ? mergedFile.getPath() : mergedFile.getName()) + "].");
                 InputStream sequence = new SequenceInputStream(listOfFiles);
                 OutputStream out = new FileOutputStream(mergedFile);
 

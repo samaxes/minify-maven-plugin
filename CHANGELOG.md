@@ -1,5 +1,9 @@
 # Minify Maven Plugin
 
+## 1.5.2
+
+* [MINIFY-5] Show source file paths in Maven log output.
+
 ## 1.5.1
 
 * [MINIFY-2] Cannot process the same filename of files in different directories.

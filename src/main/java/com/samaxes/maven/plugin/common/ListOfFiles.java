@@ -45,11 +45,14 @@ public class ListOfFiles implements Enumeration<InputStream> {
      *
      * @param log Maven plugin log
      * @param files list of files
+     * @param debug show source file paths in log output
      */
-    public ListOfFiles(Log log, List<File> files) {
+    public ListOfFiles(Log log, List<File> files, boolean debug) {
         this.files = files;
 
-        log.info("Processing source files " + this.toString() + ".");
+        for (File file : files) {
+            log.info("Processing source file [" + ((debug) ? file.getPath() : file.getName()) + "].");
+        }
     }
 
     /**
@@ -85,23 +88,5 @@ public class ListOfFiles implements Enumeration<InputStream> {
         }
 
         return is;
-    }
-
-    /**
-     * Returns the list of files contained in this object.
-     *
-     * @return the list of files
-     */
-    @Override
-    public String toString() {
-        StringBuilder stringBuilder = new StringBuilder("[");
-        for (File file : files) {
-            if (stringBuilder.length() > 1) {
-                stringBuilder.append(", ");
-            }
-            stringBuilder.append(file.getName());
-        }
-
-        return stringBuilder.append("]").toString();
     }
 }

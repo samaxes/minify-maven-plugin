@@ -225,16 +225,24 @@ public class MinifyMojo extends AbstractMojo {
     private long timeout;
 
     /**
+     * Show source file paths in log output.
+     *
+     * @parameter expression="${debug}" default-value="false"
+     * @since 1.5.2
+     */
+    private boolean debug;
+
+    /**
      * Executed when the goal is invoked, it will first invoke a parallel lifecycle, ending at the given phase.
      */
     public void execute() throws MojoExecutionException, MojoFailureException {
         Collection<Callable<Object>> processFilesTasks = new ArrayList<Callable<Object>>();
         processFilesTasks.add(new ProcessCSSFilesTask(getLog(), bufferSize, webappSourceDir, webappTargetDir,
                 cssSourceDir, cssSourceFiles, cssSourceIncludes, cssSourceExcludes, cssTargetDir, cssFinalFile, suffix,
-                charset, linebreak));
+                charset, linebreak, debug));
         processFilesTasks.add(new ProcessJSFilesTask(getLog(), bufferSize, webappSourceDir, webappTargetDir,
                 jsSourceDir, jsSourceFiles, jsSourceIncludes, jsSourceExcludes, jsTargetDir, jsFinalFile, suffix,
-                charset, linebreak, !nomunge, verbose, preserveAllSemiColons, disableOptimizations));
+                charset, linebreak, debug, !nomunge, verbose, preserveAllSemiColons, disableOptimizations));
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
         try {

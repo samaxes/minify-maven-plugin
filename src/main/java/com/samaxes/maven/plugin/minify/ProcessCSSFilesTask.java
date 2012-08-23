@@ -39,6 +39,8 @@ import com.yahoo.platform.yui.compressor.CssCompressor;
  */
 public class ProcessCSSFilesTask extends ProcessFilesTask {
 
+    private boolean debug;
+
     /**
      * Task constructor.
      *
@@ -56,12 +58,14 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
      * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.
      *        Otherwise, only byte-to-byte operations are used
      * @param linebreak split long lines after a specific column
+     * @param debug show source file paths in log output
      */
     public ProcessCSSFilesTask(Log log, Integer bufferSize, String webappSourceDir, String webappTargetDir,
             String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
-            String outputDir, String finalFilename, String suffix, String charset, int linebreak) {
+            String outputDir, String finalFilename, String suffix, String charset, int linebreak, boolean debug) {
         super(log, bufferSize, webappSourceDir, webappTargetDir, inputDir, sourceFiles, sourceIncludes, sourceExcludes,
-                outputDir, finalFilename, suffix, charset, linebreak);
+                outputDir, finalFilename, suffix, charset, linebreak, debug);
+        this.debug = debug;
     }
 
     /**
@@ -71,7 +75,8 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
     protected void minify() {
         if (minifiedFile != null) {
             try {
-                log.info("Creating minified file [" + minifiedFile.getName() + "].");
+                log.info("Creating minified file [" + ((debug) ? minifiedFile.getPath() : minifiedFile.getName())
+                        + "].");
 
                 InputStream in = new FileInputStream(mergedFile);
                 OutputStream out = new FileOutputStream(minifiedFile);
