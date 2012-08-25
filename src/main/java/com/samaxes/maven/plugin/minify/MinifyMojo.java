@@ -22,7 +22,6 @@ package com.samaxes.maven.plugin.minify;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -217,14 +216,6 @@ public class MinifyMojo extends AbstractMojo {
     private int bufferSize;
 
     /**
-     * Maximum execution time in seconds.
-     *
-     * @parameter expression="${timeout}" default-value="30"
-     * @since 1.5
-     */
-    private long timeout;
-
-    /**
      * Show source file paths in log output.
      *
      * @parameter expression="${debug}" default-value="false"
@@ -233,16 +224,24 @@ public class MinifyMojo extends AbstractMojo {
     private boolean debug;
 
     /**
+     * Maximum execution time in seconds.
+     *
+     * @parameter expression="${timeout}" default-value="30"
+     * @since 1.5
+     */
+    private long timeout;
+
+    /**
      * Executed when the goal is invoked, it will first invoke a parallel lifecycle, ending at the given phase.
      */
     public void execute() throws MojoExecutionException, MojoFailureException {
-        Collection<Callable<Object>> processFilesTasks = new ArrayList<Callable<Object>>();
-        processFilesTasks.add(new ProcessCSSFilesTask(getLog(), bufferSize, webappSourceDir, webappTargetDir,
+        Collection<ProcessFilesTask> processFilesTasks = new ArrayList<ProcessFilesTask>();
+        processFilesTasks.add(new ProcessCSSFilesTask(getLog(), bufferSize, debug, webappSourceDir, webappTargetDir,
                 cssSourceDir, cssSourceFiles, cssSourceIncludes, cssSourceExcludes, cssTargetDir, cssFinalFile, suffix,
-                charset, linebreak, debug));
-        processFilesTasks.add(new ProcessJSFilesTask(getLog(), bufferSize, webappSourceDir, webappTargetDir,
+                charset, linebreak));
+        processFilesTasks.add(new ProcessJSFilesTask(getLog(), bufferSize, debug, webappSourceDir, webappTargetDir,
                 jsSourceDir, jsSourceFiles, jsSourceIncludes, jsSourceExcludes, jsTargetDir, jsFinalFile, suffix,
-                charset, linebreak, debug, !nomunge, verbose, preserveAllSemiColons, disableOptimizations));
+                charset, linebreak, !nomunge, verbose, preserveAllSemiColons, disableOptimizations));
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
         try {

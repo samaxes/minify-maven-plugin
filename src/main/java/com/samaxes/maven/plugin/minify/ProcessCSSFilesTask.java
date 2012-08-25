@@ -39,13 +39,12 @@ import com.yahoo.platform.yui.compressor.CssCompressor;
  */
 public class ProcessCSSFilesTask extends ProcessFilesTask {
 
-    private boolean debug;
-
     /**
      * Task constructor.
      *
      * @param log Maven plugin log
-     * @param bufferSize size of the buffer used to read source files.
+     * @param bufferSize size of the buffer used to read source files
+     * @param debug show source file paths in log output
      * @param webappSourceDir web resources source directory
      * @param webappTargetDir web resources target directory
      * @param inputDir directory containing source files
@@ -58,14 +57,13 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
      * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.
      *        Otherwise, only byte-to-byte operations are used
      * @param linebreak split long lines after a specific column
-     * @param debug show source file paths in log output
      */
-    public ProcessCSSFilesTask(Log log, Integer bufferSize, String webappSourceDir, String webappTargetDir,
-            String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
-            String outputDir, String finalFilename, String suffix, String charset, int linebreak, boolean debug) {
-        super(log, bufferSize, webappSourceDir, webappTargetDir, inputDir, sourceFiles, sourceIncludes, sourceExcludes,
-                outputDir, finalFilename, suffix, charset, linebreak, debug);
-        this.debug = debug;
+    public ProcessCSSFilesTask(Log log, Integer bufferSize, boolean debug, String webappSourceDir,
+            String webappTargetDir, String inputDir, List<String> sourceFiles, List<String> sourceIncludes,
+            List<String> sourceExcludes, String outputDir, String finalFilename, String suffix, String charset,
+            int linebreak) {
+        super(log, bufferSize, debug, webappSourceDir, webappTargetDir, inputDir, sourceFiles, sourceIncludes,
+                sourceExcludes, outputDir, finalFilename, suffix, charset, linebreak);
     }
 
     /**

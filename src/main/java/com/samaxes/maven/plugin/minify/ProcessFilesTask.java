@@ -48,17 +48,17 @@ public abstract class ProcessFilesTask implements Callable<Object> {
 
     protected Log log;
 
+    protected Integer bufferSize;
+
+    protected boolean debug;
+
+    protected String charset;
+
     protected int linebreak;
 
     protected File mergedFile;
 
     protected File minifiedFile;
-
-    protected Integer bufferSize;
-
-    protected String charset;
-
-    private boolean debug;
 
     private List<File> files = new ArrayList<File>();
 
@@ -66,7 +66,8 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * Task constructor.
      *
      * @param log Maven plugin log
-     * @param bufferSize size of the buffer used to read source files.
+     * @param bufferSize size of the buffer used to read source files
+     * @param debug show source file paths in log output
      * @param webappSourceDir web resources source directory
      * @param webappTargetDir web resources target directory
      * @param inputDir directory containing source files
@@ -79,16 +80,15 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.
      *        Otherwise, only byte-to-byte operations are used
      * @param linebreak split long lines after a specific column
-     * @param debug show source file paths in log output
      */
-    public ProcessFilesTask(Log log, Integer bufferSize, String webappSourceDir, String webappTargetDir,
+    public ProcessFilesTask(Log log, Integer bufferSize, boolean debug, String webappSourceDir, String webappTargetDir,
             String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
-            String outputDir, String finalFilename, String suffix, String charset, int linebreak, boolean debug) {
+            String outputDir, String finalFilename, String suffix, String charset, int linebreak) {
         this.log = log;
-        this.linebreak = linebreak;
         this.bufferSize = bufferSize;
-        this.charset = charset;
         this.debug = debug;
+        this.charset = charset;
+        this.linebreak = linebreak;
 
         File sourceDir = new File(webappSourceDir + File.separator + inputDir);
         for (String sourceFilename : sourceFiles) {
