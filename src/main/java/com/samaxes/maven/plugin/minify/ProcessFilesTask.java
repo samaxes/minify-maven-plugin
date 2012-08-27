@@ -54,6 +54,8 @@ public abstract class ProcessFilesTask implements Callable<Object> {
 
     protected boolean skipMerge;
 
+    protected boolean skipMinify;
+
     private String mergedFilename;
 
     private String suffix;
@@ -79,6 +81,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * @param bufferSize size of the buffer used to read source files
      * @param debug show source file paths in log output
      * @param skipMerge whether to skip the merge step or not
+     * @param skipMinify whether to skip the minify step or not
      * @param webappSourceDir web resources source directory
      * @param webappTargetDir web resources target directory
      * @param inputDir directory containing source files
@@ -92,14 +95,15 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      *        Otherwise, only byte-to-byte operations are used
      * @param linebreak split long lines after a specific column
      */
-    public ProcessFilesTask(Log log, Integer bufferSize, boolean debug, boolean skipMerge, String webappSourceDir,
-            String webappTargetDir, String inputDir, List<String> sourceFiles, List<String> sourceIncludes,
-            List<String> sourceExcludes, String outputDir, String outputFilename, String suffix, String charset,
-            int linebreak) {
+    public ProcessFilesTask(Log log, Integer bufferSize, boolean debug, boolean skipMerge, boolean skipMinify,
+            String webappSourceDir, String webappTargetDir, String inputDir, List<String> sourceFiles,
+            List<String> sourceIncludes, List<String> sourceExcludes, String outputDir, String outputFilename,
+            String suffix, String charset, int linebreak) {
         this.log = log;
         this.bufferSize = bufferSize;
         this.debug = debug;
         this.skipMerge = skipMerge;
+        this.skipMinify = skipMinify;
         this.mergedFilename = outputFilename;
         this.suffix = suffix;
         this.charset = charset;
@@ -131,6 +135,9 @@ public abstract class ProcessFilesTask implements Callable<Object> {
                     File minifiedFile = new File(targetDir, mergedFile.getName().replace(extension, suffix + extension));
                     minify(mergedFile, minifiedFile);
                 }
+            } else if (skipMinify) {
+                File mergedFile = new File(targetDir, mergedFilename);
+                merge(mergedFile);
             } else {
                 File mergedFile = new File(targetDir, mergedFilename);
                 File minifiedFile = new File(targetDir, mergedFile.getName().replace(extension, suffix + extension));

@@ -240,17 +240,30 @@ public class MinifyMojo extends AbstractMojo {
     private boolean skipMerge;
 
     /**
+     * Skip the minify step. Useful when merging files that are already minified.
+     *
+     * @parameter expression="${skipMinify}" default-value="false"
+     * @since 1.5.2
+     */
+    private boolean skipMinify;
+
+    /**
      * Executed when the goal is invoked, it will first invoke a parallel lifecycle, ending at the given phase.
      */
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (skipMerge && skipMinify) {
+            getLog().warn("Both merge and minify steps are configured to be skipped.");
+            return;
+        }
+
         Collection<ProcessFilesTask> processFilesTasks = new ArrayList<ProcessFilesTask>();
-        processFilesTasks.add(new ProcessCSSFilesTask(getLog(), bufferSize, debug, skipMerge, webappSourceDir,
-                webappTargetDir, cssSourceDir, cssSourceFiles, cssSourceIncludes, cssSourceExcludes, cssTargetDir,
-                cssFinalFile, suffix, charset, linebreak));
-        processFilesTasks
-                .add(new ProcessJSFilesTask(getLog(), bufferSize, debug, skipMerge, webappSourceDir, webappTargetDir,
-                        jsSourceDir, jsSourceFiles, jsSourceIncludes, jsSourceExcludes, jsTargetDir, jsFinalFile,
-                        suffix, charset, linebreak, !nomunge, verbose, preserveAllSemiColons, disableOptimizations));
+        processFilesTasks.add(new ProcessCSSFilesTask(getLog(), bufferSize, debug, skipMerge, skipMinify,
+                webappSourceDir, webappTargetDir, cssSourceDir, cssSourceFiles, cssSourceIncludes, cssSourceExcludes,
+                cssTargetDir, cssFinalFile, suffix, charset, linebreak));
+        processFilesTasks.add(new ProcessJSFilesTask(getLog(), bufferSize, debug, skipMerge, skipMinify,
+                webappSourceDir, webappTargetDir, jsSourceDir, jsSourceFiles, jsSourceIncludes, jsSourceExcludes,
+                jsTargetDir, jsFinalFile, suffix, charset, linebreak, !nomunge, verbose, preserveAllSemiColons,
+                disableOptimizations));
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
         try {

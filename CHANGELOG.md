@@ -3,6 +3,7 @@
 ## 1.5.2
 
 * [MINIFY-5] Show source file paths in Maven log output.
+* [MINIFY-11] Option to skip the minify step.
 * [MINIFY-13] Option to skip the merge step.
 
 ## 1.5.1

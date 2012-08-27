@@ -47,6 +47,7 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
      * @param bufferSize size of the buffer used to read source files
      * @param debug show source file paths in log output
      * @param skipMerge whether to skip the merge step or not
+     * @param skipMinify whether to skip the minify step or not
      * @param webappSourceDir web resources source directory
      * @param webappTargetDir web resources target directory
      * @param inputDir directory containing source files
@@ -60,11 +61,11 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
      *        Otherwise, only byte-to-byte operations are used
      * @param linebreak split long lines after a specific column
      */
-    public ProcessCSSFilesTask(Log log, Integer bufferSize, boolean debug, boolean skipMerge, String webappSourceDir,
-            String webappTargetDir, String inputDir, List<String> sourceFiles, List<String> sourceIncludes,
-            List<String> sourceExcludes, String outputDir, String outputFilename, String suffix, String charset,
-            int linebreak) {
-        super(log, bufferSize, debug, skipMerge, webappSourceDir, webappTargetDir, inputDir, sourceFiles,
+    public ProcessCSSFilesTask(Log log, Integer bufferSize, boolean debug, boolean skipMerge, boolean skipMinify,
+            String webappSourceDir, String webappTargetDir, String inputDir, List<String> sourceFiles,
+            List<String> sourceIncludes, List<String> sourceExcludes, String outputDir, String outputFilename,
+            String suffix, String charset, int linebreak) {
+        super(log, bufferSize, debug, skipMerge, skipMinify, webappSourceDir, webappTargetDir, inputDir, sourceFiles,
                 sourceIncludes, sourceExcludes, outputDir, outputFilename, suffix, charset, linebreak);
     }
 

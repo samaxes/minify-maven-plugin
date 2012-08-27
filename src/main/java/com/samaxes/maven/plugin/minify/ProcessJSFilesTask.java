@@ -56,6 +56,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      * @param bufferSize size of the buffer used to read source files
      * @param debug show source file paths in log output
      * @param skipMerge whether to skip the merge step or not
+     * @param skipMinify whether to skip the minify step or not
      * @param webappSourceDir web resources source directory
      * @param webappTargetDir web resources target directory
      * @param inputDir directory containing source files
@@ -73,11 +74,12 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      * @param preserveAllSemiColons preserve unnecessary semicolons
      * @param disableOptimizations disable all the built-in micro optimizations
      */
-    public ProcessJSFilesTask(Log log, Integer bufferSize, boolean debug, boolean skipMerge, String webappSourceDir,
-            String webappTargetDir, String inputDir, List<String> sourceFiles, List<String> sourceIncludes,
-            List<String> sourceExcludes, String outputDir, String outputFilename, String suffix, String charset,
-            int linebreak, boolean munge, boolean verbose, boolean preserveAllSemiColons, boolean disableOptimizations) {
-        super(log, bufferSize, debug, skipMerge, webappSourceDir, webappTargetDir, inputDir, sourceFiles,
+    public ProcessJSFilesTask(Log log, Integer bufferSize, boolean debug, boolean skipMerge, boolean skipMinify,
+            String webappSourceDir, String webappTargetDir, String inputDir, List<String> sourceFiles,
+            List<String> sourceIncludes, List<String> sourceExcludes, String outputDir, String outputFilename,
+            String suffix, String charset, int linebreak, boolean munge, boolean verbose,
+            boolean preserveAllSemiColons, boolean disableOptimizations) {
+        super(log, bufferSize, debug, skipMerge, skipMinify, webappSourceDir, webappTargetDir, inputDir, sourceFiles,
                 sourceIncludes, sourceExcludes, outputDir, outputFilename, suffix, charset, linebreak);
 
         this.munge = munge;
