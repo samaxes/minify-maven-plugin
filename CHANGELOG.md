@@ -2,7 +2,7 @@
 
 ## 1.5.2
 
-* [MINIFY-5] Show source file paths in Maven log output.
+* [MINIFY-5] New goal parameter to log full source file paths and new FAQ entry pointing to the plugin goal parameters.
 * [MINIFY-11] Option to skip the minify step.
 * [MINIFY-13] Option to skip the merge step.
 
