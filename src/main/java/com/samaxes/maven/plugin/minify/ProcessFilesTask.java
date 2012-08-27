@@ -52,13 +52,23 @@ public abstract class ProcessFilesTask implements Callable<Object> {
 
     protected boolean debug;
 
+    protected boolean skipMerge;
+
+    private String mergedFilename;
+
+    private String suffix;
+
     protected String charset;
 
     protected int linebreak;
 
-    protected File mergedFile;
+    private File targetDir;
 
-    protected File minifiedFile;
+    private String extension;
+
+    private boolean sourceFilesEmpty;
+
+    private boolean sourceIncludesEmpty;
 
     private List<File> files = new ArrayList<File>();
 
@@ -68,6 +78,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * @param log Maven plugin log
      * @param bufferSize size of the buffer used to read source files
      * @param debug show source file paths in log output
+     * @param skipMerge whether to skip the merge step or not
      * @param webappSourceDir web resources source directory
      * @param webappTargetDir web resources target directory
      * @param inputDir directory containing source files
@@ -75,52 +86,106 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * @param sourceIncludes list of source files to include
      * @param sourceExcludes list of source files to exclude
      * @param outputDir directory to write the final file
-     * @param finalFilename final filename
+     * @param outputFilename the output file name
      * @param suffix final filename suffix
      * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.
      *        Otherwise, only byte-to-byte operations are used
      * @param linebreak split long lines after a specific column
      */
-    public ProcessFilesTask(Log log, Integer bufferSize, boolean debug, String webappSourceDir, String webappTargetDir,
-            String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
-            String outputDir, String finalFilename, String suffix, String charset, int linebreak) {
+    public ProcessFilesTask(Log log, Integer bufferSize, boolean debug, boolean skipMerge, String webappSourceDir,
+            String webappTargetDir, String inputDir, List<String> sourceFiles, List<String> sourceIncludes,
+            List<String> sourceExcludes, String outputDir, String outputFilename, String suffix, String charset,
+            int linebreak) {
         this.log = log;
         this.bufferSize = bufferSize;
         this.debug = debug;
+        this.skipMerge = skipMerge;
+        this.mergedFilename = outputFilename;
+        this.suffix = suffix;
         this.charset = charset;
         this.linebreak = linebreak;
 
         File sourceDir = new File(webappSourceDir + File.separator + inputDir);
         for (String sourceFilename : sourceFiles) {
-            addNewSourceFile(finalFilename, sourceDir, sourceFilename);
+            addNewSourceFile(mergedFilename, sourceDir, sourceFilename);
         }
         for (File sourceInclude : getFilesToInclude(sourceDir, sourceIncludes, sourceExcludes)) {
             if (!files.contains(sourceInclude)) {
-                addNewSourceFile(finalFilename, sourceDir, sourceInclude);
+                addNewSourceFile(mergedFilename, sourceDir, sourceInclude);
             }
         }
 
-        File targetDir = new File(webappTargetDir + File.separator + outputDir);
-        String extension = "." + FileUtils.getExtension(finalFilename);
-        if (!files.isEmpty() && (targetDir.exists() || targetDir.mkdirs())) {
-            this.mergedFile = new File(targetDir, finalFilename);
-            this.minifiedFile = new File(targetDir, this.mergedFile.getName().replace(extension, suffix + extension));
-        } else if (!sourceFiles.isEmpty() || !sourceIncludes.isEmpty()) {
-            // The 'files' list will be empty if the source file paths or names added to the project's POM are wrong.
-            String fileType = ("CSS".equalsIgnoreCase(extension.substring(1))) ? "CSS" : "JavaScript";
-            log.error("No " + fileType + " source files found to process.");
-        }
+        this.targetDir = new File(webappTargetDir + File.separator + outputDir);
+        this.extension = "." + FileUtils.getExtension(mergedFilename);
+        this.sourceFilesEmpty = sourceFiles.isEmpty();
+        this.sourceIncludesEmpty = sourceIncludes.isEmpty();
     }
 
     /**
      * Method executed by the thread.
      */
     public Object call() {
-        mergeFiles();
-        minify();
+        if (!files.isEmpty() && (targetDir.exists() || targetDir.mkdirs())) {
+            if (skipMerge) {
+                for (File mergedFile : files) {
+                    File minifiedFile = new File(targetDir, mergedFile.getName().replace(extension, suffix + extension));
+                    minify(mergedFile, minifiedFile);
+                }
+            } else {
+                File mergedFile = new File(targetDir, mergedFilename);
+                File minifiedFile = new File(targetDir, mergedFile.getName().replace(extension, suffix + extension));
+                merge(mergedFile);
+                minify(mergedFile, minifiedFile);
+            }
+        } else if (!sourceFilesEmpty || !sourceIncludesEmpty) {
+            // The 'files' list will be empty if the source file paths or names added to the project's POM are wrong.
+            String fileType = ("CSS".equalsIgnoreCase(extension.substring(1))) ? "CSS" : "JavaScript";
+            log.error("No valid " + fileType + " source files found to process.");
+        }
 
         return null;
     }
+
+    /**
+     * Merges files list.
+     *
+     * @param mergedFile output file resulting from the merged step
+     */
+    private void merge(File mergedFile) {
+        if (mergedFile != null) {
+            ListOfFiles listOfFiles = new ListOfFiles(log, files, debug);
+
+            try {
+                log.info("Creating merged file [" + ((debug) ? mergedFile.getPath() : mergedFile.getName()) + "].");
+                InputStream sequence = new SequenceInputStream(listOfFiles);
+                OutputStream out = new FileOutputStream(mergedFile);
+
+                if (charset == null) {
+                    IOUtil.copy(sequence, out, bufferSize);
+                } else {
+                    InputStreamReader sequenceReader = new InputStreamReader(sequence, charset);
+                    OutputStreamWriter outWriter = new OutputStreamWriter(out, charset);
+
+                    IOUtil.copy(sequenceReader, outWriter, bufferSize);
+                    IOUtil.close(sequenceReader);
+                    IOUtil.close(outWriter);
+                }
+
+                IOUtil.close(sequence);
+                IOUtil.close(out);
+            } catch (IOException e) {
+                log.error("An error has occurred while concatenating files.", e);
+            }
+        }
+    }
+
+    /**
+     * Minifies source file.
+     *
+     * @param mergedFile input file resulting from the merged step
+     * @param minifiedFile output file resulting from the minify step
+     */
+    abstract void minify(File file, File minifiedFile);
 
     /**
      * Logs an addition of a new source file.
@@ -183,40 +248,4 @@ public abstract class ProcessFilesTask implements Callable<Object> {
 
         return includedFiles;
     }
-
-    /**
-     * Merges files list.
-     */
-    private void mergeFiles() {
-        if (mergedFile != null) {
-            ListOfFiles listOfFiles = new ListOfFiles(log, files, debug);
-
-            try {
-                log.info("Creating merged file [" + ((debug) ? mergedFile.getPath() : mergedFile.getName()) + "].");
-                InputStream sequence = new SequenceInputStream(listOfFiles);
-                OutputStream out = new FileOutputStream(mergedFile);
-
-                if (charset == null) {
-                    IOUtil.copy(sequence, out, bufferSize);
-                } else {
-                    InputStreamReader sequenceReader = new InputStreamReader(sequence, charset);
-                    OutputStreamWriter outWriter = new OutputStreamWriter(out, charset);
-
-                    IOUtil.copy(sequenceReader, outWriter, bufferSize);
-                    IOUtil.close(sequenceReader);
-                    IOUtil.close(outWriter);
-                }
-
-                IOUtil.close(sequence);
-                IOUtil.close(out);
-            } catch (IOException e) {
-                log.error("An error has occurred while concatenating files.", e);
-            }
-        }
-    }
-
-    /**
-     * Minifies source file.
-     */
-    abstract void minify();
 }

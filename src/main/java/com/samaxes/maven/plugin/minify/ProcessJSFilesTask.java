@@ -20,6 +20,7 @@
  */
 package com.samaxes.maven.plugin.minify;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -54,6 +55,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      * @param log Maven plugin log
      * @param bufferSize size of the buffer used to read source files
      * @param debug show source file paths in log output
+     * @param skipMerge whether to skip the merge step or not
      * @param webappSourceDir web resources source directory
      * @param webappTargetDir web resources target directory
      * @param inputDir directory containing source files
@@ -61,7 +63,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      * @param sourceIncludes list of source files to include
      * @param sourceExcludes list of source files to exclude
      * @param outputDir directory to write the final file
-     * @param finalFilename final filename
+     * @param outputFilename the output file name
      * @param suffix final filename suffix
      * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.
      *        Otherwise, only byte-to-byte operations are used
@@ -71,12 +73,12 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      * @param preserveAllSemiColons preserve unnecessary semicolons
      * @param disableOptimizations disable all the built-in micro optimizations
      */
-    public ProcessJSFilesTask(Log log, Integer bufferSize, boolean debug, String webappSourceDir,
+    public ProcessJSFilesTask(Log log, Integer bufferSize, boolean debug, boolean skipMerge, String webappSourceDir,
             String webappTargetDir, String inputDir, List<String> sourceFiles, List<String> sourceIncludes,
-            List<String> sourceExcludes, String outputDir, String finalFilename, String suffix, String charset,
+            List<String> sourceExcludes, String outputDir, String outputFilename, String suffix, String charset,
             int linebreak, boolean munge, boolean verbose, boolean preserveAllSemiColons, boolean disableOptimizations) {
-        super(log, bufferSize, debug, webappSourceDir, webappTargetDir, inputDir, sourceFiles, sourceIncludes,
-                sourceExcludes, outputDir, finalFilename, suffix, charset, linebreak);
+        super(log, bufferSize, debug, skipMerge, webappSourceDir, webappTargetDir, inputDir, sourceFiles,
+                sourceIncludes, sourceExcludes, outputDir, outputFilename, suffix, charset, linebreak);
 
         this.munge = munge;
         this.verbose = verbose;
@@ -86,9 +88,12 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
 
     /**
      * Minifies JavaScript file.
+     *
+     * @param mergedFile input file resulting from the merged step
+     * @param minifiedFile output file resulting from the minify step
      */
     @Override
-    protected void minify() {
+    protected void minify(File mergedFile, File minifiedFile) {
         if (minifiedFile != null) {
             try {
                 log.info("Creating minified file [" + ((debug) ? minifiedFile.getPath() : minifiedFile.getName())

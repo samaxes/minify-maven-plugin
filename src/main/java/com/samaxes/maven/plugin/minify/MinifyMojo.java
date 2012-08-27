@@ -216,14 +216,6 @@ public class MinifyMojo extends AbstractMojo {
     private int bufferSize;
 
     /**
-     * Show source file paths in log output.
-     *
-     * @parameter expression="${debug}" default-value="false"
-     * @since 1.5.2
-     */
-    private boolean debug;
-
-    /**
      * Maximum execution time in seconds.
      *
      * @parameter expression="${timeout}" default-value="30"
@@ -232,16 +224,33 @@ public class MinifyMojo extends AbstractMojo {
     private long timeout;
 
     /**
+     * Show source file paths in log output.
+     *
+     * @parameter expression="${debug}" default-value="false"
+     * @since 1.5.2
+     */
+    private boolean debug;
+
+    /**
+     * Skip the merge step. Minification will be applied to each source file individually.
+     *
+     * @parameter expression="${skipMerge}" default-value="false"
+     * @since 1.5.2
+     */
+    private boolean skipMerge;
+
+    /**
      * Executed when the goal is invoked, it will first invoke a parallel lifecycle, ending at the given phase.
      */
     public void execute() throws MojoExecutionException, MojoFailureException {
         Collection<ProcessFilesTask> processFilesTasks = new ArrayList<ProcessFilesTask>();
-        processFilesTasks.add(new ProcessCSSFilesTask(getLog(), bufferSize, debug, webappSourceDir, webappTargetDir,
-                cssSourceDir, cssSourceFiles, cssSourceIncludes, cssSourceExcludes, cssTargetDir, cssFinalFile, suffix,
-                charset, linebreak));
-        processFilesTasks.add(new ProcessJSFilesTask(getLog(), bufferSize, debug, webappSourceDir, webappTargetDir,
-                jsSourceDir, jsSourceFiles, jsSourceIncludes, jsSourceExcludes, jsTargetDir, jsFinalFile, suffix,
-                charset, linebreak, !nomunge, verbose, preserveAllSemiColons, disableOptimizations));
+        processFilesTasks.add(new ProcessCSSFilesTask(getLog(), bufferSize, debug, skipMerge, webappSourceDir,
+                webappTargetDir, cssSourceDir, cssSourceFiles, cssSourceIncludes, cssSourceExcludes, cssTargetDir,
+                cssFinalFile, suffix, charset, linebreak));
+        processFilesTasks
+                .add(new ProcessJSFilesTask(getLog(), bufferSize, debug, skipMerge, webappSourceDir, webappTargetDir,
+                        jsSourceDir, jsSourceFiles, jsSourceIncludes, jsSourceExcludes, jsTargetDir, jsFinalFile,
+                        suffix, charset, linebreak, !nomunge, verbose, preserveAllSemiColons, disableOptimizations));
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
         try {
