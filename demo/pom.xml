@@ -77,7 +77,6 @@
                                 <jsSourceFile>samaxesjs.core.js</jsSourceFile>
                                 <jsSourceFile>samaxesjs.toc.js</jsSourceFile>
                             </jsSourceFiles>
-                            <skipMinify>true</skipMinify>
                         </configuration>
                         <goals>
                             <goal>minify</goal>
