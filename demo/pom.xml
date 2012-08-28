@@ -7,7 +7,7 @@
 
     <groupId>com.samaxes.maven</groupId>
     <artifactId>minify-maven-plugin-demo</artifactId>
-    <version>1.5.2</version>
+    <version>1.5.3-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>Minify Maven Plugin Demo</name>
@@ -45,6 +45,19 @@
                 </configuration>
             </plugin>
             <plugin>
+                <!-- mvn assembly:single ghDownloads:upload -->
+                <groupId>com.github.github</groupId>
+                <artifactId>downloads-maven-plugin</artifactId>
+                <version>0.6</version>
+                <configuration>
+                    <description>Demo for release ${project.version} of Minify Maven Plugin</description>
+                    <includes>
+                        <includes>${project.artifactId}-${project.version}-src.zip</includes>
+                    </includes>
+                    <override>true</override>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.2</version>
@@ -61,7 +74,7 @@
             <plugin>
                 <groupId>com.samaxes.maven</groupId>
                 <artifactId>minify-maven-plugin</artifactId>
-                <version>1.5.2</version>
+                <version>1.5.3-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <id>default-minify</id>
@@ -88,6 +101,7 @@
     </build>
 
     <properties>
+        <github.global.server>github</github.global.server>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.resourceEncoding>ISO-8859-1</project.build.resourceEncoding>
         <maven.compiler.target>1.5</maven.compiler.target>
