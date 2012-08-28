@@ -1,2 +1,2 @@
-com.samaxes.maven.plugin.common
-com.samaxes.maven.plugin.minify
+com.samaxes.maven.minify.common
+com.samaxes.maven.minify.plugin
