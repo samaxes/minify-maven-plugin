@@ -18,7 +18,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.samaxes.maven.plugin.minify;
+package com.samaxes.maven.minify.plugin;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -38,8 +38,8 @@ import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 
-import com.samaxes.maven.plugin.common.FilenameComparator;
-import com.samaxes.maven.plugin.common.ListOfFiles;
+import com.samaxes.maven.minify.common.FilenameComparator;
+import com.samaxes.maven.minify.common.ListOfFiles;
 
 /**
  * Abstract class for merging and compressing a files list.
@@ -131,6 +131,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
     public Object call() {
         if (!files.isEmpty() && (targetDir.exists() || targetDir.mkdirs())) {
             if (skipMerge) {
+                log.info("Skipping merge step.");
                 for (File mergedFile : files) {
                     File minifiedFile = new File(targetDir, mergedFile.getName().replace(extension, suffix + extension));
                     minify(mergedFile, minifiedFile);
@@ -138,6 +139,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
             } else if (skipMinify) {
                 File mergedFile = new File(targetDir, mergedFilename);
                 merge(mergedFile);
+                log.info("Skipping minify step.");
             } else {
                 File mergedFile = new File(targetDir, mergedFilename);
                 File minifiedFile = new File(targetDir, mergedFile.getName().replace(extension, suffix + extension));

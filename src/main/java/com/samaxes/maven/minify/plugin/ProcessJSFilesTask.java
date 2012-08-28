@@ -18,7 +18,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.samaxes.maven.plugin.minify;
+package com.samaxes.maven.minify.plugin;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,7 +33,7 @@ import java.util.List;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.IOUtil;
 
-import com.samaxes.maven.plugin.common.JavaScriptErrorReporter;
+import com.samaxes.maven.minify.common.JavaScriptErrorReporter;
 import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
 
 /**
