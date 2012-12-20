@@ -36,7 +36,7 @@ For more information, check the plugin [Maven site](http://samaxes.github.com/mi
                             <!-- Google Closure Compiler as an 
                                  optional alternative to the 
                                  default YUI Compressor -->
-                            <jsEngine>clojure</jsEngine> 
+                            <jsEngine>closure</jsEngine> 
                             <cssSourceDir>css</cssSourceDir>
                             <cssSourceFiles>
                                 <cssSourceFile>file-1.css</cssSourceFile>
