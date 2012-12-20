@@ -56,6 +56,8 @@ public abstract class ProcessFilesTask implements Callable<Object> {
 
     protected boolean skipMinify;
 
+    protected String jsEngine;
+
     private String mergedFilename;
 
     private String suffix;
@@ -82,6 +84,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * @param debug show source file paths in log output
      * @param skipMerge whether to skip the merge step or not
      * @param skipMinify whether to skip the minify step or not
+     * @param jsEngine minify processor engine selected
      * @param webappSourceDir web resources source directory
      * @param webappTargetDir web resources target directory
      * @param inputDir directory containing source files
@@ -95,7 +98,8 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      *        Otherwise, only byte-to-byte operations are used
      * @param linebreak split long lines after a specific column
      */
-    public ProcessFilesTask(Log log, Integer bufferSize, boolean debug, boolean skipMerge, boolean skipMinify,
+	public ProcessFilesTask(Log log, Integer bufferSize, boolean debug,
+        boolean skipMerge, boolean skipMinify, String jsEngine,
             String webappSourceDir, String webappTargetDir, String inputDir, List<String> sourceFiles,
             List<String> sourceIncludes, List<String> sourceExcludes, String outputDir, String outputFilename,
             String suffix, String charset, int linebreak) {
@@ -104,6 +108,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
         this.debug = debug;
         this.skipMerge = skipMerge;
         this.skipMinify = skipMinify;
+        this.jsEngine = jsEngine;
         this.mergedFilename = outputFilename;
         this.suffix = suffix;
         this.charset = charset;
