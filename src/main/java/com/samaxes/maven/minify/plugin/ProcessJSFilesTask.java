@@ -28,11 +28,17 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.IOUtil;
 
+import com.google.javascript.jscomp.CompilationLevel;
+import com.google.javascript.jscomp.Compiler;
+import com.google.javascript.jscomp.CompilerOptions;
+import com.google.javascript.jscomp.SourceFile;
 import com.samaxes.maven.minify.common.JavaScriptErrorReporter;
 import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
 
@@ -57,6 +63,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      * @param debug show source file paths in log output
      * @param skipMerge whether to skip the merge step or not
      * @param skipMinify whether to skip the minify step or not
+     * @param jsEngine minify processor engine selected
      * @param webappSourceDir web resources source directory
      * @param webappTargetDir web resources target directory
      * @param inputDir directory containing source files
@@ -74,12 +81,14 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      * @param preserveAllSemiColons preserve unnecessary semicolons
      * @param disableOptimizations disable all the built-in micro optimizations
      */
-    public ProcessJSFilesTask(Log log, Integer bufferSize, boolean debug, boolean skipMerge, boolean skipMinify,
+    public ProcessJSFilesTask(Log log, Integer bufferSize, boolean debug,
+        boolean skipMerge, boolean skipMinify, String jsEngine,
             String webappSourceDir, String webappTargetDir, String inputDir, List<String> sourceFiles,
             List<String> sourceIncludes, List<String> sourceExcludes, String outputDir, String outputFilename,
             String suffix, String charset, int linebreak, boolean munge, boolean verbose,
             boolean preserveAllSemiColons, boolean disableOptimizations) {
-        super(log, bufferSize, debug, skipMerge, skipMinify, webappSourceDir, webappTargetDir, inputDir, sourceFiles,
+        super(log, bufferSize, debug, skipMerge, skipMinify, jsEngine,
+            webappSourceDir, webappTargetDir, inputDir, sourceFiles,
                 sourceIncludes, sourceExcludes, outputDir, outputFilename, suffix, charset, linebreak);
 
         this.munge = munge;
@@ -113,9 +122,38 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
                     writer = new OutputStreamWriter(out, charset);
                 }
 
-                JavaScriptCompressor compressor = new JavaScriptCompressor(reader, new JavaScriptErrorReporter(log,
+                if (null != jsEngine && jsEngine.equals("closure")) {
+
+                    log.info("Using javascript minify engine [Google Closure Compiler].");
+
+                    Compiler compiler = new Compiler();
+
+                    CompilerOptions options = new CompilerOptions();
+
+                    CompilationLevel.SIMPLE_OPTIMIZATIONS
+                        .setOptionsForCompilationLevel(options);
+                    options.setOutputCharset(charset);
+
+                    SourceFile input = SourceFile.fromInputStream(
+                        mergedFile.getName(), in);
+
+                    List<SourceFile> externs = Collections.emptyList();
+
+                    compiler.compile(externs,
+                        Arrays.asList(new SourceFile[] { input }), options);
+
+                    writer.append(compiler.toSource());
+
+                } else {
+
+                    log.info("Using javascript minify engine [YUI Compressor].");
+
+                    JavaScriptCompressor compressor = new JavaScriptCompressor(
+                        reader, new JavaScriptErrorReporter(log,
                         mergedFile.getName()));
-                compressor.compress(writer, linebreak, munge, verbose, preserveAllSemiColons, disableOptimizations);
+                    compressor.compress(writer, linebreak, munge, verbose,
+                        preserveAllSemiColons, disableOptimizations);
+                }
 
                 IOUtil.close(reader);
                 IOUtil.close(writer);

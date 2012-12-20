@@ -1,6 +1,7 @@
 # Minify Maven Plugin
 
 Minify Maven Plugin combines and minimizes JavaScript and CSS files using [YUI Compressor](http://developer.yahoo.com/yui/compressor/) for faster page loading.
+Optionally the [Google Closure Compiler](https://developers.google.com/closure/compiler/) can be used to minimize JavaScript files. 
 
 ## Features
 
@@ -12,13 +13,13 @@ Minify Maven Plugin combines and minimizes JavaScript and CSS files using [YUI C
 
 * **Minify JavaScript and CSS**
 
-> Minification is the practice of removing unnecessary characters from code to reduce its size thereby improving load times. When code is minified all comments are removed, as well as unneeded white space characters (space, newline, and tab). In the case of JavaScript, this improves response time performance because the size of the downloaded file is reduced. Two popular tools for minifying JavaScript code are [JSMin](http://crockford.com/javascript/jsmin) and [YUI Compressor](http://developer.yahoo.com/yui/compressor/). The YUI compressor can also minify CSS.
+> Minification is the practice of removing unnecessary characters from code to reduce its size thereby improving load times. When code is minified all comments are removed, as well as unneeded white space characters (space, newline, and tab). In the case of JavaScript, this improves response time performance because the size of the downloaded file is reduced. Three popular tools for minifying JavaScript code are [JSMin](http://crockford.com/javascript/jsmin), [Google Closure Compiler](https://developers.google.com/closure/compiler/) and [YUI Compressor](http://developer.yahoo.com/yui/compressor/). The YUI compressor can also minify CSS.
 
 > Obfuscation is an alternative optimization that can be applied to source code. It's more complex than minification and thus more likely to generate bugs as a result of the obfuscation step itself. In a survey of ten top U.S. web sites, minification achieved a 21% size reduction versus 25% for obfuscation. Although obfuscation has a higher size reduction, minifying JavaScript is less risky.
 
 ## Usage & Information
 
-Configure your project's `pom.xml` to run the plugin during the project's build cycle.  
+Configure your project's `pom.xml` to run the plugin during the project's build cycle.
 For more information, check the plugin [Maven site](http://samaxes.github.com/minify-maven-plugin/) or the [demo application](https://github.com/downloads/samaxes/minify-maven-plugin/minify-maven-plugin-demo-1.5.2-src.zip).
 
     <build>
@@ -32,6 +33,10 @@ For more information, check the plugin [Maven site](http://samaxes.github.com/mi
                         <id>default-minify</id>
                         <phase>process-resources</phase>
                         <configuration>
+                            <!-- Google Closure Compiler as an 
+                                 optional alternative to the 
+                                 default YUI Compressor -->
+                            <jsEngine>closure</jsEngine> 
                             <cssSourceDir>css</cssSourceDir>
                             <cssSourceFiles>
                                 <cssSourceFile>file-1.css</cssSourceFile>

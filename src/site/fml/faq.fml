@@ -14,5 +14,11 @@
                 <p>See <a href="minify-mojo.html">minify:minify</a> goal for more info.</p>
             </answer>
         </faq>
+        <faq id="alternative-compilers">
+            <question>Is it possible to use an alternative to the YUI Compressor?</question>
+            <answer>
+                <p>The Google Closure Compiler can be configured as 'closure' with the <code>&lt;jsEngine></code> tag.</p>
+            </answer>
+        </faq>
     </part>
 </faqs>

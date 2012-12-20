@@ -176,6 +176,11 @@
             <version>2.4.7</version>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>com.google.javascript</groupId>
+            <artifactId>closure-compiler</artifactId>
+            <version>r2388</version>
+        </dependency>
     </dependencies>
 
     <reporting>

@@ -248,6 +248,15 @@ public class MinifyMojo extends AbstractMojo {
     private boolean skipMinify;
 
     /**
+     * Define the javascript compressor engine to use. Defaults to the YUI
+     * compressor.
+     * 
+     * @parameter expression="${jsEngine}" default-value="yui"
+     * @since 1.5.2
+     */
+    private String jsEngine;
+    
+    /**
      * Executed when the goal is invoked, it will first invoke a parallel lifecycle, ending at the given phase.
      */
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -257,10 +266,11 @@ public class MinifyMojo extends AbstractMojo {
         }
 
         Collection<ProcessFilesTask> processFilesTasks = new ArrayList<ProcessFilesTask>();
-        processFilesTasks.add(new ProcessCSSFilesTask(getLog(), bufferSize, debug, skipMerge, skipMinify,
+        processFilesTasks.add(new ProcessCSSFilesTask(getLog(), bufferSize,
+            debug, skipMerge, skipMinify, jsEngine,
                 webappSourceDir, webappTargetDir, cssSourceDir, cssSourceFiles, cssSourceIncludes, cssSourceExcludes,
                 cssTargetDir, cssFinalFile, suffix, charset, linebreak));
-        processFilesTasks.add(new ProcessJSFilesTask(getLog(), bufferSize, debug, skipMerge, skipMinify,
+        processFilesTasks.add(new ProcessJSFilesTask(getLog(), bufferSize, debug, skipMerge, skipMinify, jsEngine,
                 webappSourceDir, webappTargetDir, jsSourceDir, jsSourceFiles, jsSourceIncludes, jsSourceExcludes,
                 jsTargetDir, jsFinalFile, suffix, charset, linebreak, !nomunge, verbose, preserveAllSemiColons,
                 disableOptimizations));
