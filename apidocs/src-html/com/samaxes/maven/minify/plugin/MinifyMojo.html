@@ -39,7 +39,7 @@
 <span class="sourceLineNo">031</span>import org.apache.maven.plugin.MojoFailureException;<a name="line.31"></a>
 <span class="sourceLineNo">032</span><a name="line.32"></a>
 <span class="sourceLineNo">033</span>/**<a name="line.33"></a>
-<span class="sourceLineNo">034</span> * Goal which combines and minifies CSS and JavaScript files.<a name="line.34"></a>
+<span class="sourceLineNo">034</span> * Goal for combining and minifying CSS and JavaScript files.<a name="line.34"></a>
 <span class="sourceLineNo">035</span> *<a name="line.35"></a>
 <span class="sourceLineNo">036</span> * @goal minify<a name="line.36"></a>
 <span class="sourceLineNo">037</span> * @phase process-resources<a name="line.37"></a>
@@ -256,33 +256,51 @@
 <span class="sourceLineNo">248</span>    private boolean skipMinify;<a name="line.248"></a>
 <span class="sourceLineNo">249</span><a name="line.249"></a>
 <span class="sourceLineNo">250</span>    /**<a name="line.250"></a>
-<span class="sourceLineNo">251</span>     * Executed when the goal is invoked, it will first invoke a parallel lifecycle, ending at the given phase.<a name="line.251"></a>
-<span class="sourceLineNo">252</span>     */<a name="line.252"></a>
-<span class="sourceLineNo">253</span>    public void execute() throws MojoExecutionException, MojoFailureException {<a name="line.253"></a>
-<span class="sourceLineNo">254</span>        if (skipMerge &amp;&amp; skipMinify) {<a name="line.254"></a>
-<span class="sourceLineNo">255</span>            getLog().warn("Both merge and minify steps are configured to be skipped.");<a name="line.255"></a>
-<span class="sourceLineNo">256</span>            return;<a name="line.256"></a>
-<span class="sourceLineNo">257</span>        }<a name="line.257"></a>
-<span class="sourceLineNo">258</span><a name="line.258"></a>
-<span class="sourceLineNo">259</span>        Collection&lt;ProcessFilesTask&gt; processFilesTasks = new ArrayList&lt;ProcessFilesTask&gt;();<a name="line.259"></a>
-<span class="sourceLineNo">260</span>        processFilesTasks.add(new ProcessCSSFilesTask(getLog(), bufferSize, debug, skipMerge, skipMinify,<a name="line.260"></a>
-<span class="sourceLineNo">261</span>                webappSourceDir, webappTargetDir, cssSourceDir, cssSourceFiles, cssSourceIncludes, cssSourceExcludes,<a name="line.261"></a>
-<span class="sourceLineNo">262</span>                cssTargetDir, cssFinalFile, suffix, charset, linebreak));<a name="line.262"></a>
-<span class="sourceLineNo">263</span>        processFilesTasks.add(new ProcessJSFilesTask(getLog(), bufferSize, debug, skipMerge, skipMinify,<a name="line.263"></a>
-<span class="sourceLineNo">264</span>                webappSourceDir, webappTargetDir, jsSourceDir, jsSourceFiles, jsSourceIncludes, jsSourceExcludes,<a name="line.264"></a>
-<span class="sourceLineNo">265</span>                jsTargetDir, jsFinalFile, suffix, charset, linebreak, !nomunge, verbose, preserveAllSemiColons,<a name="line.265"></a>
-<span class="sourceLineNo">266</span>                disableOptimizations));<a name="line.266"></a>
+<span class="sourceLineNo">251</span>     * &lt;p&gt;<a name="line.251"></a>
+<span class="sourceLineNo">252</span>     * JAVASCRIPT ONLY OPTION!&lt;br/&gt;<a name="line.252"></a>
+<span class="sourceLineNo">253</span>     * Define the JavaScript compressor engine to use.<a name="line.253"></a>
+<span class="sourceLineNo">254</span>     * &lt;/p&gt;<a name="line.254"></a>
+<span class="sourceLineNo">255</span>     * &lt;p&gt;<a name="line.255"></a>
+<span class="sourceLineNo">256</span>     * Possible values are:<a name="line.256"></a>
+<span class="sourceLineNo">257</span>     * &lt;/p&gt;<a name="line.257"></a>
+<span class="sourceLineNo">258</span>     * &lt;ul&gt;<a name="line.258"></a>
+<span class="sourceLineNo">259</span>     * &lt;li&gt;&lt;code&gt;yui&lt;/code&gt; - &lt;a href="http://developer.yahoo.com/yui/compressor/"&gt;YUI Compressor&lt;/a&gt;&lt;/li&gt;<a name="line.259"></a>
+<span class="sourceLineNo">260</span>     * &lt;li&gt;&lt;code&gt;closure&lt;/code&gt; - &lt;a href="https://developers.google.com/closure/compiler/"&gt;Google Closure Compiler&lt;/a&gt;&lt;/li&gt;<a name="line.260"></a>
+<span class="sourceLineNo">261</span>     * &lt;/ul&gt;<a name="line.261"></a>
+<span class="sourceLineNo">262</span>     *<a name="line.262"></a>
+<span class="sourceLineNo">263</span>     * @parameter expression="${jsEngine}" default-value="yui"<a name="line.263"></a>
+<span class="sourceLineNo">264</span>     * @since 1.6<a name="line.264"></a>
+<span class="sourceLineNo">265</span>     */<a name="line.265"></a>
+<span class="sourceLineNo">266</span>    private String jsEngine;<a name="line.266"></a>
 <span class="sourceLineNo">267</span><a name="line.267"></a>
-<span class="sourceLineNo">268</span>        ExecutorService executor = Executors.newFixedThreadPool(2);<a name="line.268"></a>
-<span class="sourceLineNo">269</span>        try {<a name="line.269"></a>
-<span class="sourceLineNo">270</span>            executor.invokeAll(processFilesTasks);<a name="line.270"></a>
-<span class="sourceLineNo">271</span>            executor.shutdown();<a name="line.271"></a>
-<span class="sourceLineNo">272</span>            executor.awaitTermination(timeout, TimeUnit.SECONDS);<a name="line.272"></a>
-<span class="sourceLineNo">273</span>        } catch (InterruptedException e) {<a name="line.273"></a>
-<span class="sourceLineNo">274</span>            getLog().error(e.getMessage(), e);<a name="line.274"></a>
+<span class="sourceLineNo">268</span>    /**<a name="line.268"></a>
+<span class="sourceLineNo">269</span>     * Executed when the goal is invoked, it will first invoke a parallel lifecycle, ending at the given phase.<a name="line.269"></a>
+<span class="sourceLineNo">270</span>     */<a name="line.270"></a>
+<span class="sourceLineNo">271</span>    public void execute() throws MojoExecutionException, MojoFailureException {<a name="line.271"></a>
+<span class="sourceLineNo">272</span>        if (skipMerge &amp;&amp; skipMinify) {<a name="line.272"></a>
+<span class="sourceLineNo">273</span>            getLog().warn("Both merge and minify steps are configured to be skipped.");<a name="line.273"></a>
+<span class="sourceLineNo">274</span>            return;<a name="line.274"></a>
 <span class="sourceLineNo">275</span>        }<a name="line.275"></a>
-<span class="sourceLineNo">276</span>    }<a name="line.276"></a>
-<span class="sourceLineNo">277</span>}<a name="line.277"></a>
+<span class="sourceLineNo">276</span><a name="line.276"></a>
+<span class="sourceLineNo">277</span>        Collection&lt;ProcessFilesTask&gt; processFilesTasks = new ArrayList&lt;ProcessFilesTask&gt;();<a name="line.277"></a>
+<span class="sourceLineNo">278</span>        processFilesTasks.add(new ProcessCSSFilesTask(getLog(), bufferSize, debug, skipMerge, skipMinify,<a name="line.278"></a>
+<span class="sourceLineNo">279</span>                webappSourceDir, webappTargetDir, cssSourceDir, cssSourceFiles, cssSourceIncludes, cssSourceExcludes,<a name="line.279"></a>
+<span class="sourceLineNo">280</span>                cssTargetDir, cssFinalFile, suffix, charset, linebreak));<a name="line.280"></a>
+<span class="sourceLineNo">281</span>        processFilesTasks.add(new ProcessJSFilesTask(getLog(), bufferSize, debug, skipMerge, skipMinify,<a name="line.281"></a>
+<span class="sourceLineNo">282</span>                webappSourceDir, webappTargetDir, jsSourceDir, jsSourceFiles, jsSourceIncludes, jsSourceExcludes,<a name="line.282"></a>
+<span class="sourceLineNo">283</span>                jsTargetDir, jsFinalFile, suffix, charset, linebreak, jsEngine, !nomunge, verbose,<a name="line.283"></a>
+<span class="sourceLineNo">284</span>                preserveAllSemiColons, disableOptimizations));<a name="line.284"></a>
+<span class="sourceLineNo">285</span><a name="line.285"></a>
+<span class="sourceLineNo">286</span>        ExecutorService executor = Executors.newFixedThreadPool(2);<a name="line.286"></a>
+<span class="sourceLineNo">287</span>        try {<a name="line.287"></a>
+<span class="sourceLineNo">288</span>            executor.invokeAll(processFilesTasks);<a name="line.288"></a>
+<span class="sourceLineNo">289</span>            executor.shutdown();<a name="line.289"></a>
+<span class="sourceLineNo">290</span>            executor.awaitTermination(timeout, TimeUnit.SECONDS);<a name="line.290"></a>
+<span class="sourceLineNo">291</span>        } catch (InterruptedException e) {<a name="line.291"></a>
+<span class="sourceLineNo">292</span>            getLog().error(e.getMessage(), e);<a name="line.292"></a>
+<span class="sourceLineNo">293</span>        }<a name="line.293"></a>
+<span class="sourceLineNo">294</span>    }<a name="line.294"></a>
+<span class="sourceLineNo">295</span>}<a name="line.295"></a>
 
 
 
