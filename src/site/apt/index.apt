@@ -9,7 +9,8 @@
 Minify Maven Plugin
 
   This plugin combines and minimizes JavaScript and CSS files using
-  {{{http://developer.yahoo.com/yui/compressor/}YUI Compressor}}  for faster page loading.
+  {{{http://developer.yahoo.com/yui/compressor/}YUI Compressor}} for faster page loading. Optionally the
+  {{{https://developers.google.com/closure/compiler/}Google Closure Compiler}} can be used to minimize JavaScript files. 
 
 * Goals Overview
 
@@ -35,6 +36,6 @@ Minify Maven Plugin
 
   * {{{./examples/basic.html}Basic Configuration}}
 
-  * {{{./examples/ordering.html}Lexicographical ordering (exclude/include patterns)}}
+  * {{{./examples/patterns.html}Lexicographical ordering (include/exclude patterns)}}
 
   * {{{./examples/exclude.html}Exclude source files from WAR package}}

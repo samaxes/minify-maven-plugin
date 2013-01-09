@@ -1,16 +1,16 @@
  ------
- Lexicographical ordering (exclude/include patterns)
+ Lexicographical ordering (include/exclude patterns)
  ------
  Samuel Santos
  ------
  2010-11-08
  ------
 
-Lexicographical ordering (exclude/include patterns)
+Lexicographical ordering (include/exclude patterns)
 
 * Configure Minify Maven Plugin
 
-  Since version 1.2, Minify Maven Plugin supports exclude/include patterns for lexicographical ordering.
+  Since version 1.2, Minify Maven Plugin supports include/exclude patterns for lexicographical ordering.
 
 +---+
 <project>
@@ -21,7 +21,7 @@ Lexicographical ordering (exclude/include patterns)
       <plugin>
         <groupId>com.samaxes.maven</groupId>
         <artifactId>minify-maven-plugin</artifactId>
-        <version>1.5.2</version>
+        <version>1.6</version>
         <executions>
           <execution>
             <id>default-minify</id>

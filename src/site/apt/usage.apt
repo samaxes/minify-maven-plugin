@@ -22,8 +22,9 @@ Usage
   eliminates the need to run the plugin standalone.
 
   To bind the minify goal of the Minify Maven Plugin to a phase in the build cycle, you will need to add the
-  <<<execution>>> tag with the phase set to the build phase and the <<<goal>>> set to <<<minify>>>. For instance, using
-  <<<process-resources>>> in the phase will force the minify goal to run each time this phase of the build cycle occurs.
+  <<<execution>>> tag with the <<<phase>>> set to the build phase and the <<<goal>>> set to <<<minify>>>. For instance,
+  using <<<process-resources>>> in the phase will force the minify goal to run each time this phase of the build
+  cycle occurs.
 
 +---+
 <project>
@@ -34,12 +35,14 @@ Usage
       <plugin>
         <groupId>com.samaxes.maven</groupId>
         <artifactId>minify-maven-plugin</artifactId>
-        <version>1.5.2</version>
+        <version>1.6</version>
         <executions>
           <execution>
             <id>default-minify</id>
             <phase>process-resources</phase>
             <configuration>
+              <charset>utf-8</charset>
+              <jsEngine>closure</jsEngine>
               <cssSourceDir>css</cssSourceDir>
               <cssSourceFiles>
                 <cssSourceFile>file-1.css</cssSourceFile>
@@ -70,7 +73,7 @@ Usage
 
 * Invoke from the command-line
 
-  Create a package containing the new files.
+  Create the project archive containing the new files.
 
 +---+
 mvn package

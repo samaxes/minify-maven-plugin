@@ -31,7 +31,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 /**
- * Goal which combines and minifies CSS and JavaScript files.
+ * Goal for combining and minifying CSS and JavaScript files.
  *
  * @goal minify
  * @phase process-resources
@@ -248,14 +248,23 @@ public class MinifyMojo extends AbstractMojo {
     private boolean skipMinify;
 
     /**
-     * Define the javascript compressor engine to use. Defaults to the YUI
-     * compressor.
-     * 
+     * <p>
+     * JAVASCRIPT ONLY OPTION!<br/>
+     * Define the JavaScript compressor engine to use.
+     * </p>
+     * <p>
+     * Possible values are:
+     * </p>
+     * <ul>
+     * <li><code>yui</code> - <a href="http://developer.yahoo.com/yui/compressor/">YUI Compressor</a></li>
+     * <li><code>closure</code> - <a href="https://developers.google.com/closure/compiler/">Google Closure Compiler</a></li>
+     * </ul>
+     *
      * @parameter expression="${jsEngine}" default-value="yui"
-     * @since 1.5.2
+     * @since 1.6
      */
     private String jsEngine;
-    
+
     /**
      * Executed when the goal is invoked, it will first invoke a parallel lifecycle, ending at the given phase.
      */
@@ -266,14 +275,13 @@ public class MinifyMojo extends AbstractMojo {
         }
 
         Collection<ProcessFilesTask> processFilesTasks = new ArrayList<ProcessFilesTask>();
-        processFilesTasks.add(new ProcessCSSFilesTask(getLog(), bufferSize,
-            debug, skipMerge, skipMinify, jsEngine,
+        processFilesTasks.add(new ProcessCSSFilesTask(getLog(), bufferSize, debug, skipMerge, skipMinify,
                 webappSourceDir, webappTargetDir, cssSourceDir, cssSourceFiles, cssSourceIncludes, cssSourceExcludes,
                 cssTargetDir, cssFinalFile, suffix, charset, linebreak));
-        processFilesTasks.add(new ProcessJSFilesTask(getLog(), bufferSize, debug, skipMerge, skipMinify, jsEngine,
+        processFilesTasks.add(new ProcessJSFilesTask(getLog(), bufferSize, debug, skipMerge, skipMinify,
                 webappSourceDir, webappTargetDir, jsSourceDir, jsSourceFiles, jsSourceIncludes, jsSourceExcludes,
-                jsTargetDir, jsFinalFile, suffix, charset, linebreak, !nomunge, verbose, preserveAllSemiColons,
-                disableOptimizations));
+                jsTargetDir, jsFinalFile, suffix, charset, linebreak, jsEngine, !nomunge, verbose,
+                preserveAllSemiColons, disableOptimizations));
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
         try {

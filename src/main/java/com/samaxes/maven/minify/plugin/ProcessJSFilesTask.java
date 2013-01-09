@@ -47,6 +47,8 @@ import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
  */
 public class ProcessJSFilesTask extends ProcessFilesTask {
 
+    private String jsEngine;
+
     private boolean munge;
 
     private boolean verbose;
@@ -81,16 +83,15 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      * @param preserveAllSemiColons preserve unnecessary semicolons
      * @param disableOptimizations disable all the built-in micro optimizations
      */
-    public ProcessJSFilesTask(Log log, Integer bufferSize, boolean debug,
-        boolean skipMerge, boolean skipMinify, String jsEngine,
+    public ProcessJSFilesTask(Log log, Integer bufferSize, boolean debug, boolean skipMerge, boolean skipMinify,
             String webappSourceDir, String webappTargetDir, String inputDir, List<String> sourceFiles,
             List<String> sourceIncludes, List<String> sourceExcludes, String outputDir, String outputFilename,
-            String suffix, String charset, int linebreak, boolean munge, boolean verbose,
+            String suffix, String charset, int linebreak, String jsEngine, boolean munge, boolean verbose,
             boolean preserveAllSemiColons, boolean disableOptimizations) {
-        super(log, bufferSize, debug, skipMerge, skipMinify, jsEngine,
-            webappSourceDir, webappTargetDir, inputDir, sourceFiles,
+        super(log, bufferSize, debug, skipMerge, skipMinify, webappSourceDir, webappTargetDir, inputDir, sourceFiles,
                 sourceIncludes, sourceExcludes, outputDir, outputFilename, suffix, charset, linebreak);
 
+        this.jsEngine = jsEngine;
         this.munge = munge;
         this.verbose = verbose;
         this.preserveAllSemiColons = preserveAllSemiColons;
@@ -122,37 +123,26 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
                     writer = new OutputStreamWriter(out, charset);
                 }
 
-                if (null != jsEngine && jsEngine.equals("closure")) {
-
-                    log.info("Using javascript minify engine [Google Closure Compiler].");
-
-                    Compiler compiler = new Compiler();
+                if ("closure".equals(jsEngine)) {
+                    log.debug("Using JavaScript compressor engine [Google Closure Compiler].");
 
                     CompilerOptions options = new CompilerOptions();
-
-                    CompilationLevel.SIMPLE_OPTIMIZATIONS
-                        .setOptionsForCompilationLevel(options);
+                    CompilationLevel.SIMPLE_OPTIMIZATIONS.setOptionsForCompilationLevel(options);
                     options.setOutputCharset(charset);
 
-                    SourceFile input = SourceFile.fromInputStream(
-                        mergedFile.getName(), in);
-
+                    SourceFile input = SourceFile.fromInputStream(mergedFile.getName(), in);
                     List<SourceFile> externs = Collections.emptyList();
 
-                    compiler.compile(externs,
-                        Arrays.asList(new SourceFile[] { input }), options);
+                    Compiler compiler = new Compiler();
+                    compiler.compile(externs, Arrays.asList(new SourceFile[] { input }), options);
 
                     writer.append(compiler.toSource());
-
                 } else {
+                    log.debug("Using JavaScript compressor engine [YUI Compressor].");
 
-                    log.info("Using javascript minify engine [YUI Compressor].");
-
-                    JavaScriptCompressor compressor = new JavaScriptCompressor(
-                        reader, new JavaScriptErrorReporter(log,
-                        mergedFile.getName()));
-                    compressor.compress(writer, linebreak, munge, verbose,
-                        preserveAllSemiColons, disableOptimizations);
+                    JavaScriptCompressor compressor = new JavaScriptCompressor(reader, new JavaScriptErrorReporter(log,
+                            mergedFile.getName()));
+                    compressor.compress(writer, linebreak, munge, verbose, preserveAllSemiColons, disableOptimizations);
                 }
 
                 IOUtil.close(reader);

@@ -1,4 +1,4 @@
-/*!
+/*
  * samaxesJS JavaScript Library
  * TOC JavaScript Control v@VERSION
  * http://code.google.com/p/samaxesjs/
@@ -22,4 +22,8 @@
  * The samaxesJS global namespace object.
  */
 var samaxesJS = function() {};
+
+function testEncoding() {
+    return '你好，中文测试';
+}
 

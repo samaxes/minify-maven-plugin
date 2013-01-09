@@ -1,5 +1,9 @@
 # Minify Maven Plugin
 
+## 1.6
+
+* [MINIFY-14] Added support for Google Closure Compiler for JavaScript compression.
+
 ## 1.5.2
 
 * [MINIFY-5] New goal parameter to log full source file paths and new FAQ entry pointing to the plugin goal parameters.
