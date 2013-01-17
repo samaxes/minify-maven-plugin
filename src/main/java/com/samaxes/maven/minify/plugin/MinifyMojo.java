@@ -145,7 +145,7 @@ public class MinifyMojo extends AbstractMojo {
     /**
      * The output filename suffix.
      *
-     * @parameter expression="${suffix}" default-value=".min"
+     * @parameter expression="${suffix}" default-value=""
      * @since 1.3.2
      */
     private String suffix;
@@ -272,6 +272,10 @@ public class MinifyMojo extends AbstractMojo {
         if (skipMerge && skipMinify) {
             getLog().warn("Both merge and minify steps are configured to be skipped.");
             return;
+        }
+        
+        if (suffix == null) {
+            suffix = "";
         }
 
         Collection<ProcessFilesTask> processFilesTasks = new ArrayList<ProcessFilesTask>();
