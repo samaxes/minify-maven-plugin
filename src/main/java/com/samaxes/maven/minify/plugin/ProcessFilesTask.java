@@ -128,7 +128,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
     /**
      * Method executed by the thread.
      */
-    public Object call() {
+    public Object call() throws Exception {
         if (!files.isEmpty() && (targetDir.exists() || targetDir.mkdirs())) {
             if (skipMerge) {
                 log.info("Skipping merge step.");
@@ -160,7 +160,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      *
      * @param mergedFile output file resulting from the merged step
      */
-    private void merge(File mergedFile) {
+    private void merge(File mergedFile) throws IOException {
         if (mergedFile != null) {
             ListOfFiles listOfFiles = new ListOfFiles(log, files, debug);
 
@@ -184,6 +184,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
                 IOUtil.close(out);
             } catch (IOException e) {
                 log.error("An error has occurred while concatenating files.", e);
+                throw e;
             }
         }
     }
@@ -191,10 +192,10 @@ public abstract class ProcessFilesTask implements Callable<Object> {
     /**
      * Minifies source file.
      *
-     * @param mergedFile input file resulting from the merged step
+     * @param file input file resulting from the merged step
      * @param minifiedFile output file resulting from the minify step
      */
-    abstract void minify(File file, File minifiedFile);
+    abstract void minify(File file, File minifiedFile) throws Exception;
 
     /**
      * Logs an addition of a new source file.

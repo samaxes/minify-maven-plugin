@@ -76,7 +76,7 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
      * @param minifiedFile output file resulting from the minify step
      */
     @Override
-    protected void minify(File mergedFile, File minifiedFile) {
+    protected void minify(File mergedFile, File minifiedFile) throws IOException {
         if (minifiedFile != null) {
             try {
                 log.info("Creating minified file [" + ((debug) ? minifiedFile.getPath() : minifiedFile.getName())
@@ -103,6 +103,7 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
                 IOUtil.close(out);
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
+                throw e;
             }
         }
     }
