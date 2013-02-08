@@ -105,7 +105,8 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      * @param minifiedFile output file resulting from the minify step
      */
     @Override
-    protected void minify(File mergedFile, File minifiedFile) {
+    protected void minify(File mergedFile, File minifiedFile) throws Exception
+    {
         if (minifiedFile != null) {
             try {
                 log.info("Creating minified file [" + ((debug) ? minifiedFile.getPath() : minifiedFile.getName())
@@ -113,8 +114,9 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
 
                 InputStream in = new FileInputStream(mergedFile);
                 OutputStream out = new FileOutputStream(minifiedFile);
-                InputStreamReader reader;
-                OutputStreamWriter writer;
+                InputStreamReader reader = null;
+                OutputStreamWriter writer = null;
+                try {
                 if (charset == null) {
                     reader = new InputStreamReader(in);
                     writer = new OutputStreamWriter(out);
@@ -144,13 +146,15 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
                             mergedFile.getName()));
                     compressor.compress(writer, linebreak, munge, verbose, preserveAllSemiColons, disableOptimizations);
                 }
-
-                IOUtil.close(reader);
-                IOUtil.close(writer);
-                IOUtil.close(in);
-                IOUtil.close(out);
-            } catch (IOException e) {
+                }finally {
+                    IOUtil.close(reader);
+                    IOUtil.close(writer);
+                    IOUtil.close(in);
+                    IOUtil.close(out);
+                }
+            } catch (Exception e) {
                 log.error(e.getMessage(), e);
+                throw e;
             }
         }
     }

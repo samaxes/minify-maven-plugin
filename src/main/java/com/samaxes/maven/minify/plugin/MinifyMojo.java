@@ -22,9 +22,8 @@ package com.samaxes.maven.minify.plugin;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
+import java.util.concurrent.*;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -285,11 +284,21 @@ public class MinifyMojo extends AbstractMojo {
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
         try {
-            executor.invokeAll(processFilesTasks);
+            List<Future<Object>> futures = executor.invokeAll(processFilesTasks);
             executor.shutdown();
             executor.awaitTermination(timeout, TimeUnit.SECONDS);
+            for (Future<Object> future : futures)
+            {
+                try
+                {
+                    future.get();
+                } catch (ExecutionException e)
+                {
+                    throw new MojoFailureException(e.getMessage(), e);
+                }
+            }
         } catch (InterruptedException e) {
-            getLog().error(e.getMessage(), e);
+            throw new MojoFailureException(e.getMessage(), e);
         }
     }
 }
