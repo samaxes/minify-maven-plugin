@@ -10,7 +10,7 @@
 
     <groupId>com.samaxes.maven</groupId>
     <artifactId>minify-maven-plugin</artifactId>
-    <version>1.6.1-SNAPSHOT</version>
+    <version>1.7-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <name>Minify Maven Plugin</name>
@@ -255,8 +255,8 @@
     <properties>
         <github.global.server>github</github.global.server>
         <project.build.resourceEncoding>ISO-8859-1</project.build.resourceEncoding>
-        <maven.compiler.target>1.5</maven.compiler.target>
-        <maven.compiler.source>1.5</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.7</maven.compiler.source>
         <maven.plugin.version>2.9</maven.plugin.version>
     </properties>
 </project>

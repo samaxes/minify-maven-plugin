@@ -31,7 +31,6 @@ import java.io.OutputStreamWriter;
 import java.util.List;
 
 import org.apache.maven.plugin.logging.Log;
-import org.codehaus.plexus.util.IOUtil;
 
 import com.yahoo.platform.yui.compressor.CssCompressor;
 
@@ -74,33 +73,20 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
      *
      * @param mergedFile input file resulting from the merged step
      * @param minifiedFile output file resulting from the minify step
+     * @throws IOException when the minify step fails
      */
     @Override
     protected void minify(File mergedFile, File minifiedFile) throws IOException {
         if (minifiedFile != null) {
-            try {
+            try (InputStream in = new FileInputStream(mergedFile);
+                    OutputStream out = new FileOutputStream(minifiedFile);
+                    InputStreamReader reader = new InputStreamReader(in, charset);
+                    OutputStreamWriter writer = new OutputStreamWriter(out, charset)) {
                 log.info("Creating minified file [" + ((debug) ? minifiedFile.getPath() : minifiedFile.getName())
                         + "].");
 
-                InputStream in = new FileInputStream(mergedFile);
-                OutputStream out = new FileOutputStream(minifiedFile);
-                InputStreamReader reader;
-                OutputStreamWriter writer;
-                if (charset == null) {
-                    reader = new InputStreamReader(in);
-                    writer = new OutputStreamWriter(out);
-                } else {
-                    reader = new InputStreamReader(in, charset);
-                    writer = new OutputStreamWriter(out, charset);
-                }
-
                 CssCompressor compressor = new CssCompressor(reader);
                 compressor.compress(writer, linebreak);
-
-                IOUtil.close(reader);
-                IOUtil.close(writer);
-                IOUtil.close(in);
-                IOUtil.close(out);
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
                 throw e;

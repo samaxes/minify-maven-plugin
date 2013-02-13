@@ -54,6 +54,7 @@ public class JavaScriptErrorReporter implements ErrorReporter {
      * @param lineSource the text of the line (may be null)
      * @param lineOffset the offset into lineSource where problem was detected
      */
+    @Override
     public void warning(String message, String sourceName, int line, String lineSource, int lineOffset) {
         if (line < 0) {
             log.warn(message);
@@ -73,6 +74,7 @@ public class JavaScriptErrorReporter implements ErrorReporter {
      * @param lineSource the text of the line (may be null)
      * @param lineOffset the offset into lineSource where problem was detected
      */
+    @Override
     public void error(String message, String sourceName, int line, String lineSource, int lineOffset) {
         if (line < 0) {
             log.error(message);
@@ -92,6 +94,7 @@ public class JavaScriptErrorReporter implements ErrorReporter {
      * @param lineSource the text of the line (may be null)
      * @param lineOffset the offset into lineSource where problem was detected
      */
+    @Override
     public EvaluatorException runtimeError(String message, String sourceName, int line, String lineSource,
             int lineOffset) {
         error(message, sourceName, line, lineSource, lineOffset);

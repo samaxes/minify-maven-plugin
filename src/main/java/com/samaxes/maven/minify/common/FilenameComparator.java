@@ -39,6 +39,7 @@ public class FilenameComparator implements Comparator<File> {
      *         less than the second, or a value greater than zero if the first file is lexicographically greater than
      *         the second
      */
+    @Override
     public int compare(File o1, File o2) {
         return o1.getName().compareToIgnoreCase(o2.getName());
     }

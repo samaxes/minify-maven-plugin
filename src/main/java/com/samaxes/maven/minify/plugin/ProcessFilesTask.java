@@ -127,8 +127,11 @@ public abstract class ProcessFilesTask implements Callable<Object> {
 
     /**
      * Method executed by the thread.
+     *
+     * @throws IOException when the merge or minify steps fail
      */
-    public Object call() throws Exception {
+    @Override
+    public Object call() throws IOException {
         if (!files.isEmpty() && (targetDir.exists() || targetDir.mkdirs())) {
             if (skipMerge) {
                 log.info("Skipping merge step.");
@@ -159,29 +162,17 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * Merges files list.
      *
      * @param mergedFile output file resulting from the merged step
+     * @throws IOException when the merge step fails
      */
     private void merge(File mergedFile) throws IOException {
         if (mergedFile != null) {
-            ListOfFiles listOfFiles = new ListOfFiles(log, files, debug);
-
-            try {
-                log.info("Creating merged file [" + ((debug) ? mergedFile.getPath() : mergedFile.getName()) + "].");
-                InputStream sequence = new SequenceInputStream(listOfFiles);
-                OutputStream out = new FileOutputStream(mergedFile);
-
-                if (charset == null) {
-                    IOUtil.copy(sequence, out, bufferSize);
-                } else {
+            try (InputStream sequence = new SequenceInputStream(new ListOfFiles(log, files, debug));
+                    OutputStream out = new FileOutputStream(mergedFile);
                     InputStreamReader sequenceReader = new InputStreamReader(sequence, charset);
-                    OutputStreamWriter outWriter = new OutputStreamWriter(out, charset);
+                    OutputStreamWriter outWriter = new OutputStreamWriter(out, charset)) {
+                log.info("Creating merged file [" + ((debug) ? mergedFile.getPath() : mergedFile.getName()) + "].");
 
-                    IOUtil.copy(sequenceReader, outWriter, bufferSize);
-                    IOUtil.close(sequenceReader);
-                    IOUtil.close(outWriter);
-                }
-
-                IOUtil.close(sequence);
-                IOUtil.close(out);
+                IOUtil.copy(sequenceReader, outWriter, bufferSize);
             } catch (IOException e) {
                 log.error("An error has occurred while concatenating files.", e);
                 throw e;
@@ -194,8 +185,9 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      *
      * @param file input file resulting from the merged step
      * @param minifiedFile output file resulting from the minify step
+     * @throws IOException when the minify step fails
      */
-    abstract void minify(File file, File minifiedFile) throws Exception;
+    abstract void minify(File file, File minifiedFile) throws IOException;
 
     /**
      * Logs an addition of a new source file.

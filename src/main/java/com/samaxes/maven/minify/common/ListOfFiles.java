@@ -61,6 +61,7 @@ public class ListOfFiles implements Enumeration<InputStream> {
      * @return <code>true</code> if and only if this enumeration object contains at least one more element to provide;
      *         <code>false</code> otherwise.
      */
+    @Override
     public boolean hasMoreElements() {
         return (current < files.size()) ? true : false;
     }
@@ -71,6 +72,7 @@ public class ListOfFiles implements Enumeration<InputStream> {
      * @return the next element of this enumeration.
      * @exception NoSuchElementException if no more elements exist.
      */
+    @Override
     public InputStream nextElement() {
         InputStream is = null;
 

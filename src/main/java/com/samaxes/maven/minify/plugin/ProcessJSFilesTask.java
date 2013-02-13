@@ -33,7 +33,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.maven.plugin.logging.Log;
-import org.codehaus.plexus.util.IOUtil;
 
 import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.Compiler;
@@ -103,27 +102,17 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      *
      * @param mergedFile input file resulting from the merged step
      * @param minifiedFile output file resulting from the minify step
+     * @throws IOException when the minify step fails
      */
     @Override
-    protected void minify(File mergedFile, File minifiedFile) throws Exception
-    {
+    protected void minify(File mergedFile, File minifiedFile) throws IOException {
         if (minifiedFile != null) {
-            try {
+            try (InputStream in = new FileInputStream(mergedFile);
+                    OutputStream out = new FileOutputStream(minifiedFile);
+                    InputStreamReader reader = new InputStreamReader(in, charset);
+                    OutputStreamWriter writer = new OutputStreamWriter(out, charset)) {
                 log.info("Creating minified file [" + ((debug) ? minifiedFile.getPath() : minifiedFile.getName())
                         + "].");
-
-                InputStream in = new FileInputStream(mergedFile);
-                OutputStream out = new FileOutputStream(minifiedFile);
-                InputStreamReader reader = null;
-                OutputStreamWriter writer = null;
-                try {
-                if (charset == null) {
-                    reader = new InputStreamReader(in);
-                    writer = new OutputStreamWriter(out);
-                } else {
-                    reader = new InputStreamReader(in, charset);
-                    writer = new OutputStreamWriter(out, charset);
-                }
 
                 if ("closure".equals(jsEngine)) {
                     log.debug("Using JavaScript compressor engine [Google Closure Compiler].");
@@ -146,13 +135,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
                             mergedFile.getName()));
                     compressor.compress(writer, linebreak, munge, verbose, preserveAllSemiColons, disableOptimizations);
                 }
-                }finally {
-                    IOUtil.close(reader);
-                    IOUtil.close(writer);
-                    IOUtil.close(in);
-                    IOUtil.close(out);
-                }
-            } catch (Exception e) {
+            } catch (IOException e) {
                 log.error(e.getMessage(), e);
                 throw e;
             }

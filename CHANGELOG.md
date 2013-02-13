@@ -1,5 +1,11 @@
 # Minify Maven Plugin
 
+## 1.7
+
+* [MINIFY-19] Build should fail if compiler can't parse/compile source files.
+* Assumes UTF-8 as the default charset.
+* Requires Java 7.
+
 ## 1.6
 
 * [MINIFY-14] Added support for Google Closure Compiler for JavaScript compression.
