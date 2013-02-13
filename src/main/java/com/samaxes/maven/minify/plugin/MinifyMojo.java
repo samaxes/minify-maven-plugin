@@ -32,6 +32,8 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
+import com.google.common.base.Strings;
+
 /**
  * Goal for combining and minifying CSS and JavaScript files.
  *
@@ -116,16 +118,22 @@ public class MinifyMojo extends AbstractMojo {
 
     /**
      * CSS target directory.
+     * <p>
+     * Takes the same value as <code>cssSourceDir</code> when empty.
+     * </p>
      *
-     * @parameter expression="${cssTargetDir}" default-value="css"
+     * @parameter expression="${cssTargetDir}"
      * @since 1.3.2
      */
     private String cssTargetDir;
 
     /**
      * JavaScript target directory.
+     * <p>
+     * Takes the same value as <code>jsSourceDir</code> when empty.
+     * </p>
      *
-     * @parameter expression="${jsTargetDir}" default-value="js"
+     * @parameter expression="${jsTargetDir}"
      * @since 1.3.2
      */
     private String jsTargetDir;
@@ -267,6 +275,12 @@ public class MinifyMojo extends AbstractMojo {
         if (skipMerge && skipMinify) {
             getLog().warn("Both merge and minify steps are configured to be skipped.");
             return;
+        }
+        if (Strings.isNullOrEmpty(cssTargetDir)) {
+            cssTargetDir = cssSourceDir;
+        }
+        if (Strings.isNullOrEmpty(jsTargetDir)) {
+            jsTargetDir = jsSourceDir;
         }
 
         Collection<ProcessFilesTask> processFilesTasks = new ArrayList<ProcessFilesTask>();

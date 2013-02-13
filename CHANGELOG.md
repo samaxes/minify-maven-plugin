@@ -2,6 +2,7 @@
 
 ## 1.7
 
+* [MINIFY-17] Option to use same subdirectory on target as in source.
 * [MINIFY-19] Build should fail if compiler can't parse/compile source files.
 * Assumes UTF-8 as the default charset.
 * Requires Java 7.
