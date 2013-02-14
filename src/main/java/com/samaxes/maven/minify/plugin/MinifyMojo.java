@@ -161,6 +161,15 @@ public class MinifyMojo extends AbstractMojo {
     private String suffix;
 
     /**
+     * Do not append a suffix to the minified output filename, independently of the value in the <code>suffix</code>
+     * parameter.
+     *
+     * @parameter expression="${nosuffix}" default-value="false"
+     * @since 1.7
+     */
+    private boolean nosuffix;
+
+    /**
      * <p>
      * If a supported character set is specified, it will be used to read the input file. Otherwise, it will assume that
      * the platform's default character set is being used. The output file is encoded using the same character set.
@@ -286,10 +295,10 @@ public class MinifyMojo extends AbstractMojo {
         Collection<ProcessFilesTask> processFilesTasks = new ArrayList<ProcessFilesTask>();
         processFilesTasks.add(new ProcessCSSFilesTask(getLog(), bufferSize, debug, skipMerge, skipMinify,
                 webappSourceDir, webappTargetDir, cssSourceDir, cssSourceFiles, cssSourceIncludes, cssSourceExcludes,
-                cssTargetDir, cssFinalFile, suffix, charset, linebreak));
+                cssTargetDir, cssFinalFile, suffix, nosuffix, charset, linebreak));
         processFilesTasks.add(new ProcessJSFilesTask(getLog(), bufferSize, debug, skipMerge, skipMinify,
                 webappSourceDir, webappTargetDir, jsSourceDir, jsSourceFiles, jsSourceIncludes, jsSourceExcludes,
-                jsTargetDir, jsFinalFile, suffix, charset, linebreak, jsEngine, !nomunge, verbose,
+                jsTargetDir, jsFinalFile, suffix, nosuffix, charset, linebreak, jsEngine, !nomunge, verbose,
                 preserveAllSemiColons, disableOptimizations));
 
         ExecutorService executor = Executors.newFixedThreadPool(2);

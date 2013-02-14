@@ -2,6 +2,7 @@
 
 ## 1.7
 
+* [MINIFY-16] Added nosuffix option to avoid the suffix (.min) on the minified output filename.
 * [MINIFY-17] Option to use same subdirectory on target as in source.
 * [MINIFY-19] Build should fail if compiler can't parse/compile source files.
 * Assumes UTF-8 as the default charset.
