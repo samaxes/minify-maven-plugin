@@ -84,19 +84,20 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
                     InputStreamReader reader = new InputStreamReader(in, charset);
                     OutputStreamWriter writer = new OutputStreamWriter(out, charset)) {
                 if (debug) {
-                    log.info("Creating minified file [" + minifiedFile.getPath() + "].");
+                    log.info("Creating the minified file [" + minifiedFile.getPath() + "].");
                 } else {
                     File temp = (nosuffix) ? mergedFile : minifiedFile;
-                    log.info("Creating minified file [" + temp.getName() + "].");
+                    log.info("Creating the minified file [" + temp.getName() + "].");
                 }
 
                 CssCompressor compressor = new CssCompressor(reader);
                 compressor.compress(writer, linebreak);
             } catch (IOException e) {
-                log.error(e.getMessage(), e);
+                log.error("Failed to compress the CSS file [" + mergedFile.getName() + "].", e);
                 throw e;
             }
 
+            logCompressionGains(mergedFile, minifiedFile);
             cleanupFiles(mergedFile, minifiedFile);
         }
     }

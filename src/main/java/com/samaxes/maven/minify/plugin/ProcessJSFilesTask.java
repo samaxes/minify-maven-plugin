@@ -113,14 +113,14 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
                     InputStreamReader reader = new InputStreamReader(in, charset);
                     OutputStreamWriter writer = new OutputStreamWriter(out, charset)) {
                 if (debug) {
-                    log.info("Creating minified file [" + minifiedFile.getPath() + "].");
+                    log.info("Creating the minified file [" + minifiedFile.getPath() + "].");
                 } else {
                     File temp = (nosuffix) ? mergedFile : minifiedFile;
-                    log.info("Creating minified file [" + temp.getName() + "].");
+                    log.info("Creating the minified file [" + temp.getName() + "].");
                 }
 
                 if ("closure".equals(jsEngine)) {
-                    log.debug("Using JavaScript compressor engine [Google Closure Compiler].");
+                    log.debug("Using Google Closure Compiler engine.");
 
                     CompilerOptions options = new CompilerOptions();
                     CompilationLevel.SIMPLE_OPTIMIZATIONS.setOptionsForCompilationLevel(options);
@@ -134,17 +134,18 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
 
                     writer.append(compiler.toSource());
                 } else {
-                    log.debug("Using JavaScript compressor engine [YUI Compressor].");
+                    log.debug("Using YUI Compressor engine.");
 
                     JavaScriptCompressor compressor = new JavaScriptCompressor(reader, new JavaScriptErrorReporter(log,
                             mergedFile.getName()));
                     compressor.compress(writer, linebreak, munge, verbose, preserveAllSemiColons, disableOptimizations);
                 }
             } catch (IOException e) {
-                log.error(e.getMessage(), e);
+                log.error("Failed to compress the JavaScript file [" + mergedFile.getName() + "].", e);
                 throw e;
             }
 
+            logCompressionGains(mergedFile, minifiedFile);
             cleanupFiles(mergedFile, minifiedFile);
         }
     }

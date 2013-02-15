@@ -21,6 +21,7 @@
 package com.samaxes.maven.minify.plugin;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.zip.GZIPOutputStream;
 
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.DirectoryScanner;
@@ -139,7 +141,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
     public Object call() throws IOException {
         if (!files.isEmpty() && (targetDir.exists() || targetDir.mkdirs())) {
             if (skipMerge) {
-                log.info("Skipping merge step.");
+                log.info("Skipping the merge step...");
                 for (File mergedFile : files) {
                     File minifiedFile = new File(targetDir, mergedFile.getName().replace(extension, suffix + extension));
                     minify(mergedFile, minifiedFile);
@@ -147,7 +149,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
             } else if (skipMinify) {
                 File mergedFile = new File(targetDir, mergedFilename);
                 merge(mergedFile);
-                log.info("Skipping minify step.");
+                log.info("Skipping the minify step...");
             } else {
                 File mergedFile = new File(targetDir, mergedFilename);
                 merge(mergedFile);
@@ -155,7 +157,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
                 minify(mergedFile, minifiedFile);
             }
         } else if (!sourceFilesEmpty || !sourceIncludesEmpty) {
-            // The 'files' list will be empty if the source file paths or names added to the project's POM are wrong.
+            // The 'files' list can still be empty if source file paths added to the project's POM are incorrect
             String fileType = ("CSS".equalsIgnoreCase(extension.substring(1))) ? "CSS" : "JavaScript";
             log.error("No valid " + fileType + " source files found to process.");
         }
@@ -175,11 +177,11 @@ public abstract class ProcessFilesTask implements Callable<Object> {
                     OutputStream out = new FileOutputStream(mergedFile);
                     InputStreamReader sequenceReader = new InputStreamReader(sequence, charset);
                     OutputStreamWriter outWriter = new OutputStreamWriter(out, charset)) {
-                log.info("Creating merged file [" + ((debug) ? mergedFile.getPath() : mergedFile.getName()) + "].");
+                log.info("Creating the merged file [" + ((debug) ? mergedFile.getPath() : mergedFile.getName()) + "].");
 
                 IOUtil.copy(sequenceReader, outWriter, bufferSize);
             } catch (IOException e) {
-                log.error("An error has occurred while concatenating files.", e);
+                log.error("Failed to concatenate files.", e);
                 throw e;
             }
         }
@@ -193,6 +195,31 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * @throws IOException when the minify step fails
      */
     abstract void minify(File mergedFile, File minifiedFile) throws IOException;
+
+    /**
+     * Logs files size gains resulting from minification.
+     *
+     * @param mergedFile input file resulting from the merged step
+     * @param minifiedFile output file resulting from the minify step
+     */
+    void logCompressionGains(File mergedFile, File minifiedFile) {
+        try {
+            File temp = File.createTempFile(minifiedFile.getName(), ".gz");
+
+            try (InputStream in = new FileInputStream(minifiedFile);
+                    GZIPOutputStream outGZIP = new GZIPOutputStream(new FileOutputStream(temp))) {
+                IOUtil.copy(in, outGZIP, bufferSize);
+            }
+
+            log.info("Uncompressed size: " + mergedFile.length() + " bytes.");
+            log.info("Compressed size: " + minifiedFile.length() + " bytes minified (" + temp.length()
+                    + " bytes gzipped).");
+
+            temp.deleteOnExit();
+        } catch (IOException e) {
+            log.debug("Failed to calculate the gzipped file size.", e);
+        }
+    }
 
     /**
      * Cleanup files. Remove merged file is nosuffix parameter was set to true.
@@ -240,12 +267,12 @@ public abstract class ProcessFilesTask implements Callable<Object> {
     private void addNewSourceFile(String finalFilename, File sourceDir, File sourceFile) {
         if (sourceFile.exists()) {
             if (finalFilename.equalsIgnoreCase(sourceFile.getName())) {
-                log.warn("Source file [" + sourceFile.getName() + "] has the same name as the final file.");
+                log.warn("The source file [" + sourceFile.getName() + "] has the same name as the final file.");
             }
-            log.debug("Source file [" + sourceFile.getName() + "] added.");
+            log.debug("Adding source file [" + sourceFile.getName() + "].");
             files.add(sourceFile);
         } else {
-            log.warn("Source file [" + sourceFile.getName() + "] was not included beacause it does not exist.");
+            log.warn("The source file [" + sourceFile.getName() + "] does not exist.");
         }
     }
 
