@@ -197,7 +197,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
     abstract void minify(File mergedFile, File minifiedFile) throws IOException;
 
     /**
-     * Logs files size gains resulting from minification.
+     * Logs compression gains.
      *
      * @param mergedFile input file resulting from the merged step
      * @param minifiedFile output file resulting from the minify step

@@ -6,7 +6,7 @@
 * [MINIFY-17] Option to use same subdirectory on target as in source.
 * [MINIFY-19] Build should fail if compiler can't parse/compile source files.
 * Assumes UTF-8 as the default charset.
-* Logs files size gains resulting from minification.
+* Logs compression gains.
 * Requires Java 7.
 
 ## 1.6
