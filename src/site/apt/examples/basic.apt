@@ -21,7 +21,7 @@ Basic Configuration
       <plugin>
         <groupId>com.samaxes.maven</groupId>
         <artifactId>minify-maven-plugin</artifactId>
-        <version>1.6</version>
+        <version>1.7</version>
         <configuration>
           <cssSourceFiles>
             <cssSourceFile>file-1.css</cssSourceFile>
