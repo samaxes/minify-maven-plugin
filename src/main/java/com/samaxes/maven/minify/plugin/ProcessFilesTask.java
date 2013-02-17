@@ -49,35 +49,33 @@ import com.samaxes.maven.minify.common.ListOfFiles;
  */
 public abstract class ProcessFilesTask implements Callable<Object> {
 
-    protected Log log;
+    protected final Log log;
 
-    protected Integer bufferSize;
+    protected final Integer bufferSize;
 
-    protected boolean debug;
+    protected final boolean debug;
 
-    protected boolean skipMerge;
+    protected final boolean skipMerge;
 
-    protected boolean skipMinify;
+    protected final boolean skipMinify;
 
-    protected String charset;
+    protected final String charset;
 
-    protected int linebreak;
+    protected final int linebreak;
 
-    protected boolean nosuffix;
+    protected final boolean nosuffix;
 
-    private String mergedFilename;
+    private final String mergedFilename;
 
-    private String suffix;
+    private final String suffix;
 
-    private File targetDir;
+    private final File targetDir;
 
-    private String extension;
+    private final boolean sourceFilesEmpty;
 
-    private boolean sourceFilesEmpty;
+    private final boolean sourceIncludesEmpty;
 
-    private boolean sourceIncludesEmpty;
-
-    private List<File> files = new ArrayList<File>();
+    private final List<File> files = new ArrayList<File>();
 
     /**
      * Task constructor.
@@ -127,7 +125,6 @@ public abstract class ProcessFilesTask implements Callable<Object> {
         }
 
         this.targetDir = new File(webappTargetDir + File.separator + outputDir);
-        this.extension = "." + FileUtils.getExtension(mergedFilename);
         this.sourceFilesEmpty = sourceFiles.isEmpty();
         this.sourceIncludesEmpty = sourceIncludes.isEmpty();
     }
@@ -139,27 +136,34 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      */
     @Override
     public Object call() throws IOException {
-        if (!files.isEmpty() && (targetDir.exists() || targetDir.mkdirs())) {
-            if (skipMerge) {
-                log.info("Skipping the merge step...");
-                for (File mergedFile : files) {
-                    File minifiedFile = new File(targetDir, mergedFile.getName().replace(extension, suffix + extension));
+        synchronized (log) {
+            String fileType = (this instanceof ProcessCSSFilesTask) ? "CSS" : "JavaScript";
+            log.info("");
+            log.info("Starting " + fileType + " task:");
+
+            if (!files.isEmpty() && (targetDir.exists() || targetDir.mkdirs())) {
+                if (skipMerge) {
+                    log.info("Skipping the merge step...");
+                    for (File mergedFile : files) {
+                        File minifiedFile = new File(targetDir, FileUtils.removeExtension(mergedFile.getName())
+                                + suffix + "." + FileUtils.getExtension(mergedFile.getName()));
+                        minify(mergedFile, minifiedFile);
+                    }
+                } else if (skipMinify) {
+                    File mergedFile = new File(targetDir, mergedFilename);
+                    merge(mergedFile);
+                    log.info("Skipping the minify step...");
+                } else {
+                    File mergedFile = new File(targetDir, mergedFilename);
+                    merge(mergedFile);
+                    File minifiedFile = new File(targetDir, FileUtils.removeExtension(mergedFilename) + suffix + "."
+                            + FileUtils.getExtension(mergedFilename));
                     minify(mergedFile, minifiedFile);
                 }
-            } else if (skipMinify) {
-                File mergedFile = new File(targetDir, mergedFilename);
-                merge(mergedFile);
-                log.info("Skipping the minify step...");
-            } else {
-                File mergedFile = new File(targetDir, mergedFilename);
-                merge(mergedFile);
-                File minifiedFile = new File(targetDir, mergedFilename.replace(extension, suffix + extension));
-                minify(mergedFile, minifiedFile);
+            } else if (!sourceFilesEmpty || !sourceIncludesEmpty) {
+                // 'files' list will be empty if source file paths or names added to the project's POM are invalid.
+                log.error("No valid " + fileType + " source files found to process.");
             }
-        } else if (!sourceFilesEmpty || !sourceIncludesEmpty) {
-            // The 'files' list can still be empty if source file paths added to the project's POM are incorrect
-            String fileType = ("CSS".equalsIgnoreCase(extension.substring(1))) ? "CSS" : "JavaScript";
-            log.error("No valid " + fileType + " source files found to process.");
         }
 
         return null;
@@ -207,7 +211,8 @@ public abstract class ProcessFilesTask implements Callable<Object> {
             File temp = File.createTempFile(minifiedFile.getName(), ".gz");
 
             try (InputStream in = new FileInputStream(minifiedFile);
-                    GZIPOutputStream outGZIP = new GZIPOutputStream(new FileOutputStream(temp))) {
+                    OutputStream out = new FileOutputStream(temp);
+                    GZIPOutputStream outGZIP = new GZIPOutputStream(out)) {
                 IOUtil.copy(in, outGZIP, bufferSize);
             }
 

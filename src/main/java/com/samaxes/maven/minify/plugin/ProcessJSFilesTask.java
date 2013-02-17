@@ -46,15 +46,15 @@ import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
  */
 public class ProcessJSFilesTask extends ProcessFilesTask {
 
-    private String jsEngine;
+    private final String jsEngine;
 
-    private boolean munge;
+    private final boolean munge;
 
-    private boolean verbose;
+    private final boolean verbose;
 
-    private boolean preserveAllSemiColons;
+    private final boolean preserveAllSemiColons;
 
-    private boolean disableOptimizations;
+    private final boolean disableOptimizations;
 
     /**
      * Task constructor.
