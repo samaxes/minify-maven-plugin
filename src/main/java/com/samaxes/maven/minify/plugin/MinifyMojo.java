@@ -155,7 +155,7 @@ public class MinifyMojo extends AbstractMojo {
     /**
      * The output filename suffix.
      *
-     * @parameter expression="${suffix}" default-value=".min"
+     * @parameter expression="${suffix}" default-value="min"
      * @since 1.3.2
      */
     private String suffix;

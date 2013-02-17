@@ -29,7 +29,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.SequenceInputStream;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -49,6 +48,8 @@ import com.samaxes.maven.minify.common.ListOfFiles;
  */
 public abstract class ProcessFilesTask implements Callable<Object> {
 
+    public static final String TEMP_SUFFIX = ".tmp";
+
     protected final Log log;
 
     protected final Integer bufferSize;
@@ -65,9 +66,9 @@ public abstract class ProcessFilesTask implements Callable<Object> {
 
     protected final boolean nosuffix;
 
-    private final String mergedFilename;
+    protected final String suffix;
 
-    private final String suffix;
+    private final String mergedFilename;
 
     private final File targetDir;
 
@@ -88,7 +89,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * @param webappSourceDir web resources source directory
      * @param webappTargetDir web resources target directory
      * @param inputDir directory containing source files
-     * @param sourceFiles list of source files to include
+     * @param sourceFilenames list of source files to include
      * @param sourceIncludes list of source files to include
      * @param sourceExcludes list of source files to exclude
      * @param outputDir directory to write the final file
@@ -100,7 +101,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * @param linebreak split long lines after a specific column
      */
     public ProcessFilesTask(Log log, Integer bufferSize, boolean debug, boolean skipMerge, boolean skipMinify,
-            String webappSourceDir, String webappTargetDir, String inputDir, List<String> sourceFiles,
+            String webappSourceDir, String webappTargetDir, String inputDir, List<String> sourceFilenames,
             List<String> sourceIncludes, List<String> sourceExcludes, String outputDir, String outputFilename,
             String suffix, boolean nosuffix, String charset, int linebreak) {
         this.log = log;
@@ -112,10 +113,10 @@ public abstract class ProcessFilesTask implements Callable<Object> {
         this.linebreak = linebreak;
         this.nosuffix = nosuffix;
         this.mergedFilename = outputFilename;
-        this.suffix = suffix;
+        this.suffix = suffix + ".";
 
         File sourceDir = new File(webappSourceDir + File.separator + inputDir);
-        for (String sourceFilename : sourceFiles) {
+        for (String sourceFilename : sourceFilenames) {
             addNewSourceFile(mergedFilename, sourceDir, sourceFilename);
         }
         for (File sourceInclude : getFilesToInclude(sourceDir, sourceIncludes, sourceExcludes)) {
@@ -125,7 +126,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
         }
 
         this.targetDir = new File(webappTargetDir + File.separator + outputDir);
-        this.sourceFilesEmpty = sourceFiles.isEmpty();
+        this.sourceFilesEmpty = sourceFilenames.isEmpty();
         this.sourceIncludesEmpty = sourceIncludes.isEmpty();
     }
 
@@ -138,15 +139,15 @@ public abstract class ProcessFilesTask implements Callable<Object> {
     public Object call() throws IOException {
         synchronized (log) {
             String fileType = (this instanceof ProcessCSSFilesTask) ? "CSS" : "JavaScript";
-            log.info("");
             log.info("Starting " + fileType + " task:");
 
             if (!files.isEmpty() && (targetDir.exists() || targetDir.mkdirs())) {
                 if (skipMerge) {
                     log.info("Skipping the merge step...");
                     for (File mergedFile : files) {
-                        File minifiedFile = new File(targetDir, FileUtils.removeExtension(mergedFile.getName())
-                                + suffix + "." + FileUtils.getExtension(mergedFile.getName()));
+                        File minifiedFile = new File(targetDir, (nosuffix) ? mergedFile.getName()
+                                : FileUtils.basename(mergedFile.getName()) + suffix
+                                        + FileUtils.getExtension(mergedFile.getName()));
                         minify(mergedFile, minifiedFile);
                     }
                 } else if (skipMinify) {
@@ -154,12 +155,16 @@ public abstract class ProcessFilesTask implements Callable<Object> {
                     merge(mergedFile);
                     log.info("Skipping the minify step...");
                 } else {
-                    File mergedFile = new File(targetDir, mergedFilename);
+                    File mergedFile = new File(targetDir, (nosuffix) ? mergedFilename + TEMP_SUFFIX : mergedFilename);
                     merge(mergedFile);
-                    File minifiedFile = new File(targetDir, FileUtils.removeExtension(mergedFilename) + suffix + "."
-                            + FileUtils.getExtension(mergedFilename));
+                    File minifiedFile = new File(targetDir, (nosuffix) ? mergedFilename
+                            : FileUtils.basename(mergedFilename) + suffix + FileUtils.getExtension(mergedFilename));
                     minify(mergedFile, minifiedFile);
+                    if (nosuffix) {
+                        mergedFile.deleteOnExit();
+                    }
                 }
+                log.info("");
             } else if (!sourceFilesEmpty || !sourceIncludesEmpty) {
                 // 'files' list will be empty if source file paths or names added to the project's POM are invalid.
                 log.error("No valid " + fileType + " source files found to process.");
@@ -170,29 +175,27 @@ public abstract class ProcessFilesTask implements Callable<Object> {
     }
 
     /**
-     * Merges files list.
+     * Merges a list of source files.
      *
      * @param mergedFile output file resulting from the merged step
      * @throws IOException when the merge step fails
      */
     protected void merge(File mergedFile) throws IOException {
-        if (mergedFile != null) {
-            try (InputStream sequence = new SequenceInputStream(new ListOfFiles(log, files, debug));
-                    OutputStream out = new FileOutputStream(mergedFile);
-                    InputStreamReader sequenceReader = new InputStreamReader(sequence, charset);
-                    OutputStreamWriter outWriter = new OutputStreamWriter(out, charset)) {
-                log.info("Creating the merged file [" + ((debug) ? mergedFile.getPath() : mergedFile.getName()) + "].");
+        try (InputStream sequence = new SequenceInputStream(new ListOfFiles(log, files, debug));
+                OutputStream out = new FileOutputStream(mergedFile);
+                InputStreamReader sequenceReader = new InputStreamReader(sequence, charset);
+                OutputStreamWriter outWriter = new OutputStreamWriter(out, charset)) {
+            log.info("Creating the merged file [" + ((debug) ? mergedFile.getPath() : mergedFile.getName()) + "].");
 
-                IOUtil.copy(sequenceReader, outWriter, bufferSize);
-            } catch (IOException e) {
-                log.error("Failed to concatenate files.", e);
-                throw e;
-            }
+            IOUtil.copy(sequenceReader, outWriter, bufferSize);
+        } catch (IOException e) {
+            log.error("Failed to concatenate files.", e);
+            throw e;
         }
     }
 
     /**
-     * Minifies source file.
+     * Minifies a source file.
      *
      * @param mergedFile input file resulting from the merged step
      * @param minifiedFile output file resulting from the minify step
@@ -227,29 +230,6 @@ public abstract class ProcessFilesTask implements Callable<Object> {
     }
 
     /**
-     * Cleanup files. Remove merged file is nosuffix parameter was set to true.
-     *
-     * @param mergedFile input file resulting from the merged step
-     * @param minifiedFile output file resulting from the minify step
-     */
-    void cleanupFiles(File mergedFile, File minifiedFile) {
-        if (nosuffix) {
-            String mergedFilename = mergedFile.getName();
-            URI mergedFileURI = mergedFile.toURI();
-
-            if (debug) {
-                log.info("Deleting the file [" + mergedFilename + "].");
-            }
-            mergedFile.delete();
-
-            if (debug) {
-                log.info("Renaming the file [" + minifiedFile.getName() + "] to [" + mergedFilename + "].");
-            }
-            minifiedFile.renameTo(new File(mergedFileURI));
-        }
-    }
-
-    /**
      * Logs an addition of a new source file.
      *
      * @param finalFilename the final file name
@@ -272,12 +252,14 @@ public abstract class ProcessFilesTask implements Callable<Object> {
     private void addNewSourceFile(String finalFilename, File sourceDir, File sourceFile) {
         if (sourceFile.exists()) {
             if (finalFilename.equalsIgnoreCase(sourceFile.getName())) {
-                log.warn("The source file [" + sourceFile.getName() + "] has the same name as the final file.");
+                log.warn("The source file [" + ((debug) ? sourceFile.getPath() : sourceFile.getName())
+                        + "] has the same name as the final file.");
             }
-            log.debug("Adding source file [" + sourceFile.getName() + "].");
+            log.debug("Adding source file [" + ((debug) ? sourceFile.getPath() : sourceFile.getName()) + "].");
             files.add(sourceFile);
         } else {
-            log.warn("The source file [" + sourceFile.getName() + "] does not exist.");
+            log.warn("The source file [" + ((debug) ? sourceFile.getPath() : sourceFile.getName())
+                    + "] does not exist.");
         }
     }
 

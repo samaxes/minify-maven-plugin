@@ -70,7 +70,7 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
     }
 
     /**
-     * Minifies CSS file.
+     * Minifies a CSS file.
      *
      * @param mergedFile input file resulting from the merged step
      * @param minifiedFile output file resulting from the minify step
@@ -78,27 +78,20 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
      */
     @Override
     protected void minify(File mergedFile, File minifiedFile) throws IOException {
-        if (minifiedFile != null) {
-            try (InputStream in = new FileInputStream(mergedFile);
-                    OutputStream out = new FileOutputStream(minifiedFile);
-                    InputStreamReader reader = new InputStreamReader(in, charset);
-                    OutputStreamWriter writer = new OutputStreamWriter(out, charset)) {
-                if (debug) {
-                    log.info("Creating the minified file [" + minifiedFile.getPath() + "].");
-                } else {
-                    File temp = (nosuffix) ? mergedFile : minifiedFile;
-                    log.info("Creating the minified file [" + temp.getName() + "].");
-                }
+        try (InputStream in = new FileInputStream(mergedFile);
+                OutputStream out = new FileOutputStream(minifiedFile);
+                InputStreamReader reader = new InputStreamReader(in, charset);
+                OutputStreamWriter writer = new OutputStreamWriter(out, charset)) {
+            log.info("Creating the minified file [" + ((debug) ? minifiedFile.getPath() : minifiedFile.getName())
+                    + "].");
 
-                CssCompressor compressor = new CssCompressor(reader);
-                compressor.compress(writer, linebreak);
-            } catch (IOException e) {
-                log.error("Failed to compress the CSS file [" + mergedFile.getName() + "].", e);
-                throw e;
-            }
-
-            logCompressionGains(mergedFile, minifiedFile);
-            cleanupFiles(mergedFile, minifiedFile);
+            CssCompressor compressor = new CssCompressor(reader);
+            compressor.compress(writer, linebreak);
+        } catch (IOException e) {
+            log.error("Failed to compress the CSS file [" + mergedFile.getName() + "].", e);
+            throw e;
         }
+
+        logCompressionGains(mergedFile, minifiedFile);
     }
 }
