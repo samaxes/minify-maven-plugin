@@ -38,6 +38,7 @@ import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.CompilerOptions;
 import com.google.javascript.jscomp.SourceFile;
+import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 import com.samaxes.maven.minify.common.JavaScriptErrorReporter;
 import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
 
@@ -56,6 +57,8 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
 
     private final boolean disableOptimizations;
 
+    private final LanguageMode closureLanguageIn;
+    
     /**
      * Task constructor.
      *
@@ -87,7 +90,8 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
             String webappSourceDir, String webappTargetDir, String inputDir, List<String> sourceFiles,
             List<String> sourceIncludes, List<String> sourceExcludes, String outputDir, String outputFilename,
             String suffix, boolean nosuffix, String charset, int linebreak, String jsEngine, boolean munge,
-            boolean verbose, boolean preserveAllSemiColons, boolean disableOptimizations) {
+            boolean verbose, boolean preserveAllSemiColons, boolean disableOptimizations,
+            LanguageMode closureLanguageIn) {
         super(log, bufferSize, debug, skipMerge, skipMinify, webappSourceDir, webappTargetDir, inputDir, sourceFiles,
                 sourceIncludes, sourceExcludes, outputDir, outputFilename, suffix, nosuffix, charset, linebreak);
 
@@ -96,6 +100,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
         this.verbose = verbose;
         this.preserveAllSemiColons = preserveAllSemiColons;
         this.disableOptimizations = disableOptimizations;
+        this.closureLanguageIn = closureLanguageIn;
     }
 
     /**
@@ -120,6 +125,9 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
                 CompilerOptions options = new CompilerOptions();
                 CompilationLevel.SIMPLE_OPTIMIZATIONS.setOptionsForCompilationLevel(options);
                 options.setOutputCharset(charset);
+                if (closureLanguageIn != null) {
+                    options.setLanguageIn(closureLanguageIn);
+                }
 
                 SourceFile input = SourceFile.fromInputStream(mergedFile.getName(), in);
                 List<SourceFile> externs = Collections.emptyList();

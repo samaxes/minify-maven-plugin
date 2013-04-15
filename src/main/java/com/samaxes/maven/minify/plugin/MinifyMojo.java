@@ -20,6 +20,9 @@
  */
 package com.samaxes.maven.minify.plugin;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -28,11 +31,20 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import javax.annotation.Nullable;
+
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.io.Files;
+import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 
 /**
  * Goal for combining and minifying CSS and JavaScript files.
@@ -41,7 +53,25 @@ import com.google.common.base.Strings;
  * @phase process-resources
  */
 public class MinifyMojo extends AbstractMojo {
+    
+    private static final Function<String, String> TRIM_AND_REMOVE_COMMENTS = new Function<String, String>() {
+        @Override
+        public String apply(@Nullable String input) {
+            if (input == null) {
+                return null;
+            } else {
+                String result = input.trim();
+                if (result.startsWith("#")) {
+                    return null;
+                } else {
+                    return Strings.emptyToNull(result);
+                }
+            }
+        }
+    }; 
 
+    private static final Predicate<String> NOT_NULL = Predicates.<String>not(Predicates.<String>isNull());
+    
     /**
      * Webapp source directory.
      *
@@ -78,11 +108,25 @@ public class MinifyMojo extends AbstractMojo {
     private ArrayList<String> cssSourceFiles;
 
     /**
+     *  A file containing a new-line separated list of CSS source file names.
+     *
+     * @parameter expression="${cssSourcesFile}" alias="csssFiles"
+     */
+    private String cssSourcesFile;
+
+    /**
      * JavaScript source filenames list.
      *
      * @parameter expression="${jsSourceFiles}" alias="jsFiles"
      */
     private ArrayList<String> jsSourceFiles;
+    
+    /**
+     * A file containing a new-line separated list of JavaScript source file names.  
+     *
+     * @parameter expression="${jsSourcesFile}" alias="jssFile"
+     */
+    private String jsSourcesFile;
 
     /**
      * CSS files to include. Specified as fileset patterns which are relative to the CSS source directory.
@@ -275,6 +319,13 @@ public class MinifyMojo extends AbstractMojo {
      * @since 1.6
      */
     private String jsEngine;
+    
+    /**
+     * Closure language-in compiler option
+     *
+     * @parameter expression="${closureLanguageIn}"
+     */
+    private LanguageMode closureLanguageIn;
 
     /**
      * Executed when the goal is invoked, it will first invoke a parallel lifecycle, ending at the given phase.
@@ -291,6 +342,12 @@ public class MinifyMojo extends AbstractMojo {
         if (Strings.isNullOrEmpty(jsTargetDir)) {
             jsTargetDir = jsSourceDir;
         }
+        if (!Strings.isNullOrEmpty(jsSourcesFile)) {
+            jsSourceFiles = getFiles(jsSourcesFile);
+        }
+        if (!Strings.isNullOrEmpty(cssSourcesFile)) {
+            cssSourceFiles = getFiles(cssSourcesFile);
+        }
 
         Collection<ProcessFilesTask> processFilesTasks = new ArrayList<ProcessFilesTask>();
         processFilesTasks.add(new ProcessCSSFilesTask(getLog(), bufferSize, debug, skipMerge, skipMinify,
@@ -299,7 +356,7 @@ public class MinifyMojo extends AbstractMojo {
         processFilesTasks.add(new ProcessJSFilesTask(getLog(), bufferSize, debug, skipMerge, skipMinify,
                 webappSourceDir, webappTargetDir, jsSourceDir, jsSourceFiles, jsSourceIncludes, jsSourceExcludes,
                 jsTargetDir, jsFinalFile, suffix, nosuffix, charset, linebreak, jsEngine, !nomunge, verbose,
-                preserveAllSemiColons, disableOptimizations));
+                preserveAllSemiColons, disableOptimizations, closureLanguageIn));
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
         try {
@@ -317,4 +374,15 @@ public class MinifyMojo extends AbstractMojo {
             throw new MojoFailureException(e.getMessage(), e);
         }
     }
+    
+    private ArrayList<String> getFiles(String bundleDescriptor) throws MojoFailureException {
+        try {
+            Iterable<String> files = Files.readLines(new File(bundleDescriptor), Charset.forName(charset));
+            files = Iterables.transform(files, TRIM_AND_REMOVE_COMMENTS);
+            files = Iterables.filter(files, NOT_NULL);
+            return Lists.newArrayList(files);
+        } catch (IOException e) {
+            throw new MojoFailureException(e.getMessage(), e);
+        }
+   }
 }
