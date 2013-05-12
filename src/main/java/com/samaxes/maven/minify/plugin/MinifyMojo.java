@@ -20,8 +20,10 @@
  */
 package com.samaxes.maven.minify.plugin;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -33,6 +35,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 import com.google.common.base.Strings;
+import com.samaxes.maven.minify.plugin.ProcessFilesTask;
 
 /**
  * Goal for combining and minifying CSS and JavaScript files.
@@ -40,7 +43,7 @@ import com.google.common.base.Strings;
  * @goal minify
  * @phase process-resources
  */
-public class MinifyMojo extends AbstractMojo {
+public class MinifyMojo extends AbstractMojo implements Runnable{
 
     /**
      * Webapp source directory.
@@ -277,10 +280,55 @@ public class MinifyMojo extends AbstractMojo {
     private String jsEngine;
 
     /**
+     * Refresh period, in seconds
+     *
+     * @parameter property="refreshPeriod" default-value="5"
+     */
+    private int refreshPeriod = 5;
+
+    private List<File> files = new ArrayList<File>();
+    private Date lastCompiled;
+    
+    public void run() {
+    	while (true) {
+            try {
+                Thread.sleep(1000L * refreshPeriod);
+            } catch (InterruptedException e) {
+                getLog().warn("Sleep interrupted");
+            }
+            if (isModified()) {
+				minify();
+            }
+        }
+    }
+    
+    private boolean isModified() {
+    	if(files == null) {
+    		return false;
+    	}
+    	for(File f : files) {
+		   if (!f.exists()) {
+               continue;
+           }
+           if (f.lastModified() > lastCompiled.getTime()) {
+               return true;
+           }
+    	}
+        return false;
+    }
+    
+    /**
      * Executed when the goal is invoked, it will first invoke a parallel lifecycle, ending at the given phase.
      */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+    	minify();
+        Thread refresh = new Thread(this);
+        refresh.start();
+
+    }
+    
+    private void minify() {
         if (skipMerge && skipMinify) {
             getLog().warn("Both merge and minify steps are configured to be skipped.");
             return;
@@ -291,7 +339,7 @@ public class MinifyMojo extends AbstractMojo {
         if (Strings.isNullOrEmpty(jsTargetDir)) {
             jsTargetDir = jsSourceDir;
         }
-
+        
         Collection<ProcessFilesTask> processFilesTasks = new ArrayList<ProcessFilesTask>();
         processFilesTasks.add(new ProcessCSSFilesTask(getLog(), bufferSize, debug, skipMerge, skipMinify,
                 webappSourceDir, webappTargetDir, cssSourceDir, cssSourceFiles, cssSourceIncludes, cssSourceExcludes,
@@ -301,6 +349,11 @@ public class MinifyMojo extends AbstractMojo {
                 jsTargetDir, jsFinalFile, suffix, nosuffix, charset, linebreak, jsEngine, !nomunge, verbose,
                 preserveAllSemiColons, disableOptimizations));
 
+        files.clear();
+        for(ProcessFilesTask fileTask : processFilesTasks) {
+        	files.addAll(fileTask.getFiles());
+        }
+
         ExecutorService executor = Executors.newFixedThreadPool(2);
         try {
             List<Future<Object>> futures = executor.invokeAll(processFilesTasks);
@@ -308,13 +361,15 @@ public class MinifyMojo extends AbstractMojo {
                 try {
                     future.get();
                 } catch (ExecutionException e) {
-                    throw new MojoFailureException(e.getMessage(), e);
+                    getLog().error(e.getMessage(), e);
                 }
             }
             executor.shutdown();
         } catch (InterruptedException e) {
             executor.shutdownNow();
-            throw new MojoFailureException(e.getMessage(), e);
+            getLog().error(e.getMessage(), e);
         }
+        this.lastCompiled = new Date();
+
     }
 }

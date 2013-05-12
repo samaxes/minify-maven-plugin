@@ -125,7 +125,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
             }
         }
 
-        this.targetDir = new File(webappTargetDir + File.separator + outputDir);
+        this.targetDir = new File(webappSourceDir + File.separator + outputDir);
         this.sourceFilesEmpty = sourceFilenames.isEmpty();
         this.sourceIncludesEmpty = sourceIncludes.isEmpty();
     }
@@ -174,6 +174,10 @@ public abstract class ProcessFilesTask implements Callable<Object> {
         return null;
     }
 
+    public List<File> getFiles() {
+    	return files;
+    }
+    
     /**
      * Merges a list of source files.
      *
@@ -224,6 +228,8 @@ public abstract class ProcessFilesTask implements Callable<Object> {
                     + " bytes gzipped).");
 
             temp.deleteOnExit();
+            //delete merged file as well.
+            mergedFile.delete();
         } catch (IOException e) {
             log.debug("Failed to calculate the gzipped file size.", e);
         }
