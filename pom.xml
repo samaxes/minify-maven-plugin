@@ -4,18 +4,12 @@
 
     <groupId>com.notemyweb.maven</groupId>
     <artifactId>minify-maven-plugin</artifactId>
-    <version>1.7.1-SNAPSHOT</version>
+    <version>1.7.1</version>
     <packaging>maven-plugin</packaging>
 
     <name>Minify Maven Plugin</name>
     <description>Combine and minimize JavaScript and CSS files for faster page loading.</description>
-    <url>https://github.com/samaxes/minify-maven-plugin</url>
-
-    <issueManagement>
-        <system>GitHub</system>
-        <url>https://github.com/samaxes/minify-maven-plugin/issues</url>
-    </issueManagement>
-    
+   
     <scm>
         <connection>scm:git:git://github.com/aravinds03/minify-maven-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:aravinds03/minify-maven-plugin.git</developerConnection>
