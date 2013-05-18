@@ -18,7 +18,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.samaxes.maven.minify.plugin;
+package com.notemyweb.minify.plugin;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 import com.google.common.base.Strings;
-import com.samaxes.maven.minify.plugin.ProcessFilesTask;
+import com.notemyweb.minify.plugin.ProcessFilesTask;
 
 /**
  * Goal for combining and minifying CSS and JavaScript files.

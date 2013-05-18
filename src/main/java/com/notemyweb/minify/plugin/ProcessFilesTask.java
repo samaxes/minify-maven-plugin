@@ -18,7 +18,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.samaxes.maven.minify.plugin;
+package com.notemyweb.minify.plugin;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,8 +40,8 @@ import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 
-import com.samaxes.maven.minify.common.FilenameComparator;
-import com.samaxes.maven.minify.common.ListOfFiles;
+import com.notemyweb.minify.common.FilenameComparator;
+import com.notemyweb.minify.common.ListOfFiles;
 
 /**
  * Abstract class for merging and compressing a files list.

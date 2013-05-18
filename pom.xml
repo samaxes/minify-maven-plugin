@@ -2,13 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>7</version>
-    </parent>
-
-    <groupId>com.samaxes.maven</groupId>
+    <groupId>com.notemyweb.maven</groupId>
     <artifactId>minify-maven-plugin</artifactId>
     <version>1.7.1-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
@@ -16,40 +10,16 @@
     <name>Minify Maven Plugin</name>
     <description>Combine and minimize JavaScript and CSS files for faster page loading.</description>
     <url>https://github.com/samaxes/minify-maven-plugin</url>
-    <inceptionYear>2009</inceptionYear>
-    <organization>
-        <name>samaxes</name>
-        <url>http://www.samaxes.com/</url>
-    </organization>
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <developers>
-        <developer>
-            <id>samaxes</id>
-            <name>Samuel Santos</name>
-            <url>http://www.samaxes.com/</url>
-            <roles>
-                <role>project owner</role>
-                <role>developer</role>
-            </roles>
-            <timezone>0</timezone>
-        </developer>
-    </developers>
 
     <issueManagement>
         <system>GitHub</system>
         <url>https://github.com/samaxes/minify-maven-plugin/issues</url>
     </issueManagement>
+    
     <scm>
-        <connection>scm:git:git://github.com/samaxes/minify-maven-plugin.git</connection>
-        <developerConnection>scm:git:git@github.com:samaxes/minify-maven-plugin.git</developerConnection>
-        <url>https://github.com/samaxes/minify-maven-plugin</url>
+        <connection>scm:git:git://github.com/aravinds03/minify-maven-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:aravinds03/minify-maven-plugin.git</developerConnection>
+        <url>https://github.com/aravinds03/minify-maven-plugin</url>
     </scm>
 
     <prerequisites>
@@ -91,18 +61,6 @@
         </pluginManagement>
 
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-docck-plugin</artifactId>
-                <version>1.0</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -152,21 +110,6 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>3.2</version>
-            </plugin>
-            <plugin>
-                <!-- mvn site ghSite:site -->
-                <groupId>com.github.github</groupId>
-                <artifactId>site-maven-plugin</artifactId>
-                <version>0.7</version>
-                <configuration>
-                    <message>Creating site for ${project.version}</message>
-                    <noJekyll>true</noJekyll>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
             </plugin>
         </plugins>
@@ -193,66 +136,6 @@
         </dependency>
     </dependencies>
 
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.6</version>
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>dependencies</report>
-                            <report>dependency-convergence</report>
-                            <report>dependency-management</report>
-                            <report>issue-tracking</report>
-                            <report>plugin-management</report>
-                            <report>license</report>
-                            <report>plugins</report>
-                            <report>summary</report>
-                            <report>project-team</report>
-                            <report>scm</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9</version>
-                <configuration>
-                    <charset>${project.build.sourceEncoding}</charset>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                    <docencoding>${project.build.sourceEncoding}</docencoding>
-                    <source>${maven.compiler.source}</source>
-                    <linksource>true</linksource>
-                    <quiet>true</quiet>
-                    <links>
-                        <link>http://docs.oracle.com/javaee/5/api/</link>
-                    </links>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jxr-plugin</artifactId>
-                <version>2.3</version>
-                <configuration>
-                    <inputEncoding>${project.build.sourceEncoding}</inputEncoding>
-                    <outputEncoding>${project.build.sourceEncoding}</outputEncoding>
-                    <javadocDir>target/site/apidocs</javadocDir>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-plugin-plugin</artifactId>
-                <version>${maven.plugin.version}</version>
-                <configuration>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                </configuration>
-            </plugin>
-        </plugins>
-    </reporting>
-
     <properties>
         <github.global.server>github</github.global.server>
         <project.build.resourceEncoding>ISO-8859-1</project.build.resourceEncoding>
@@ -260,4 +143,24 @@
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.plugin.version>2.9</maven.plugin.version>
     </properties>
+    
+    <repositories> 
+	    <repository>
+			<id>googlecode.oauth.releases.repo</id>
+			<url>dav:https://oauth-app1.googlecode.com/svn/trunk/mavenrepo/maven-releases/</url>
+		</repository>
+	</repositories>
+    
+    <distributionManagement>
+        <repository>
+			<id>googlecode.oauth.releases.repo</id>
+			<url>dav:https://oauth-app1.googlecode.com/svn/trunk/mavenrepo/maven-releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>googlecode.oauth.snapshot.repo</id>
+			<url>dav:https://oauth-app1.googlecode.com/svn/trunk/mavenrepo/maven-snapshots/</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
+    </distributionManagement>
+    
 </project>
