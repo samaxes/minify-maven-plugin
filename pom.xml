@@ -188,7 +188,7 @@
         <dependency>
             <groupId>com.google.javascript</groupId>
             <artifactId>closure-compiler</artifactId>
-            <version>r2388</version>
+            <version>v20130722</version>
             <optional>true</optional>
         </dependency>
     </dependencies>
@@ -256,8 +256,8 @@
     <properties>
         <github.global.server>github</github.global.server>
         <project.build.resourceEncoding>ISO-8859-1</project.build.resourceEncoding>
-        <maven.compiler.target>1.7</maven.compiler.target>
         <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
         <maven.plugin.version>2.9</maven.plugin.version>
     </properties>
 </project>

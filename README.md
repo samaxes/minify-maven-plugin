@@ -60,4 +60,9 @@ Configure your project's `pom.xml` to run the plugin during the project's build 
 </build>
 ```
 
-For more information, check the plugin [documentation](http://samaxes.github.com/minify-maven-plugin/) and the [demo application](https://github.com/downloads/samaxes/minify-maven-plugin/minify-maven-plugin-demo-1.7-src.zip).
+For more information, check the plugin [documentation](http://samaxes.github.com/minify-maven-plugin/) and the [demo application](https://github.com/downloads/samaxes/minify-maven-plugin/minify-maven-plugin-demo-1.7-src.zip).  
+**Note:** For version 1.7 or greater of Minify Maven Plugin, Java SE 7 is required. If you need to support older versions of Java please use the version 1.6 of this plugin.
+
+## License
+
+This distribution is licensed under the terms of the Apache License, Version 2.0 (see LICENSE.txt).
