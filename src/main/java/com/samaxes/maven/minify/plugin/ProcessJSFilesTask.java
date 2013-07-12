@@ -83,11 +83,11 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      * @param preserveAllSemiColons preserve unnecessary semicolons
      * @param disableOptimizations disable all the built-in micro optimizations
      */
-    public ProcessJSFilesTask(Log log, Integer bufferSize, boolean debug, boolean skipMerge, boolean skipMinify,
-            String webappSourceDir, String webappTargetDir, String inputDir, List<String> sourceFiles,
-            List<String> sourceIncludes, List<String> sourceExcludes, String outputDir, String outputFilename,
-            String suffix, boolean nosuffix, String charset, int linebreak, String jsEngine, boolean munge,
-            boolean verbose, boolean preserveAllSemiColons, boolean disableOptimizations) {
+    public ProcessJSFilesTask(final Log log, final Integer bufferSize, final boolean debug, final boolean skipMerge, final boolean skipMinify,
+            final String webappSourceDir, final String webappTargetDir, final String inputDir, final List<String> sourceFiles,
+            final List<String> sourceIncludes, final List<String> sourceExcludes, final String outputDir, final String outputFilename,
+            final String suffix, final boolean nosuffix, final String charset, final int linebreak, final String jsEngine, final boolean munge,
+            final boolean verbose, final boolean preserveAllSemiColons, final boolean disableOptimizations) {
         super(log, bufferSize, debug, skipMerge, skipMinify, webappSourceDir, webappTargetDir, inputDir, sourceFiles,
                 sourceIncludes, sourceExcludes, outputDir, outputFilename, suffix, nosuffix, charset, linebreak);
 
@@ -106,40 +106,77 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      * @throws IOException when the minify step fails
      */
     @Override
-    protected void minify(File mergedFile, File minifiedFile) throws IOException {
-        try (InputStream in = new FileInputStream(mergedFile);
-                OutputStream out = new FileOutputStream(minifiedFile);
-                InputStreamReader reader = new InputStreamReader(in, charset);
-                OutputStreamWriter writer = new OutputStreamWriter(out, charset)) {
-            log.info("Creating the minified file [" + ((debug) ? minifiedFile.getPath() : minifiedFile.getName())
-                    + "].");
+    protected void minify(final File mergedFile, final File minifiedFile) throws IOException {
+        try
+        {
+            final InputStream in = new FileInputStream(mergedFile);
+            try
+            {
+                final OutputStream out = new FileOutputStream(minifiedFile);
+                try
+                {
+                    final InputStreamReader reader = new InputStreamReader(in, this.charset);
+                    try
+                    {
+                    final OutputStreamWriter writer = new OutputStreamWriter(out, this.charset);
+                        try
+                        {
 
-            if ("closure".equals(jsEngine)) {
-                log.debug("Using Google Closure Compiler engine.");
+                            this.log.info("Creating the minified file [" + ((this.debug) ? minifiedFile.getPath() : minifiedFile.getName())
+                                    + "].");
 
-                CompilerOptions options = new CompilerOptions();
-                CompilationLevel.SIMPLE_OPTIMIZATIONS.setOptionsForCompilationLevel(options);
-                options.setOutputCharset(charset);
+                            if ("closure".equals(this.jsEngine))
+                            {
+                                this.log.debug("Using Google Closure Compiler engine.");
 
-                SourceFile input = SourceFile.fromInputStream(mergedFile.getName(), in);
-                List<SourceFile> externs = Collections.emptyList();
+                                final CompilerOptions options = new CompilerOptions();
+                                CompilationLevel.SIMPLE_OPTIMIZATIONS.setOptionsForCompilationLevel(options);
+                                options.setOutputCharset(this.charset);
 
-                Compiler compiler = new Compiler();
-                compiler.compile(externs, Arrays.asList(new SourceFile[] { input }), options);
+                                final SourceFile input = SourceFile.fromInputStream(mergedFile.getName(), in);
+                                final List<SourceFile> externs = Collections.emptyList();
 
-                writer.append(compiler.toSource());
-            } else {
-                log.debug("Using YUI Compressor engine.");
+                                final Compiler compiler = new Compiler();
+                                compiler.compile(externs, Arrays.asList(new SourceFile[] { input }), options);
 
-                JavaScriptCompressor compressor = new JavaScriptCompressor(reader, new JavaScriptErrorReporter(log,
-                        mergedFile.getName()));
-                compressor.compress(writer, linebreak, munge, verbose, preserveAllSemiColons, disableOptimizations);
+                                writer.append(compiler.toSource());
+                            }
+                            else
+                            {
+                                this.log.debug("Using YUI Compressor engine.");
+
+                                final JavaScriptCompressor compressor = new JavaScriptCompressor(reader, new JavaScriptErrorReporter(
+                                        this.log, mergedFile.getName()));
+                                compressor.compress(writer, this.linebreak, this.munge, this.verbose, this.preserveAllSemiColons,
+                                        this.disableOptimizations);
+                            }
+                        }
+                        finally
+                        {
+                            writer.close();
+                        }
+                    }
+                    finally
+                    {
+                        reader.close();
+                    }
+                }
+                finally
+                {
+                    // may already be closed but make sure
+                    out.close();
+                }
             }
-        } catch (IOException e) {
-            log.error("Failed to compress the JavaScript file [" + mergedFile.getName() + "].", e);
+            finally
+            {
+                // may already be closed but make sure
+                in.close();
+            }
+        } catch (final IOException e) {
+            this.log.error("Failed to compress the JavaScript file [" + mergedFile.getName() + "].", e);
             throw e;
         }
 
-        logCompressionGains(mergedFile, minifiedFile);
+        this.logCompressionGains(mergedFile, minifiedFile);
     }
 }
