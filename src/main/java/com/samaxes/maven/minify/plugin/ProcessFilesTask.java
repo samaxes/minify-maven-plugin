@@ -213,46 +213,13 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * @throws IOException when the merge step fails
      */
     protected void merge(final File mergedFile) throws IOException {
-        try
-        {
-            final InputStream sequence = new SequenceInputStream(new ListOfFiles(this.log, this.files, this.debug));
-            try
-            {
-                final OutputStream out = new FileOutputStream(mergedFile);
-                try
-                {
-                    final InputStreamReader sequenceReader = new InputStreamReader(sequence, this.charset);
-                    try
-                    {
-                        final OutputStreamWriter outWriter = new OutputStreamWriter(out, this.charset);
-                        try
-                        {
-                            this.log.info("Creating the merged file [" + ((this.debug) ? mergedFile.getPath() : mergedFile.getName())
-                                    + "].");
+        try (InputStream sequence = new SequenceInputStream(new ListOfFiles(this.log, this.files, this.debug));
+                OutputStream out = new FileOutputStream(mergedFile);
+                InputStreamReader sequenceReader = new InputStreamReader(sequence, this.charset);
+                OutputStreamWriter outWriter = new OutputStreamWriter(out, this.charset)) {
+            this.log.info("Creating the merged file [" + ((this.debug) ? mergedFile.getPath() : mergedFile.getName()) + "].");
 
-                            IOUtil.copy(sequenceReader, outWriter, this.bufferSize);
-                        }
-                        finally
-                        {
-                            outWriter.close();
-                        }
-                    }
-                    finally
-                    {
-                        sequenceReader.close();
-                    }
-                }
-                finally
-                {
-                    // may already be closed but make sure
-                    out.close();
-                }
-            }
-            finally
-            {
-                // may already be closed but make sure
-                sequence.close();
-            }
+            IOUtil.copy(sequenceReader, outWriter, this.bufferSize);
         } catch (final IOException e) {
             this.log.error("Failed to concatenate files.", e);
             throw e;
@@ -278,31 +245,10 @@ public abstract class ProcessFilesTask implements Callable<Object> {
         try {
             final File temp = File.createTempFile(minifiedFile.getName(), ".gz");
 
-            final InputStream in = new FileInputStream(minifiedFile);
-            try
-            {
-                final OutputStream out = new FileOutputStream(temp);
-                try
-                {
-                    final GZIPOutputStream outGZIP = new GZIPOutputStream(out);
-                    try
-                    {
-                        IOUtil.copy(in, outGZIP, this.bufferSize);
-                    }
-                    finally
-                    {
-                        outGZIP.close();
-                    }
-                }
-                finally
-                {
-                    // may already be closed but make sure
-                    out.close();
-                }
-            }
-            finally
-            {
-                in.close();
+            try (InputStream in = new FileInputStream(minifiedFile);
+                    OutputStream out = new FileOutputStream(temp);
+                    GZIPOutputStream outGZIP = new GZIPOutputStream(out)) {
+                IOUtil.copy(in, outGZIP, this.bufferSize);
             }
 
             this.log.info("Uncompressed size: " + mergedFile.length() + " bytes.");

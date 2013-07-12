@@ -61,10 +61,10 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
      *        Otherwise, only byte-to-byte operations are used
      * @param linebreak split long lines after a specific column
      */
-    public ProcessCSSFilesTask(final Log log, final Integer bufferSize, final boolean debug, final boolean skipMerge, final boolean skipMinify,
-            final String webappSourceDir, final String webappTargetDir, final String inputDir, final List<String> sourceFiles,
-            final List<String> sourceIncludes, final List<String> sourceExcludes, final String outputDir, final String outputFilename,
-            final String suffix, final boolean nosuffix, final String charset, final int linebreak) {
+    public ProcessCSSFilesTask(Log log, Integer bufferSize, boolean debug, boolean skipMerge, boolean skipMinify,
+            String webappSourceDir, String webappTargetDir, String inputDir, List<String> sourceFiles,
+            List<String> sourceIncludes, List<String> sourceExcludes, String outputDir, String outputFilename,
+            String suffix, boolean nosuffix, String charset, int linebreak) {
         super(log, bufferSize, debug, skipMerge, skipMinify, webappSourceDir, webappTargetDir, inputDir, sourceFiles,
                 sourceIncludes, sourceExcludes, outputDir, outputFilename, suffix, nosuffix, charset, linebreak);
     }
@@ -77,53 +77,21 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
      * @throws IOException when the minify step fails
      */
     @Override
-    protected void minify(final File mergedFile, final File minifiedFile) throws IOException {
-        try
-        {
-            final InputStream in = new FileInputStream(mergedFile);
-            try
-            {
-                final OutputStream out = new FileOutputStream(minifiedFile);
-                try
-                {
-                    final InputStreamReader reader = new InputStreamReader(in, this.charset);
-                    try
-                    {
-                    final OutputStreamWriter writer = new OutputStreamWriter(out, this.charset);
-                        try
-                        {
-                            this.log.info("Creating the minified file [" + ((this.debug) ? minifiedFile.getPath() : minifiedFile.getName())
-                                    + "].");
+    protected void minify(File mergedFile, File minifiedFile) throws IOException {
+        try (InputStream in = new FileInputStream(mergedFile);
+                OutputStream out = new FileOutputStream(minifiedFile);
+                InputStreamReader reader = new InputStreamReader(in, charset);
+                OutputStreamWriter writer = new OutputStreamWriter(out, charset)) {
+            log.info("Creating the minified file [" + ((debug) ? minifiedFile.getPath() : minifiedFile.getName())
+                    + "].");
 
-                            final CssCompressor compressor = new CssCompressor(reader);
-                            compressor.compress(writer, this.linebreak);
-                        }
-                        finally
-                        {
-                            writer.close();
-                        }
-                    }
-                    finally
-                    {
-                        reader.close();
-                    }
-                }
-                finally
-                {
-                    // may already be closed but make sure
-                    out.close();
-                }
-            }
-            finally
-            {
-                // may already be closed but make sure
-                in.close();
-            }
-        } catch (final IOException e) {
-            this.log.error("Failed to compress the CSS file [" + mergedFile.getName() + "].", e);
+            CssCompressor compressor = new CssCompressor(reader);
+            compressor.compress(writer, linebreak);
+        } catch (IOException e) {
+            log.error("Failed to compress the CSS file [" + mergedFile.getName() + "].", e);
             throw e;
         }
 
-        this.logCompressionGains(mergedFile, minifiedFile);
+        logCompressionGains(mergedFile, minifiedFile);
     }
 }

@@ -271,9 +271,9 @@
 
     <properties>
         <github.global.server>github</github.global.server>
-        <project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
-        <maven.compiler.source>1.6</maven.compiler.source>
-        <maven.compiler.target>1.6</maven.compiler.target>
+        <project.build.resourceEncoding>ISO-8859-1</project.build.resourceEncoding>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
         <maven.plugin.version>2.9</maven.plugin.version>
     </properties>
 </project>
