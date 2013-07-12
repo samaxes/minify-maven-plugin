@@ -154,8 +154,8 @@ public class MinifyMojo extends AbstractMojo {
 
     /**
      * The output filename suffix.
-     *
-     * @parameter expression="${suffix}" default-value="min"
+     * 
+     * @parameter expression="${suffix}" default-value=".min"
      * @since 1.3.2
      */
     private String suffix;
@@ -281,38 +281,38 @@ public class MinifyMojo extends AbstractMojo {
      */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        if (skipMerge && skipMinify) {
-            getLog().warn("Both merge and minify steps are configured to be skipped.");
+        if (this.skipMerge && this.skipMinify) {
+            this.getLog().warn("Both merge and minify steps are configured to be skipped.");
             return;
         }
-        if (Strings.isNullOrEmpty(cssTargetDir)) {
-            cssTargetDir = cssSourceDir;
+        if (Strings.isNullOrEmpty(this.cssTargetDir)) {
+            this.cssTargetDir = this.cssSourceDir;
         }
-        if (Strings.isNullOrEmpty(jsTargetDir)) {
-            jsTargetDir = jsSourceDir;
+        if (Strings.isNullOrEmpty(this.jsTargetDir)) {
+            this.jsTargetDir = this.jsSourceDir;
         }
 
-        Collection<ProcessFilesTask> processFilesTasks = new ArrayList<ProcessFilesTask>();
-        processFilesTasks.add(new ProcessCSSFilesTask(getLog(), bufferSize, debug, skipMerge, skipMinify,
-                webappSourceDir, webappTargetDir, cssSourceDir, cssSourceFiles, cssSourceIncludes, cssSourceExcludes,
-                cssTargetDir, cssFinalFile, suffix, nosuffix, charset, linebreak));
-        processFilesTasks.add(new ProcessJSFilesTask(getLog(), bufferSize, debug, skipMerge, skipMinify,
-                webappSourceDir, webappTargetDir, jsSourceDir, jsSourceFiles, jsSourceIncludes, jsSourceExcludes,
-                jsTargetDir, jsFinalFile, suffix, nosuffix, charset, linebreak, jsEngine, !nomunge, verbose,
-                preserveAllSemiColons, disableOptimizations));
+        final Collection<ProcessFilesTask> processFilesTasks = new ArrayList<ProcessFilesTask>();
+        processFilesTasks.add(new ProcessCSSFilesTask(this.getLog(), this.bufferSize, this.debug, this.skipMerge, this.skipMinify,
+                this.webappSourceDir, this.webappTargetDir, this.cssSourceDir, this.cssSourceFiles, this.cssSourceIncludes, this.cssSourceExcludes,
+                this.cssTargetDir, this.cssFinalFile, this.suffix, this.nosuffix, this.charset, this.linebreak));
+        processFilesTasks.add(new ProcessJSFilesTask(this.getLog(), this.bufferSize, this.debug, this.skipMerge, this.skipMinify,
+                this.webappSourceDir, this.webappTargetDir, this.jsSourceDir, this.jsSourceFiles, this.jsSourceIncludes, this.jsSourceExcludes,
+                this.jsTargetDir, this.jsFinalFile, this.suffix, this.nosuffix, this.charset, this.linebreak, this.jsEngine, !this.nomunge, this.verbose,
+                this.preserveAllSemiColons, this.disableOptimizations));
 
-        ExecutorService executor = Executors.newFixedThreadPool(2);
+        final ExecutorService executor = Executors.newFixedThreadPool(2);
         try {
-            List<Future<Object>> futures = executor.invokeAll(processFilesTasks);
-            for (Future<Object> future : futures) {
+            final List<Future<Object>> futures = executor.invokeAll(processFilesTasks);
+            for (final Future<Object> future : futures) {
                 try {
                     future.get();
-                } catch (ExecutionException e) {
+                } catch (final ExecutionException e) {
                     throw new MojoFailureException(e.getMessage(), e);
                 }
             }
             executor.shutdown();
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             executor.shutdownNow();
             throw new MojoFailureException(e.getMessage(), e);
         }
