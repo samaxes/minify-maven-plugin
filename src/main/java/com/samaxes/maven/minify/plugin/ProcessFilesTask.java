@@ -70,8 +70,6 @@ public abstract class ProcessFilesTask implements Callable<Object> {
 
     private final String mergedFilename;
 
-    private final File sourceDir;
-
     private final File targetDir;
 
     private final boolean sourceFilesEmpty;
@@ -102,10 +100,10 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      *        Otherwise, only byte-to-byte operations are used
      * @param linebreak split long lines after a specific column
      */
-    public ProcessFilesTask(final Log log, final Integer bufferSize, final boolean debug, final boolean skipMerge, final boolean skipMinify,
-            final String webappSourceDir, final String webappTargetDir, final String inputDir, final List<String> sourceFilenames,
-            final List<String> sourceIncludes, final List<String> sourceExcludes, final String outputDir, final String outputFilename,
-            final String suffix, final boolean nosuffix, final String charset, final int linebreak) {
+    public ProcessFilesTask(Log log, Integer bufferSize, boolean debug, boolean skipMerge, boolean skipMinify,
+            String webappSourceDir, String webappTargetDir, String inputDir, List<String> sourceFilenames,
+            List<String> sourceIncludes, List<String> sourceExcludes, String outputDir, String outputFilename,
+            String suffix, boolean nosuffix, String charset, int linebreak) {
         this.log = log;
         this.bufferSize = bufferSize;
         this.debug = debug;
@@ -115,16 +113,15 @@ public abstract class ProcessFilesTask implements Callable<Object> {
         this.linebreak = linebreak;
         this.nosuffix = nosuffix;
         this.mergedFilename = outputFilename;
-        this.suffix = suffix;
+        this.suffix = suffix + ".";
 
-        this.sourceDir = new File(webappSourceDir + File.separator + inputDir);
-        for (final String sourceFilename : sourceFilenames) {
-            this.addNewSourceFile(this.mergedFilename, sourceFilename);
+        File sourceDir = new File(webappSourceDir + File.separator + inputDir);
+        for (String sourceFilename : sourceFilenames) {
+            addNewSourceFile(mergedFilename, sourceDir, sourceFilename);
         }
-        for (final File sourceInclude : this.getFilesToInclude(sourceIncludes, sourceExcludes))
-        {
-            if (!this.files.contains(sourceInclude)) {
-                this.addNewSourceFile(this.mergedFilename, sourceInclude);
+        for (File sourceInclude : getFilesToInclude(sourceDir, sourceIncludes, sourceExcludes)) {
+            if (!files.contains(sourceInclude)) {
+                addNewSourceFile(mergedFilename, sourceDir, sourceInclude);
             }
         }
 
@@ -140,66 +137,37 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      */
     @Override
     public Object call() throws IOException {
-        synchronized (this.log) {
-            final String fileType = (this instanceof ProcessCSSFilesTask) ? "CSS" : "JavaScript";
-            this.log.info("Starting " + fileType + " task:");
+        synchronized (log) {
+            String fileType = (this instanceof ProcessCSSFilesTask) ? "CSS" : "JavaScript";
+            log.info("Starting " + fileType + " task:");
 
-            if (!this.files.isEmpty() && (this.targetDir.exists() || this.targetDir.mkdirs())) {
-                if (this.skipMerge) {
-
-                    this.log.info("Skipping the merge step...");
-                    final String sourceBasePath = this.sourceDir.getAbsolutePath();
-
-                    for (final File mergedFile : this.files) {
-
-                        final String originalPath = mergedFile.getAbsolutePath();
-                        final String subDirectory = originalPath.substring(sourceBasePath.length(),
-                                originalPath.lastIndexOf(File.separator));
-
-                        final File targetDir = new File(this.targetDir.getAbsolutePath() + subDirectory);
-                        targetDir.mkdirs();
-
-                        String extension = FileUtils.getExtension(mergedFile.getName());
-                        if (extension.length() > 0)
-                        {
-                            // need to manually add the dot which is explicitly not returned
-                            extension = "." + extension;
-                        }
-                        final String targetFileName = (this.nosuffix) ? mergedFile.getName() : (FileUtils.removeExtension(FileUtils
-                                .filename(mergedFile.getName())) + this.suffix + extension);
-                        final File minifiedFile = new File(targetDir, targetFileName);
-
-                        this.minify(mergedFile, minifiedFile);
+            if (!files.isEmpty() && (targetDir.exists() || targetDir.mkdirs())) {
+                if (skipMerge) {
+                    log.info("Skipping the merge step...");
+                    for (File mergedFile : files) {
+                        File minifiedFile = new File(targetDir, (nosuffix) ? mergedFile.getName()
+                                : FileUtils.basename(mergedFile.getName()) + suffix
+                                        + FileUtils.getExtension(mergedFile.getName()));
+                        minify(mergedFile, minifiedFile);
                     }
-                } else if (this.skipMinify) {
-
-                    final File mergedFile = new File(this.targetDir, this.mergedFilename);
-                    this.merge(mergedFile);
-                    this.log.info("Skipping the minify step...");
-
+                } else if (skipMinify) {
+                    File mergedFile = new File(targetDir, mergedFilename);
+                    merge(mergedFile);
+                    log.info("Skipping the minify step...");
                 } else {
-
-                    final File mergedFile = new File(this.targetDir, (this.nosuffix) ? this.mergedFilename + TEMP_SUFFIX : this.mergedFilename);
-                    this.merge(mergedFile);
-
-                    String extension = FileUtils.getExtension(this.mergedFilename);
-                    if (extension.length() > 0)
-                    {
-                        // need to manually add the dot which is explicitly not returned
-                        extension = "." + extension;
-                    }
-                    final File minifiedFile = new File(this.targetDir, (this.nosuffix) ? this.mergedFilename
-                            : FileUtils.removeExtension(this.mergedFilename) + this.suffix + extension);
-                    this.minify(mergedFile, minifiedFile);
-
-                    if (this.nosuffix) {
+                    File mergedFile = new File(targetDir, (nosuffix) ? mergedFilename + TEMP_SUFFIX : mergedFilename);
+                    merge(mergedFile);
+                    File minifiedFile = new File(targetDir, (nosuffix) ? mergedFilename
+                            : FileUtils.basename(mergedFilename) + suffix + FileUtils.getExtension(mergedFilename));
+                    minify(mergedFile, minifiedFile);
+                    if (nosuffix) {
                         mergedFile.deleteOnExit();
                     }
                 }
-                this.log.info("Completed  " + fileType + " task");
-            } else if (!this.sourceFilesEmpty || !this.sourceIncludesEmpty) {
+                log.info("");
+            } else if (!sourceFilesEmpty || !sourceIncludesEmpty) {
                 // 'files' list will be empty if source file paths or names added to the project's POM are invalid.
-                this.log.error("No valid " + fileType + " source files found to process.");
+                log.error("No valid " + fileType + " source files found to process.");
             }
         }
 
@@ -212,49 +180,16 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * @param mergedFile output file resulting from the merged step
      * @throws IOException when the merge step fails
      */
-    protected void merge(final File mergedFile) throws IOException {
-        try
-        {
-            final InputStream sequence = new SequenceInputStream(new ListOfFiles(this.log, this.files, this.debug));
-            try
-            {
-                final OutputStream out = new FileOutputStream(mergedFile);
-                try
-                {
-                    final InputStreamReader sequenceReader = new InputStreamReader(sequence, this.charset);
-                    try
-                    {
-                        final OutputStreamWriter outWriter = new OutputStreamWriter(out, this.charset);
-                        try
-                        {
-                            this.log.info("Creating the merged file [" + ((this.debug) ? mergedFile.getPath() : mergedFile.getName())
-                                    + "].");
+    protected void merge(File mergedFile) throws IOException {
+        try (InputStream sequence = new SequenceInputStream(new ListOfFiles(log, files, debug));
+                OutputStream out = new FileOutputStream(mergedFile);
+                InputStreamReader sequenceReader = new InputStreamReader(sequence, charset);
+                OutputStreamWriter outWriter = new OutputStreamWriter(out, charset)) {
+            log.info("Creating the merged file [" + ((debug) ? mergedFile.getPath() : mergedFile.getName()) + "].");
 
-                            IOUtil.copy(sequenceReader, outWriter, this.bufferSize);
-                        }
-                        finally
-                        {
-                            outWriter.close();
-                        }
-                    }
-                    finally
-                    {
-                        sequenceReader.close();
-                    }
-                }
-                finally
-                {
-                    // may already be closed but make sure
-                    out.close();
-                }
-            }
-            finally
-            {
-                // may already be closed but make sure
-                sequence.close();
-            }
-        } catch (final IOException e) {
-            this.log.error("Failed to concatenate files.", e);
+            IOUtil.copy(sequenceReader, outWriter, bufferSize);
+        } catch (IOException e) {
+            log.error("Failed to concatenate files.", e);
             throw e;
         }
     }
@@ -274,44 +209,23 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * @param mergedFile input file resulting from the merged step
      * @param minifiedFile output file resulting from the minify step
      */
-    void logCompressionGains(final File mergedFile, final File minifiedFile) {
+    void logCompressionGains(File mergedFile, File minifiedFile) {
         try {
-            final File temp = File.createTempFile(minifiedFile.getName(), ".gz");
+            File temp = File.createTempFile(minifiedFile.getName(), ".gz");
 
-            final InputStream in = new FileInputStream(minifiedFile);
-            try
-            {
-                final OutputStream out = new FileOutputStream(temp);
-                try
-                {
-                    final GZIPOutputStream outGZIP = new GZIPOutputStream(out);
-                    try
-                    {
-                        IOUtil.copy(in, outGZIP, this.bufferSize);
-                    }
-                    finally
-                    {
-                        outGZIP.close();
-                    }
-                }
-                finally
-                {
-                    // may already be closed but make sure
-                    out.close();
-                }
-            }
-            finally
-            {
-                in.close();
+            try (InputStream in = new FileInputStream(minifiedFile);
+                    OutputStream out = new FileOutputStream(temp);
+                    GZIPOutputStream outGZIP = new GZIPOutputStream(out)) {
+                IOUtil.copy(in, outGZIP, bufferSize);
             }
 
-            this.log.info("Uncompressed size: " + mergedFile.length() + " bytes.");
-            this.log.info("Compressed size: " + minifiedFile.length() + " bytes minified (" + temp.length()
+            log.info("Uncompressed size: " + mergedFile.length() + " bytes.");
+            log.info("Compressed size: " + minifiedFile.length() + " bytes minified (" + temp.length()
                     + " bytes gzipped).");
 
             temp.deleteOnExit();
-        } catch (final IOException e) {
-            this.log.debug("Failed to calculate the gzipped file size.", e);
+        } catch (IOException e) {
+            log.debug("Failed to calculate the gzipped file size.", e);
         }
     }
 
@@ -322,11 +236,10 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * @param sourceDir the sources directory
      * @param sourceFilename the source file name
      */
-    private void addNewSourceFile(final String finalFilename, final String sourceFilename)
-    {
-        final File sourceFile = new File(this.sourceDir, sourceFilename);
+    private void addNewSourceFile(String finalFilename, File sourceDir, String sourceFilename) {
+        File sourceFile = new File(sourceDir, sourceFilename);
 
-        this.addNewSourceFile(finalFilename, sourceFile);
+        addNewSourceFile(finalFilename, sourceDir, sourceFile);
     }
 
     /**
@@ -336,17 +249,16 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * @param sourceDir the sources directory
      * @param sourceFile the source file
      */
-    private void addNewSourceFile(final String finalFilename, final File sourceFile)
-    {
+    private void addNewSourceFile(String finalFilename, File sourceDir, File sourceFile) {
         if (sourceFile.exists()) {
             if (finalFilename.equalsIgnoreCase(sourceFile.getName())) {
-                this.log.warn("The source file [" + ((this.debug) ? sourceFile.getPath() : sourceFile.getName())
+                log.warn("The source file [" + ((debug) ? sourceFile.getPath() : sourceFile.getName())
                         + "] has the same name as the final file.");
             }
-            this.log.debug("Adding source file [" + ((this.debug) ? sourceFile.getPath() : sourceFile.getName()) + "].");
-            this.files.add(sourceFile);
+            log.debug("Adding source file [" + ((debug) ? sourceFile.getPath() : sourceFile.getName()) + "].");
+            files.add(sourceFile);
         } else {
-            this.log.warn("The source file [" + ((this.debug) ? sourceFile.getPath() : sourceFile.getName())
+            log.warn("The source file [" + ((debug) ? sourceFile.getPath() : sourceFile.getName())
                     + "] does not exist.");
         }
     }
@@ -359,21 +271,20 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * @param excludes list of source files to exclude
      * @return the files to copy
      */
-    private List<File> getFilesToInclude(final List<String> includes, final List<String> excludes)
-    {
-        final List<File> includedFiles = new ArrayList<File>();
+    private List<File> getFilesToInclude(File baseDir, List<String> includes, List<String> excludes) {
+        List<File> includedFiles = new ArrayList<File>();
 
         if (includes != null && !includes.isEmpty()) {
-            final DirectoryScanner scanner = new DirectoryScanner();
+            DirectoryScanner scanner = new DirectoryScanner();
 
             scanner.setIncludes(includes.toArray(new String[0]));
             scanner.setExcludes(excludes.toArray(new String[0]));
             scanner.addDefaultExcludes();
-            scanner.setBasedir(this.sourceDir);
+            scanner.setBasedir(baseDir);
             scanner.scan();
 
-            for (final String includedFilename : scanner.getIncludedFiles()) {
-                includedFiles.add(new File(this.sourceDir, includedFilename));
+            for (String includedFilename : scanner.getIncludedFiles()) {
+                includedFiles.add(new File(baseDir, includedFilename));
             }
 
             Collections.sort(includedFiles, new FilenameComparator());

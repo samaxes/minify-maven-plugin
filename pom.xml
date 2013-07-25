@@ -51,22 +51,6 @@
         <developerConnection>scm:git:git@github.com:samaxes/minify-maven-plugin.git</developerConnection>
         <url>https://github.com/samaxes/minify-maven-plugin</url>
     </scm>
-    
-    <distributionManagement>
-
-        <repository>
-            <id>${distribution.repo.release.id}</id>
-            <name>${distribution.repo.release.name}</name>
-            <url>${distribution.repo.release.url}</url>
-        </repository>
-
-        <snapshotRepository>
-            <id>${distribution.repo.snapshot.id}</id>
-            <name>${distribution.repo.snapshot.name}</name>
-            <url>${distribution.repo.snapshot.url}</url>
-        </snapshotRepository>
-
-    </distributionManagement>
 
     <prerequisites>
         <maven>2.2.1</maven>
@@ -271,9 +255,9 @@
 
     <properties>
         <github.global.server>github</github.global.server>
-        <project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
-        <maven.compiler.source>1.6</maven.compiler.source>
-        <maven.compiler.target>1.6</maven.compiler.target>
+        <project.build.resourceEncoding>ISO-8859-1</project.build.resourceEncoding>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
         <maven.plugin.version>2.9</maven.plugin.version>
     </properties>
 </project>
