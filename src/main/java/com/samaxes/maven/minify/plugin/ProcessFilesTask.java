@@ -70,6 +70,8 @@ public abstract class ProcessFilesTask implements Callable<Object> {
 
     private final String mergedFilename;
 
+    private final File sourceDir;
+
     private final File targetDir;
 
     private final boolean sourceFilesEmpty;
@@ -115,13 +117,13 @@ public abstract class ProcessFilesTask implements Callable<Object> {
         this.mergedFilename = outputFilename;
         this.suffix = suffix + ".";
 
-        File sourceDir = new File(webappSourceDir + File.separator + inputDir);
+        this.sourceDir = new File(webappSourceDir + File.separator + inputDir);
         for (String sourceFilename : sourceFilenames) {
-            addNewSourceFile(mergedFilename, sourceDir, sourceFilename);
+            addNewSourceFile(mergedFilename, sourceFilename);
         }
-        for (File sourceInclude : getFilesToInclude(sourceDir, sourceIncludes, sourceExcludes)) {
+        for (File sourceInclude : getFilesToInclude(sourceIncludes, sourceExcludes)) {
             if (!files.contains(sourceInclude)) {
-                addNewSourceFile(mergedFilename, sourceDir, sourceInclude);
+                addNewSourceFile(mergedFilename, sourceInclude);
             }
         }
 
@@ -144,8 +146,17 @@ public abstract class ProcessFilesTask implements Callable<Object> {
             if (!files.isEmpty() && (targetDir.exists() || targetDir.mkdirs())) {
                 if (skipMerge) {
                     log.info("Skipping the merge step...");
+                    String sourceBasePath = sourceDir.getAbsolutePath();
+
                     for (File mergedFile : files) {
-                        File minifiedFile = new File(targetDir, (nosuffix) ? mergedFile.getName()
+                        // Create folders to preserve sub-directory structure when only minifying
+                        String originalPath = mergedFile.getAbsolutePath();
+                        String subPath = originalPath.substring(sourceBasePath.length(),
+                                originalPath.lastIndexOf(File.separator));
+                        File targetPath = new File(targetDir.getAbsolutePath() + subPath);
+                        targetPath.mkdirs();
+
+                        File minifiedFile = new File(targetPath, (nosuffix) ? mergedFile.getName()
                                 : FileUtils.basename(mergedFile.getName()) + suffix
                                         + FileUtils.getExtension(mergedFile.getName()));
                         minify(mergedFile, minifiedFile);
@@ -233,23 +244,21 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * Logs an addition of a new source file.
      *
      * @param finalFilename the final file name
-     * @param sourceDir the sources directory
      * @param sourceFilename the source file name
      */
-    private void addNewSourceFile(String finalFilename, File sourceDir, String sourceFilename) {
+    private void addNewSourceFile(String finalFilename, String sourceFilename) {
         File sourceFile = new File(sourceDir, sourceFilename);
 
-        addNewSourceFile(finalFilename, sourceDir, sourceFile);
+        addNewSourceFile(finalFilename, sourceFile);
     }
 
     /**
      * Logs an addition of a new source file.
      *
      * @param finalFilename the final file name
-     * @param sourceDir the sources directory
      * @param sourceFile the source file
      */
-    private void addNewSourceFile(String finalFilename, File sourceDir, File sourceFile) {
+    private void addNewSourceFile(String finalFilename, File sourceFile) {
         if (sourceFile.exists()) {
             if (finalFilename.equalsIgnoreCase(sourceFile.getName())) {
                 log.warn("The source file [" + ((debug) ? sourceFile.getPath() : sourceFile.getName())
@@ -266,12 +275,11 @@ public abstract class ProcessFilesTask implements Callable<Object> {
     /**
      * Returns the files to copy. Default exclusions are used when the excludes list is empty.
      *
-     * @param baseDir the base directory to start from
      * @param includes list of source files to include
      * @param excludes list of source files to exclude
      * @return the files to copy
      */
-    private List<File> getFilesToInclude(File baseDir, List<String> includes, List<String> excludes) {
+    private List<File> getFilesToInclude(List<String> includes, List<String> excludes) {
         List<File> includedFiles = new ArrayList<File>();
 
         if (includes != null && !includes.isEmpty()) {
@@ -280,11 +288,11 @@ public abstract class ProcessFilesTask implements Callable<Object> {
             scanner.setIncludes(includes.toArray(new String[0]));
             scanner.setExcludes(excludes.toArray(new String[0]));
             scanner.addDefaultExcludes();
-            scanner.setBasedir(baseDir);
+            scanner.setBasedir(sourceDir);
             scanner.scan();
 
             for (String includedFilename : scanner.getIncludedFiles()) {
-                includedFiles.add(new File(baseDir, includedFilename));
+                includedFiles.add(new File(sourceDir, includedFilename));
             }
 
             Collections.sort(includedFiles, new FilenameComparator());
