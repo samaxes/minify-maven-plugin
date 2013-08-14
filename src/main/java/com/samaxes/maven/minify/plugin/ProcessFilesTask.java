@@ -172,7 +172,9 @@ public abstract class ProcessFilesTask implements Callable<Object> {
                             : FileUtils.basename(mergedFilename) + suffix + FileUtils.getExtension(mergedFilename));
                     minify(mergedFile, minifiedFile);
                     if (nosuffix) {
-                        mergedFile.deleteOnExit();
+                        if (!mergedFile.delete()) {
+                            mergedFile.deleteOnExit();
+                        }
                     }
                 }
                 log.info("");
