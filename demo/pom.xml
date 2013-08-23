@@ -7,7 +7,7 @@
 
     <groupId>com.samaxes.maven</groupId>
     <artifactId>minify-maven-plugin-demo</artifactId>
-    <version>1.6</version>
+    <version>1.6.1</version>
     <packaging>war</packaging>
 
     <name>Minify Maven Plugin Demo</name>
@@ -74,7 +74,7 @@
             <plugin>
                 <groupId>com.samaxes.maven</groupId>
                 <artifactId>minify-maven-plugin</artifactId>
-                <version>1.6</version>
+                <version>1.6.1</version>
                 <executions>
                     <execution>
                         <id>default-minify</id>
@@ -90,7 +90,7 @@
                             </cssSourceFiles>
                             <jsSourceFiles>
                                 <jsSourceFile>samaxesjs.core.js</jsSourceFile>
-                                <jsSourceFile>samaxesjs.toc.js</jsSourceFile>
+                                <jsSourceFile>ext/samaxesjs.toc.js</jsSourceFile>
                             </jsSourceFiles>
                         </configuration>
                         <goals>
