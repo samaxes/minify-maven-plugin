@@ -89,7 +89,7 @@
                             </cssSourceFiles>
                             <jsSourceFiles>
                                 <jsSourceFile>samaxesjs.core.js</jsSourceFile>
-                                <jsSourceFile>samaxesjs.toc.js</jsSourceFile>
+                                <jsSourceFile>ext/samaxesjs.toc.js</jsSourceFile>
                             </jsSourceFiles>
                         </configuration>
                         <goals>
