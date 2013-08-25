@@ -3,6 +3,7 @@
 ## 1.7.1
 
 * Update Google Closure Compiler to v20130722.
+* Preserve sub-directory structure when only minifying (#29).
 
 ## 1.7
 
@@ -12,6 +13,10 @@
 * Add `UTF-8` as the default charset.
 * Log compression gains.
 * Require Java SE 7 for better resource management. See [AutoCloseable](http://docs.oracle.com/javase/7/docs/api/java/lang/AutoCloseable.html) interface and [try-with-resources](http://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html) statements.
+
+## 1.6.1
+
+* Preserve sub-directory structure when only minifying (#29).
 
 ## 1.6
 
