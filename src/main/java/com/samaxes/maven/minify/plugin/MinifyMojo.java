@@ -31,142 +31,129 @@ import java.util.concurrent.Future;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 
 import com.google.common.base.Strings;
 
 /**
  * Goal for combining and minifying CSS and JavaScript files.
- *
- * @goal minify
- * @phase process-resources
  */
+@Mojo(name = "minify", defaultPhase = LifecyclePhase.PROCESS_RESOURCES, threadSafe = true)
 public class MinifyMojo extends AbstractMojo {
 
     /**
      * Webapp source directory.
-     *
-     * @parameter expression="${webappSourceDir}" default-value="${basedir}/src/main/webapp"
      */
+    @Parameter(property = "webappSourceDir", defaultValue = "${basedir}/src/main/webapp")
     private String webappSourceDir;
 
     /**
      * Webapp target directory.
-     *
-     * @parameter expression="${webappTargetDir}" default-value="${project.build.directory}/${project.build.finalName}"
      */
+    @Parameter(property = "webappTargetDir", defaultValue = "${project.build.directory}/${project.build.finalName}")
     private String webappTargetDir;
 
     /**
      * CSS source directory.
-     *
-     * @parameter expression="${cssSourceDir}" default-value="css"
      */
+    @Parameter(property = "cssSourceDir", defaultValue = "css")
     private String cssSourceDir;
 
     /**
      * JavaScript source directory.
-     *
-     * @parameter expression="${jsSourceDir}" default-value="js"
      */
+    @Parameter(property = "jsSourceDir", defaultValue = "js")
     private String jsSourceDir;
 
     /**
      * CSS source filenames list.
-     *
-     * @parameter expression="${cssSourceFiles}" alias="cssFiles"
      */
+    @Parameter(property = "cssSourceFiles", alias = "cssFiles")
     private ArrayList<String> cssSourceFiles;
 
     /**
      * JavaScript source filenames list.
-     *
-     * @parameter expression="${jsSourceFiles}" alias="jsFiles"
      */
+    @Parameter(property = "jsSourceFiles", alias = "jsFiles")
     private ArrayList<String> jsSourceFiles;
 
     /**
      * CSS files to include. Specified as fileset patterns which are relative to the CSS source directory.
      *
-     * @parameter expression="${cssSourceIncludes}" alias="cssIncludes"
      * @since 1.2
      */
+    @Parameter(property = "cssSourceIncludes", alias = "cssIncludes")
     private ArrayList<String> cssSourceIncludes;
 
     /**
      * JavaScript files to include. Specified as fileset patterns which are relative to the JavaScript source directory.
      *
-     * @parameter expression="${jsSourceIncludes}" alias="jsIncludes"
      * @since 1.2
      */
+    @Parameter(property = "jsSourceIncludes", alias = "jsIncludes")
     private ArrayList<String> jsSourceIncludes;
 
     /**
      * CSS files to exclude. Specified as fileset patterns which are relative to the CSS source directory.
      *
-     * @parameter expression="${cssSourceExcludes}" alias="cssExcludes"
      * @since 1.2
      */
+    @Parameter(property = "cssSourceExcludes", alias = "cssExcludes")
     private ArrayList<String> cssSourceExcludes;
 
     /**
      * JavaScript files to exclude. Specified as fileset patterns which are relative to the JavaScript source directory.
      *
-     * @parameter expression="${jsSourceExcludes}" alias="jsExcludes"
      * @since 1.2
      */
+    @Parameter(property = "jsSourceExcludes", alias = "jsExcludes")
     private ArrayList<String> jsSourceExcludes;
 
     /**
-     * CSS target directory.
-     * <p>
-     * Takes the same value as <code>cssSourceDir</code> when empty.
-     * </p>
+     * CSS target directory. Takes the same value as <code>cssSourceDir</code> when empty.
      *
-     * @parameter expression="${cssTargetDir}"
      * @since 1.3.2
      */
+    @Parameter(property = "cssTargetDir")
     private String cssTargetDir;
 
     /**
-     * JavaScript target directory.
-     * <p>
-     * Takes the same value as <code>jsSourceDir</code> when empty.
-     * </p>
+     * JavaScript target directory. Takes the same value as <code>jsSourceDir</code> when empty.
      *
-     * @parameter expression="${jsTargetDir}"
      * @since 1.3.2
      */
+    @Parameter(property = "jsTargetDir")
     private String jsTargetDir;
 
     /**
      * CSS output filename.
-     *
-     * @parameter expression="${cssFinalFile}" default-value="style.css"
      */
+    @Parameter(property = "cssFinalFile", defaultValue = "style.css")
     private String cssFinalFile;
 
     /**
      * JavaScript output filename.
-     *
-     * @parameter expression="${jsFinalFile}" default-value="script.js"
      */
+    @Parameter(property = "jsFinalFile", defaultValue = "script.js")
     private String jsFinalFile;
 
     /**
      * The output filename suffix.
      *
-     * @parameter expression="${suffix}" default-value="min"
      * @since 1.3.2
      */
+    @Parameter(property = "suffix", defaultValue = "min")
     private String suffix;
 
     /**
      * Do not append a suffix to the minified output filename, independently of the value in the <code>suffix</code>
      * parameter.
      *
-     * @parameter expression="${nosuffix}" default-value="false"
      * @since 1.7
      */
+    @Parameter(property = "nosuffix", defaultValue = "false")
     private boolean nosuffix;
 
     /**
@@ -179,9 +166,9 @@ public class MinifyMojo extends AbstractMojo {
      * encoding types.
      * </p>
      *
-     * @parameter expression="${charset}" default-value="UTF-8"
      * @since 1.3.2
      */
+    @Parameter(property = "charset", defaultValue = "UTF-8")
     private String charset;
 
     /**
@@ -189,73 +176,67 @@ public class MinifyMojo extends AbstractMojo {
      * option is used in that case to split long lines after a specific column. It can also be used to make the code
      * more readable, easier to debug (especially with the MS Script Debugger). Specify 0 to get a line break after each
      * semi-colon in JavaScript, and after each rule in CSS. Specify -1 to disallow line breaks.
-     *
-     * @parameter expression="${linebreak}" default-value="-1"
      */
+    @Parameter(property = "linebreak", defaultValue = "-1")
     private int linebreak;
 
     /**
      * JAVASCRIPT ONLY OPTION!<br/>
      * Minify only. Do not obfuscate local symbols.
-     *
-     * @parameter expression="${munge}" default-value="false"
      */
+    @Parameter(property = "munge", defaultValue = "false")
     private boolean nomunge;
 
     /**
      * JAVASCRIPT ONLY OPTION!<br/>
      * Display informational messages and warnings.
-     *
-     * @parameter expression="${verbose}" default-value="false"
      */
+    @Parameter(property = "verbose", defaultValue = "false")
     private boolean verbose;
 
     /**
      * JAVASCRIPT ONLY OPTION!<br/>
      * Preserve unnecessary semicolons (such as right before a '}'). This option is useful when compressed code has to
      * be run through JSLint (which is the case of YUI for example).
-     *
-     * @parameter expression="${preserveAllSemiColons}" default-value="false"
      */
+    @Parameter(property = "preserveAllSemiColons", defaultValue = "false")
     private boolean preserveAllSemiColons;
 
     /**
      * JAVASCRIPT ONLY OPTION!<br/>
      * Disable all the built-in micro optimizations.
-     *
-     * @parameter expression="${disableOptimizations}" default-value="false"
      */
+    @Parameter(property = "disableOptimizations", defaultValue = "false")
     private boolean disableOptimizations;
 
     /**
      * Size of the buffer used to read source files.
-     *
-     * @parameter expression="${bufferSize}" default-value="4096"
      */
+    @Parameter(property = "bufferSize", defaultValue = "4096")
     private int bufferSize;
 
     /**
      * Show source file paths in log output.
      *
-     * @parameter expression="${debug}" default-value="false"
      * @since 1.5.2
      */
+    @Parameter(property = "debug", defaultValue = "false")
     private boolean debug;
 
     /**
      * Skip the merge step. Minification will be applied to each source file individually.
      *
-     * @parameter expression="${skipMerge}" default-value="false"
      * @since 1.5.2
      */
+    @Parameter(property = "skipMerge", defaultValue = "false")
     private boolean skipMerge;
 
     /**
      * Skip the minify step. Useful when merging files that are already minified.
      *
-     * @parameter expression="${skipMinify}" default-value="false"
      * @since 1.5.2
      */
+    @Parameter(property = "skipMinify", defaultValue = "false")
     private boolean skipMinify;
 
     /**
@@ -271,9 +252,9 @@ public class MinifyMojo extends AbstractMojo {
      * <li><code>closure</code> - <a href="https://developers.google.com/closure/compiler/">Google Closure Compiler</a></li>
      * </ul>
      *
-     * @parameter expression="${jsEngine}" default-value="yui"
      * @since 1.6
      */
+    @Parameter(property = "jsEngine", defaultValue = "yui")
     private String jsEngine;
 
     /**

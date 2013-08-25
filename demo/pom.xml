@@ -18,19 +18,19 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.6</version>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
                 <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.0</version>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
                 <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
@@ -45,22 +45,9 @@
                 </configuration>
             </plugin>
             <plugin>
-                <!-- mvn assembly:single ghDownloads:upload -->
-                <groupId>com.github.github</groupId>
-                <artifactId>downloads-maven-plugin</artifactId>
-                <version>0.6</version>
-                <configuration>
-                    <description>Demo for release ${project.version} of Minify Maven Plugin</description>
-                    <includes>
-                        <includes>${project.artifactId}-${project.version}-src.zip</includes>
-                    </includes>
-                    <override>true</override>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.3</version>
+                <version>2.4</version>
                 <configuration>
                     <warSourceExcludes>**/reset.css,**/fonts.css,**/base.css,**/toc.css,**/samaxesjs.core.js,**/samaxesjs.toc.js</warSourceExcludes>
                     <archive>
@@ -78,7 +65,6 @@
                 <executions>
                     <execution>
                         <id>default-minify</id>
-                        <phase>process-resources</phase>
                         <configuration>
                             <jsEngine>closure</jsEngine>
                             <cssSourceFiles>
@@ -102,7 +88,6 @@
     </build>
 
     <properties>
-        <github.global.server>github</github.global.server>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.resourceEncoding>ISO-8859-1</project.build.resourceEncoding>
         <maven.compiler.source>1.5</maven.compiler.source>

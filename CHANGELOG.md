@@ -4,6 +4,8 @@
 
 * Update Google Closure Compiler to v20130722.
 * Preserve sub-directory structure when only minifying (#29).
+* Delete transient .tmp file on spot in case of nosuffix = true (#32).
+* Use annotations to generate the plugin descriptor file.
 
 ## 1.7
 
