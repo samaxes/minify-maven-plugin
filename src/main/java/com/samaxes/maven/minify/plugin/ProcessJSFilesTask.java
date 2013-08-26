@@ -1,6 +1,4 @@
 /*
- * $Id$
- *
  * Minify Maven Plugin
  * https://github.com/samaxes/minify-maven-plugin
  *
@@ -46,8 +44,6 @@ import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
  */
 public class ProcessJSFilesTask extends ProcessFilesTask {
 
-    private final String jsEngine;
-
     private final boolean munge;
 
     private final boolean verbose;
@@ -84,14 +80,14 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      * @param disableOptimizations disable all the built-in micro optimizations
      */
     public ProcessJSFilesTask(Log log, Integer bufferSize, boolean debug, boolean skipMerge, boolean skipMinify,
-            String webappSourceDir, String webappTargetDir, String inputDir, List<String> sourceFiles,
+            String jsEngine, String webappSourceDir, String webappTargetDir, String inputDir, List<String> sourceFiles,
             List<String> sourceIncludes, List<String> sourceExcludes, String outputDir, String outputFilename,
-            String suffix, boolean nosuffix, String charset, int linebreak, String jsEngine, boolean munge,
-            boolean verbose, boolean preserveAllSemiColons, boolean disableOptimizations) {
-        super(log, bufferSize, debug, skipMerge, skipMinify, webappSourceDir, webappTargetDir, inputDir, sourceFiles,
-                sourceIncludes, sourceExcludes, outputDir, outputFilename, suffix, nosuffix, charset, linebreak);
+            String suffix, boolean nosuffix, String charset, int linebreak, boolean munge, boolean verbose,
+            boolean preserveAllSemiColons, boolean disableOptimizations) {
+        super(log, bufferSize, debug, skipMerge, skipMinify, jsEngine, webappSourceDir, webappTargetDir, inputDir,
+                sourceFiles, sourceIncludes, sourceExcludes, outputDir, outputFilename, suffix, nosuffix, charset,
+                linebreak);
 
-        this.jsEngine = jsEngine;
         this.munge = munge;
         this.verbose = verbose;
         this.preserveAllSemiColons = preserveAllSemiColons;
@@ -114,7 +110,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
             log.info("Creating the minified file [" + ((debug) ? minifiedFile.getPath() : minifiedFile.getName())
                     + "].");
 
-            if ("closure".equals(jsEngine)) {
+            if ("closure".equals(engine)) {
                 log.debug("Using Google Closure Compiler engine.");
 
                 CompilerOptions options = new CompilerOptions();
@@ -128,12 +124,14 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
                 compiler.compile(externs, Arrays.asList(new SourceFile[] { input }), options);
 
                 writer.append(compiler.toSource());
-            } else {
+            } else if ("yui".equals(engine)) {
                 log.debug("Using YUI Compressor engine.");
 
                 JavaScriptCompressor compressor = new JavaScriptCompressor(reader, new JavaScriptErrorReporter(log,
                         mergedFile.getName()));
                 compressor.compress(writer, linebreak, munge, verbose, preserveAllSemiColons, disableOptimizations);
+            } else {
+                log.warn("JavaScript engine not supported.");
             }
         } catch (IOException e) {
             log.error("Failed to compress the JavaScript file [" + mergedFile.getName() + "].", e);

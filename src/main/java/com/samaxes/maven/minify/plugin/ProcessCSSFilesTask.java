@@ -1,6 +1,4 @@
 /*
- * $Id$
- *
  * Minify Maven Plugin
  * https://github.com/samaxes/minify-maven-plugin
  *
@@ -47,6 +45,7 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
      * @param debug show source file paths in log output
      * @param skipMerge whether to skip the merge step or not
      * @param skipMinify whether to skip the minify step or not
+     * @param cssEngine minify processor engine selected
      * @param webappSourceDir web resources source directory
      * @param webappTargetDir web resources target directory
      * @param inputDir directory containing source files
@@ -62,11 +61,12 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
      * @param linebreak split long lines after a specific column
      */
     public ProcessCSSFilesTask(Log log, Integer bufferSize, boolean debug, boolean skipMerge, boolean skipMinify,
-            String webappSourceDir, String webappTargetDir, String inputDir, List<String> sourceFiles,
-            List<String> sourceIncludes, List<String> sourceExcludes, String outputDir, String outputFilename,
-            String suffix, boolean nosuffix, String charset, int linebreak) {
-        super(log, bufferSize, debug, skipMerge, skipMinify, webappSourceDir, webappTargetDir, inputDir, sourceFiles,
-                sourceIncludes, sourceExcludes, outputDir, outputFilename, suffix, nosuffix, charset, linebreak);
+            String cssEngine, String webappSourceDir, String webappTargetDir, String inputDir,
+            List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes, String outputDir,
+            String outputFilename, String suffix, boolean nosuffix, String charset, int linebreak) {
+        super(log, bufferSize, debug, skipMerge, skipMinify, cssEngine, webappSourceDir, webappTargetDir, inputDir,
+                sourceFiles, sourceIncludes, sourceExcludes, outputDir, outputFilename, suffix, nosuffix, charset,
+                linebreak);
     }
 
     /**
@@ -85,8 +85,14 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
             log.info("Creating the minified file [" + ((debug) ? minifiedFile.getPath() : minifiedFile.getName())
                     + "].");
 
-            CssCompressor compressor = new CssCompressor(reader);
-            compressor.compress(writer, linebreak);
+            if ("yui".equals(engine)) {
+                log.debug("Using YUI Compressor engine.");
+
+                CssCompressor compressor = new CssCompressor(reader);
+                compressor.compress(writer, linebreak);
+            } else {
+                log.warn("CSS engine not supported.");
+            }
         } catch (IOException e) {
             log.error("Failed to compress the CSS file [" + mergedFile.getName() + "].", e);
             throw e;

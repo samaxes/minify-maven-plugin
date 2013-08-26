@@ -1,6 +1,4 @@
 /*
- * $Id$
- *
  * Minify Maven Plugin
  * https://github.com/samaxes/minify-maven-plugin
  *

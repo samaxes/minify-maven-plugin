@@ -1,6 +1,4 @@
 /*
- * $Id$
- *
  * Minify Maven Plugin
  * https://github.com/samaxes/minify-maven-plugin
  *
@@ -60,6 +58,8 @@ public abstract class ProcessFilesTask implements Callable<Object> {
 
     protected final boolean skipMinify;
 
+    protected final String engine;
+
     protected final String charset;
 
     protected final int linebreak;
@@ -88,6 +88,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * @param debug show source file paths in log output
      * @param skipMerge whether to skip the merge step or not
      * @param skipMinify whether to skip the minify step or not
+     * @param engine minify processor engine selected
      * @param webappSourceDir web resources source directory
      * @param webappTargetDir web resources target directory
      * @param inputDir directory containing source files
@@ -103,14 +104,15 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * @param linebreak split long lines after a specific column
      */
     public ProcessFilesTask(Log log, Integer bufferSize, boolean debug, boolean skipMerge, boolean skipMinify,
-            String webappSourceDir, String webappTargetDir, String inputDir, List<String> sourceFilenames,
-            List<String> sourceIncludes, List<String> sourceExcludes, String outputDir, String outputFilename,
-            String suffix, boolean nosuffix, String charset, int linebreak) {
+            String engine, String webappSourceDir, String webappTargetDir, String inputDir,
+            List<String> sourceFilenames, List<String> sourceIncludes, List<String> sourceExcludes, String outputDir,
+            String outputFilename, String suffix, boolean nosuffix, String charset, int linebreak) {
         this.log = log;
         this.bufferSize = bufferSize;
         this.debug = debug;
         this.skipMerge = skipMerge;
         this.skipMinify = skipMinify;
+        this.engine = engine;
         this.charset = charset;
         this.linebreak = linebreak;
         this.nosuffix = nosuffix;
