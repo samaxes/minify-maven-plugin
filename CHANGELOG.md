@@ -87,7 +87,7 @@
 ## 1.3
 
 * Change exclude/include patterns from a comma separated `String` to `List<String>`. Also included a custom file comparator that only compares the file name instead of the full file path.
-* Update [YUI Compressor](http://developer.yahoo.com/yui/compressor/) dependency to version 2.4.2.
+* Update [YUI Compressor](http://yui.github.com/yuicompressor/) dependency to version 2.4.2.
 
 ## 1.2.1
 

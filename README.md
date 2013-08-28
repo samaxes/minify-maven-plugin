@@ -1,6 +1,6 @@
 # Minify Maven Plugin
 
-Minify Maven Plugin combines and minimizes JavaScript and CSS files using [YUI Compressor](http://developer.yahoo.com/yui/compressor/) for faster page loading. Optionally the [Google Closure Compiler](https://developers.google.com/closure/compiler/) can be used to minimize JavaScript files.
+Minify Maven Plugin combines and minimizes JavaScript and CSS files using [YUI Compressor](http://yui.github.com/yuicompressor/) for faster page loading. Optionally the [Google Closure Compiler](https://developers.google.com/closure/compiler/) can be used to minimize JavaScript files.
 
 ## Benefits
 
@@ -12,7 +12,7 @@ Minify Maven Plugin combines and minimizes JavaScript and CSS files using [YUI C
 
 ### Compress JavaScript and CSS
 
-> Minification/compression is the practice of removing unnecessary characters from code to reduce its size thereby improving load times. A JavaScript compressor, in addition to removing comments and white-spaces, obfuscates local variables using the smallest possible variable name. This improves response time performance because the size of the downloaded file is reduced. Some popular tools for minifying JavaScript code are [UglifyJS](http://lisperator.net/uglifyjs/), [Closure Compiler](https://developers.google.com/closure/compiler/) and [YUI Compressor](http://developer.yahoo.com/yui/compressor/). The YUI Compressor is also able to safely compress CSS files.
+> Minification/compression is the practice of removing unnecessary characters from code to reduce its size thereby improving load times. A JavaScript compressor, in addition to removing comments and white-spaces, obfuscates local variables using the smallest possible variable name. This improves response time performance because the size of the downloaded file is reduced. Some popular tools for minifying JavaScript code are [UglifyJS](http://lisperator.net/uglifyjs/), [Closure Compiler](https://developers.google.com/closure/compiler/) and [YUI Compressor](http://yui.github.com/yuicompressor/). The YUI Compressor is also able to safely compress CSS files.
 
 ## Usage & Information
 
