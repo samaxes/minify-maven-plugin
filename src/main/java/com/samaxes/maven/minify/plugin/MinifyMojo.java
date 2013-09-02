@@ -205,7 +205,7 @@ public class MinifyMojo extends AbstractMojo {
      *
      * @since 1.3.2
      */
-    @Parameter(property = "charset", defaultValue = "UTF-8")
+    @Parameter(property = "charset", defaultValue = "${project.build.sourceEncoding}")
     private String charset;
 
     /**

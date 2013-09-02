@@ -1,5 +1,9 @@
 # Minify Maven Plugin
 
+## 1.7.2
+
+* Update default `charset` value to `${project.build.sourceEncoding}`.
+
 ## 1.7.1
 
 * Update Google Closure Compiler to v20130722.
