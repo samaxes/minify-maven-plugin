@@ -3,6 +3,8 @@
 ## 1.7.2
 
 * Update default `charset` value to `${project.build.sourceEncoding}`.
+* Deprecate the option `debug`. `verbose` should be used instead.
+* Change YUI option names to clearly indicate that they are specific to YUI Compressor.
 
 ## 1.7.1
 

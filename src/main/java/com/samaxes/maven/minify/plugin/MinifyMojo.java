@@ -182,22 +182,6 @@ public class MinifyMojo extends AbstractMojo {
     private boolean nosuffix;
 
     /**
-     * Skip the merge step. Minification will be applied to each source file individually.
-     *
-     * @since 1.5.2
-     */
-    @Parameter(property = "skipMerge", defaultValue = "false")
-    private boolean skipMerge;
-
-    /**
-     * Skip the minify step. Useful when merging files that are already minified.
-     *
-     * @since 1.5.2
-     */
-    @Parameter(property = "skipMinify", defaultValue = "false")
-    private boolean skipMinify;
-
-    /**
      * If a supported character set is specified, it will be used to read the input file. Otherwise, it will assume that
      * the platform's default character set is being used. The output file is encoded using the same character set.<br/>
      * See the <a href="http://www.iana.org/assignments/character-sets">IANA Charset Registry</a> for a list of valid
@@ -218,50 +202,111 @@ public class MinifyMojo extends AbstractMojo {
      * Show source file paths in log output.
      *
      * @since 1.5.2
+     * @deprecated Use {@link #verbose} instead.
      */
-    @Parameter(property = "debug", defaultValue = "false")
-    private boolean debug;
+    @Deprecated
+    @Parameter(property = "debug")
+    private Boolean debug;
+
+    /**
+     * Display additional informational messages and warnings.
+     */
+    @Parameter(property = "verbose", defaultValue = "false")
+    private boolean verbose;
+
+    /**
+     * Skip the merge step. Minification will be applied to each source file individually.
+     *
+     * @since 1.5.2
+     */
+    @Parameter(property = "skipMerge", defaultValue = "false")
+    private boolean skipMerge;
+
+    /**
+     * Skip the minify step. Useful when merging files that are already minified.
+     *
+     * @since 1.5.2
+     */
+    @Parameter(property = "skipMinify", defaultValue = "false")
+    private boolean skipMinify;
 
     /* YUI Compressor Only Options */
 
     /**
      * Some source control tools don't like files containing lines longer than, say 8000 characters. The linebreak
      * option is used in that case to split long lines after a specific column. It can also be used to make the code
-     * more readable, easier to debug (especially with the MS Script Debugger). Specify 0 to get a line break after each
-     * semi-colon in JavaScript, and after each rule in CSS. Specify -1 to disallow line breaks.<br/>
+     * more readable and easier to debug. Specify {@code 0} to get a line break after each semi-colon in JavaScript, and
+     * after each rule in CSS. Specify {@code -1} to disallow line breaks.<br/>
+     * <strong>Supported engine is</strong>: YUI Compressor [ Global Option ]
+     *
+     * @deprecated Use {@link #yuiLinebreak} instead.
+     */
+    @Deprecated
+    @Parameter(property = "linebreak")
+    private Integer linebreak;
+
+    /**
+     * Some source control tools don't like files containing lines longer than, say 8000 characters. The linebreak
+     * option is used in that case to split long lines after a specific column. It can also be used to make the code
+     * more readable and easier to debug. Specify {@code 0} to get a line break after each semi-colon in JavaScript, and
+     * after each rule in CSS. Specify {@code -1} to disallow line breaks.<br/>
      * <strong>Supported engine is</strong>: YUI Compressor [ Global Option ]
      */
-    @Parameter(property = "linebreak", defaultValue = "-1")
-    private int linebreak;
+    @Parameter(property = "yuiLinebreak", defaultValue = "-1")
+    private int yuiLinebreak;
+
+    /**
+     * Minify only. Do not obfuscate local symbols.<br/>
+     * <strong>Supported engine is</strong>: YUI Compressor [ JavaScript Only Option ]
+     *
+     * @deprecated Use {@link #yuiMunge} instead.
+     */
+    @Deprecated
+    @Parameter(property = "munge")
+    private Boolean munge;
 
     /**
      * Minify only. Do not obfuscate local symbols.<br/>
      * <strong>Supported engine is</strong>: YUI Compressor [ JavaScript Only Option ]
      */
-    @Parameter(property = "munge", defaultValue = "false")
-    private boolean nomunge;
-
-    /**
-     * Display informational messages and warnings.<br/>
-     * <strong>Supported engine is</strong>: YUI Compressor [ JavaScript Only Option ]
-     */
-    @Parameter(property = "verbose", defaultValue = "false")
-    private boolean verbose;
+    @Parameter(property = "yuiMunge", defaultValue = "true")
+    private boolean yuiMunge;
 
     /**
      * Preserve unnecessary semicolons (such as right before a '}'). This option is useful when compressed code has to
-     * be run through JSLint (which is the case of YUI for example).<br/>
+     * be run through JSLint.<br/>
      * <strong>Supported engine is</strong>: YUI Compressor [ JavaScript Only Option ]
+     *
+     * @deprecated Use {@link #yuiPreserveAllSemiColons} instead.
      */
-    @Parameter(property = "preserveAllSemiColons", defaultValue = "false")
-    private boolean preserveAllSemiColons;
+    @Deprecated
+    @Parameter(property = "preserveAllSemiColons")
+    private Boolean preserveAllSemiColons;
 
     /**
-     * Disable all the built-in micro optimizations.<br/>
+     * Preserve unnecessary semicolons (such as right before a '}'). This option is useful when compressed code has to
+     * be run through JSLint.<br/>
      * <strong>Supported engine is</strong>: YUI Compressor [ JavaScript Only Option ]
      */
-    @Parameter(property = "disableOptimizations", defaultValue = "false")
-    private boolean disableOptimizations;
+    @Parameter(property = "yuiPreserveAllSemiColons", defaultValue = "false")
+    private boolean yuiPreserveAllSemiColons;
+
+    /**
+     * Disable all the built-in micro-optimizations.<br/>
+     * <strong>Supported engine is</strong>: YUI Compressor [ JavaScript Only Option ]
+     *
+     * @deprecated Use {@link #yuiDisableOptimizations} instead.
+     */
+    @Deprecated
+    @Parameter(property = "disableOptimizations")
+    private Boolean disableOptimizations;
+
+    /**
+     * Disable all the built-in micro-optimizations.<br/>
+     * <strong>Supported engine is</strong>: YUI Compressor [ JavaScript Only Option ]
+     */
+    @Parameter(property = "yuiDisableOptimizations", defaultValue = "false")
+    private boolean yuiDisableOptimizations;
 
     /* Google Closure Compiler Only Options */
 
@@ -272,6 +317,8 @@ public class MinifyMojo extends AbstractMojo {
      */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        checkDeprecatedOptions();
+
         if (skipMerge && skipMinify) {
             getLog().warn("Both merge and minify steps are configured to be skipped.");
             return;
@@ -289,8 +336,8 @@ public class MinifyMojo extends AbstractMojo {
                 cssTargetDir, cssFinalFile, suffix, nosuffix, charset, linebreak));
         processFilesTasks.add(new ProcessJSFilesTask(getLog(), bufferSize, debug, skipMerge, skipMinify, jsEngine,
                 webappSourceDir, webappTargetDir, jsSourceDir, jsSourceFiles, jsSourceIncludes, jsSourceExcludes,
-                jsTargetDir, jsFinalFile, suffix, nosuffix, charset, linebreak, !nomunge, verbose,
-                preserveAllSemiColons, disableOptimizations));
+                jsTargetDir, jsFinalFile, suffix, nosuffix, charset, linebreak, munge, verbose, preserveAllSemiColons,
+                disableOptimizations));
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
         try {
@@ -306,6 +353,39 @@ public class MinifyMojo extends AbstractMojo {
         } catch (InterruptedException e) {
             executor.shutdownNow();
             throw new MojoFailureException(e.getMessage(), e);
+        }
+    }
+
+    private void checkDeprecatedOptions() {
+        if (debug == null) {
+            debug = verbose;
+        } else {
+            getLog().warn(
+                    "The option 'debug' is deprecated and will be removed on the next version. Use 'verbose' instead.");
+        }
+        if (linebreak == null) {
+            linebreak = yuiLinebreak;
+        } else {
+            getLog().warn(
+                    "The option 'linebreak' is deprecated and will be removed on the next version. Use 'yuiLinebreak' instead.");
+        }
+        if (munge == null) {
+            munge = yuiMunge;
+        } else {
+            getLog().warn(
+                    "The option 'munge' is deprecated and will be removed on the next version. Use 'yuiMunge' instead.");
+        }
+        if (preserveAllSemiColons == null) {
+            preserveAllSemiColons = yuiPreserveAllSemiColons;
+        } else {
+            getLog().warn(
+                    "The option 'preserveAllSemiColons' is deprecated and will be removed on the next version. Use 'yuiPreserveAllSemiColons' instead.");
+        }
+        if (disableOptimizations == null) {
+            disableOptimizations = yuiDisableOptimizations;
+        } else {
+            getLog().warn(
+                    "The option 'disableOptimizations' is deprecated and will be removed on the next version. Use 'yuiDisableOptimizations' instead.");
         }
     }
 }
