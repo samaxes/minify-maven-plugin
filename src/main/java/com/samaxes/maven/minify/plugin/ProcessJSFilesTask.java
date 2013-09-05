@@ -35,6 +35,7 @@ import org.apache.maven.plugin.logging.Log;
 import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.CompilerOptions;
+import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 import com.google.javascript.jscomp.SourceFile;
 import com.samaxes.maven.minify.common.JavaScriptErrorReporter;
 import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
@@ -51,6 +52,8 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
     private final boolean preserveAllSemiColons;
 
     private final boolean disableOptimizations;
+
+    private final LanguageMode closureLanguageIn;
 
     /**
      * Task constructor.
@@ -78,12 +81,13 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      * @param verbose display informational messages and warnings
      * @param preserveAllSemiColons preserve unnecessary semicolons
      * @param disableOptimizations disable all the built-in micro optimizations
+     * @param disableOptimizations disable all the built-in micro optimizations
      */
     public ProcessJSFilesTask(Log log, Integer bufferSize, boolean debug, boolean skipMerge, boolean skipMinify,
             String jsEngine, String webappSourceDir, String webappTargetDir, String inputDir, List<String> sourceFiles,
             List<String> sourceIncludes, List<String> sourceExcludes, String outputDir, String outputFilename,
             String suffix, boolean nosuffix, String charset, int linebreak, boolean munge, boolean verbose,
-            boolean preserveAllSemiColons, boolean disableOptimizations) {
+            boolean preserveAllSemiColons, boolean disableOptimizations, LanguageMode closureLanguageIn) {
         super(log, bufferSize, debug, skipMerge, skipMinify, jsEngine, webappSourceDir, webappTargetDir, inputDir,
                 sourceFiles, sourceIncludes, sourceExcludes, outputDir, outputFilename, suffix, nosuffix, charset,
                 linebreak);
@@ -92,6 +96,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
         this.verbose = verbose;
         this.preserveAllSemiColons = preserveAllSemiColons;
         this.disableOptimizations = disableOptimizations;
+        this.closureLanguageIn = closureLanguageIn;
     }
 
     /**
@@ -116,6 +121,9 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
                 CompilerOptions options = new CompilerOptions();
                 CompilationLevel.SIMPLE_OPTIMIZATIONS.setOptionsForCompilationLevel(options);
                 options.setOutputCharset(charset);
+                if (closureLanguageIn != null) {
+                    options.setLanguageIn(closureLanguageIn);
+                }
 
                 SourceFile input = SourceFile.fromInputStream(mergedFile.getName(), in);
                 List<SourceFile> externs = Collections.emptyList();

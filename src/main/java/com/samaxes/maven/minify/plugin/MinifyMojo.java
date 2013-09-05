@@ -34,6 +34,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.google.common.base.Strings;
+import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 
 /**
  * Goal for combining and minifying CSS and JavaScript files.
@@ -310,7 +311,12 @@ public class MinifyMojo extends AbstractMojo {
 
     /* Google Closure Compiler Only Options */
 
-    /* TODO Google Closure Compiler options... */
+    /**
+     * Closure language-in compiler option
+     *
+     * @parameter expression="${closureLanguageIn}"
+     */
+    private LanguageMode closureLanguageIn;
 
     /**
      * Executed when the goal is invoked, it will first invoke a parallel lifecycle, ending at the given phase.
@@ -337,7 +343,7 @@ public class MinifyMojo extends AbstractMojo {
         processFilesTasks.add(new ProcessJSFilesTask(getLog(), bufferSize, debug, skipMerge, skipMinify, jsEngine,
                 webappSourceDir, webappTargetDir, jsSourceDir, jsSourceFiles, jsSourceIncludes, jsSourceExcludes,
                 jsTargetDir, jsFinalFile, suffix, nosuffix, charset, linebreak, munge, verbose, preserveAllSemiColons,
-                disableOptimizations));
+                disableOptimizations, closureLanguageIn));
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
         try {
