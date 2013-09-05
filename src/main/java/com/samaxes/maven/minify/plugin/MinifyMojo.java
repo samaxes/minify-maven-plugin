@@ -312,11 +312,20 @@ public class MinifyMojo extends AbstractMojo {
     /* Google Closure Compiler Only Options */
 
     /**
-     * Closure language-in compiler option
+     * Refers to which version of ECMAScript to assume when checking for errors in your code.<br/>
+     * Possible values are:
+     * <ul>
+     * <li><code>ECMASCRIPT3</code> - Checks code assuming ECMAScript 3 compliance, and gives errors for code using
+     * features only present in ECMAScript 5.</li>
+     * <li><code>ECMASCRIPT5</code> - Checks code assuming ECMAScript 5 compliance, allowing new features not present in
+     * ECMAScript 3.</li>
+     * <li><code>ECMASCRIPT5_STRICT</code> - Like ECMASCRIPT5 but assumes compliance with strict mode ('use strict';).</li>
+     * </ul>
      *
-     * @parameter expression="${closureLanguageIn}"
+     * @since 1.7.2
      */
-    private LanguageMode closureLanguageIn;
+    @Parameter(property = "closureLanguageIn", defaultValue = "ECMASCRIPT3")
+    private LanguageMode closureLanguage;
 
     /**
      * Executed when the goal is invoked, it will first invoke a parallel lifecycle, ending at the given phase.
@@ -343,7 +352,7 @@ public class MinifyMojo extends AbstractMojo {
         processFilesTasks.add(new ProcessJSFilesTask(getLog(), bufferSize, debug, skipMerge, skipMinify, jsEngine,
                 webappSourceDir, webappTargetDir, jsSourceDir, jsSourceFiles, jsSourceIncludes, jsSourceExcludes,
                 jsTargetDir, jsFinalFile, suffix, nosuffix, charset, linebreak, munge, verbose, preserveAllSemiColons,
-                disableOptimizations, closureLanguageIn));
+                disableOptimizations, closureLanguage));
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
         try {
