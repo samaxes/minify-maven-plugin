@@ -35,9 +35,11 @@ import org.apache.maven.plugin.logging.Log;
 import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.CompilerOptions;
-import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 import com.google.javascript.jscomp.SourceFile;
+import com.samaxes.maven.minify.common.ClosureConfig;
 import com.samaxes.maven.minify.common.JavaScriptErrorReporter;
+import com.samaxes.maven.minify.common.YuiConfig;
+import com.samaxes.maven.minify.plugin.MinifyMojo.Engine;
 import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
 
 /**
@@ -45,25 +47,20 @@ import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
  */
 public class ProcessJSFilesTask extends ProcessFilesTask {
 
-    private final boolean munge;
-
-    private final boolean verbose;
-
-    private final boolean preserveAllSemiColons;
-
-    private final boolean disableOptimizations;
-
-    private final LanguageMode closureLanguage;
+    private final ClosureConfig closureConfig;
 
     /**
      * Task constructor.
      *
      * @param log Maven plugin log
+     * @param verbose display additional info
      * @param bufferSize size of the buffer used to read source files
-     * @param debug show source file paths in log output
+     * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.
+     *        Otherwise, only byte-to-byte operations are used
+     * @param suffix final filename suffix
+     * @param nosuffix whether to use a suffix for the minified filename or not
      * @param skipMerge whether to skip the merge step or not
      * @param skipMinify whether to skip the minify step or not
-     * @param jsEngine minify processor engine selected
      * @param webappSourceDir web resources source directory
      * @param webappTargetDir web resources target directory
      * @param inputDir directory containing source files
@@ -72,31 +69,19 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      * @param sourceExcludes list of source files to exclude
      * @param outputDir directory to write the final file
      * @param outputFilename the output file name
-     * @param suffix final filename suffix
-     * @param nosuffix whether to use a suffix for the minified filename or not
-     * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.
-     *        Otherwise, only byte-to-byte operations are used
-     * @param linebreak split long lines after a specific column
-     * @param munge minify only
-     * @param verbose display informational messages and warnings
-     * @param preserveAllSemiColons preserve unnecessary semicolons
-     * @param disableOptimizations disable all the built-in micro optimizations
-     * @param closureLanguage version of ECMAScript used to report errors in the code
+     * @param engine minify processor engine selected
+     * @param yuiConfig YUI Compressor configuration
+     * @param closureConfig Google Closure Compiler configuration
      */
-    public ProcessJSFilesTask(Log log, Integer bufferSize, boolean debug, boolean skipMerge, boolean skipMinify,
-            String jsEngine, String webappSourceDir, String webappTargetDir, String inputDir, List<String> sourceFiles,
-            List<String> sourceIncludes, List<String> sourceExcludes, String outputDir, String outputFilename,
-            String suffix, boolean nosuffix, String charset, int linebreak, boolean munge, boolean verbose,
-            boolean preserveAllSemiColons, boolean disableOptimizations, LanguageMode closureLanguage) {
-        super(log, bufferSize, debug, skipMerge, skipMinify, jsEngine, webappSourceDir, webappTargetDir, inputDir,
-                sourceFiles, sourceIncludes, sourceExcludes, outputDir, outputFilename, suffix, nosuffix, charset,
-                linebreak);
+    public ProcessJSFilesTask(Log log, boolean verbose, Integer bufferSize, String charset, String suffix,
+            boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir, String webappTargetDir,
+            String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
+            String outputDir, String outputFilename, Engine engine, YuiConfig yuiConfig, ClosureConfig closureConfig) {
+        super(log, verbose, bufferSize, charset, suffix, nosuffix, skipMerge, skipMinify, webappSourceDir,
+                webappTargetDir, inputDir, sourceFiles, sourceIncludes, sourceExcludes, outputDir, outputFilename,
+                engine, yuiConfig);
 
-        this.munge = munge;
-        this.verbose = verbose;
-        this.preserveAllSemiColons = preserveAllSemiColons;
-        this.disableOptimizations = disableOptimizations;
-        this.closureLanguage = closureLanguage;
+        this.closureConfig = closureConfig;
     }
 
     /**
@@ -112,32 +97,37 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
                 OutputStream out = new FileOutputStream(minifiedFile);
                 InputStreamReader reader = new InputStreamReader(in, charset);
                 OutputStreamWriter writer = new OutputStreamWriter(out, charset)) {
-            log.info("Creating the minified file [" + ((debug) ? minifiedFile.getPath() : minifiedFile.getName())
+            log.info("Creating the minified file [" + ((verbose) ? minifiedFile.getPath() : minifiedFile.getName())
                     + "].");
 
-            if ("closure".equals(engine)) {
-                log.debug("Using Google Closure Compiler engine.");
+            switch (engine) {
+                case CLOSURE:
+                    log.debug("Using Google Closure Compiler engine.");
 
-                CompilerOptions options = new CompilerOptions();
-                CompilationLevel.SIMPLE_OPTIMIZATIONS.setOptionsForCompilationLevel(options);
-                options.setOutputCharset(charset);
-                options.setLanguageIn(closureLanguage);
+                    CompilerOptions options = new CompilerOptions();
+                    CompilationLevel.SIMPLE_OPTIMIZATIONS.setOptionsForCompilationLevel(options);
+                    options.setOutputCharset(charset);
+                    options.setLanguageIn(closureConfig.getLanguage());
 
-                SourceFile input = SourceFile.fromInputStream(mergedFile.getName(), in);
-                List<SourceFile> externs = Collections.emptyList();
+                    SourceFile input = SourceFile.fromInputStream(mergedFile.getName(), in);
+                    List<SourceFile> externs = Collections.emptyList();
 
-                Compiler compiler = new Compiler();
-                compiler.compile(externs, Arrays.asList(new SourceFile[] { input }), options);
+                    Compiler compiler = new Compiler();
+                    compiler.compile(externs, Arrays.asList(new SourceFile[] { input }), options);
 
-                writer.append(compiler.toSource());
-            } else if ("yui".equals(engine)) {
-                log.debug("Using YUI Compressor engine.");
+                    writer.append(compiler.toSource());
+                    break;
+                case YUI:
+                    log.debug("Using YUI Compressor engine.");
 
-                JavaScriptCompressor compressor = new JavaScriptCompressor(reader, new JavaScriptErrorReporter(log,
-                        mergedFile.getName()));
-                compressor.compress(writer, linebreak, munge, verbose, preserveAllSemiColons, disableOptimizations);
-            } else {
-                log.warn("JavaScript engine not supported.");
+                    JavaScriptCompressor compressor = new JavaScriptCompressor(reader, new JavaScriptErrorReporter(log,
+                            mergedFile.getName()));
+                    compressor.compress(writer, yuiConfig.getLinebreak(), yuiConfig.isMunge(), verbose,
+                            yuiConfig.isPreserveAllSemiColons(), yuiConfig.isDisableOptimizations());
+                    break;
+                default:
+                    log.warn("JavaScript engine not supported.");
+                    break;
             }
         } catch (IOException e) {
             log.error("Failed to compress the JavaScript file [" + mergedFile.getName() + "].", e);

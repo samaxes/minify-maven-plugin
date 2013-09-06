@@ -29,23 +29,24 @@ import java.util.NoSuchElementException;
 import org.apache.maven.plugin.logging.Log;
 
 /**
- * {@code ListOfFiles} is used to initialize the SequenceInputStream which uses {@code ListOfFiles} to get a new
- * InputStream for every file listed.
+ * Used to initialize a {@code SequenceInputStream} with a {@code Enumeration<? extends InputStream>}. The input streams
+ * that are produced by the enumeration will be read, in order, to provide the bytes to be read from the
+ * {@code SequenceInputStream}.
  */
-public class ListOfFiles implements Enumeration<InputStream> {
+public class SourceFilesEnumeration implements Enumeration<InputStream> {
 
     private List<File> files;
 
     private int current = 0;
 
     /**
-     * ListOfFiles public constructor.
+     * Enumeration public constructor.
      *
      * @param log Maven plugin log
      * @param files list of files
      * @param debug show source file paths in log output
      */
-    public ListOfFiles(Log log, List<File> files, boolean debug) {
+    public SourceFilesEnumeration(Log log, List<File> files, boolean debug) {
         this.files = files;
 
         for (File file : files) {

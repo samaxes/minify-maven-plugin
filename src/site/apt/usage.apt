@@ -42,7 +42,7 @@ Usage
             <phase>process-resources</phase>
             <configuration>
               <charset>utf-8</charset>
-              <jsEngine>closure</jsEngine>
+              <jsEngine>CLOSURE</jsEngine>
               <cssSourceDir>css</cssSourceDir>
               <cssSourceFiles>
                 <cssSourceFile>file-1.css</cssSourceFile>

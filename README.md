@@ -34,7 +34,7 @@ Configure your project's `pom.xml` to run the plugin during the project's build 
                         <!-- Google Closure Compiler as an 
                              optional alternative to the 
                              default YUI Compressor -->
-                        <jsEngine>closure</jsEngine>
+                        <jsEngine>CLOSURE</jsEngine>
                         <cssSourceDir>css</cssSourceDir>
                         <cssSourceFiles>
                             <cssSourceFile>file-1.css</cssSourceFile>

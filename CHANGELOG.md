@@ -4,9 +4,9 @@
 
 * Update default `charset` value to `${project.build.sourceEncoding}`.
 * Deprecate the option `debug`. `verbose` should be used instead.
-* Change YUI option names to clearly indicate that they are specific to YUI Compressor.
+* Change YUI option's names to clearly indicate that they are specific to YUI Compressor.
 * Update Google Closure Compiler to v20130823.
-* Add support for Google Closure Compiler `language` option.
+* Add support for Google Closure Compiler `language` option (#24).
 
 ## 1.7.1
 

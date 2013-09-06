@@ -35,6 +35,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 import com.google.common.base.Strings;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
+import com.samaxes.maven.minify.common.ClosureConfig;
+import com.samaxes.maven.minify.common.YuiConfig;
 
 /**
  * Goal for combining and minifying CSS and JavaScript files.
@@ -42,128 +44,52 @@ import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 @Mojo(name = "minify", defaultPhase = LifecyclePhase.PROCESS_RESOURCES, threadSafe = true)
 public class MinifyMojo extends AbstractMojo {
 
+    /**
+     * Engine used for minification
+     */
+    public static enum Engine {
+        /** YUI Compressor */
+        YUI,
+        /** Google Closure Compiler */
+        CLOSURE;
+    }
+
+    /* ************** */
     /* Global Options */
+    /* ************** */
 
     /**
-     * Webapp source directory.
-     */
-    @Parameter(property = "webappSourceDir", defaultValue = "${basedir}/src/main/webapp")
-    private String webappSourceDir;
-
-    /**
-     * Webapp target directory.
-     */
-    @Parameter(property = "webappTargetDir", defaultValue = "${project.build.directory}/${project.build.finalName}")
-    private String webappTargetDir;
-
-    /**
-     * CSS source directory.
-     */
-    @Parameter(property = "cssSourceDir", defaultValue = "css")
-    private String cssSourceDir;
-
-    /**
-     * JavaScript source directory.
-     */
-    @Parameter(property = "jsSourceDir", defaultValue = "js")
-    private String jsSourceDir;
-
-    /**
-     * CSS source filenames list.
-     */
-    @Parameter(property = "cssSourceFiles", alias = "cssFiles")
-    private ArrayList<String> cssSourceFiles;
-
-    /**
-     * JavaScript source filenames list.
-     */
-    @Parameter(property = "jsSourceFiles", alias = "jsFiles")
-    private ArrayList<String> jsSourceFiles;
-
-    /**
-     * CSS files to include. Specified as fileset patterns which are relative to the CSS source directory.
+     * Show source file paths in log output.
      *
-     * @since 1.2
+     * @since 1.5.2
+     * @deprecated Use {@link #verbose} instead.
      */
-    @Parameter(property = "cssSourceIncludes", alias = "cssIncludes")
-    private ArrayList<String> cssSourceIncludes;
+    @Deprecated
+    @Parameter(property = "debug")
+    private Boolean debug;
 
     /**
-     * JavaScript files to include. Specified as fileset patterns which are relative to the JavaScript source directory.
-     *
-     * @since 1.2
+     * Display additional informational messages and warnings.
      */
-    @Parameter(property = "jsSourceIncludes", alias = "jsIncludes")
-    private ArrayList<String> jsSourceIncludes;
+    @Parameter(property = "verbose", defaultValue = "false")
+    private boolean verbose;
 
     /**
-     * CSS files to exclude. Specified as fileset patterns which are relative to the CSS source directory.
-     *
-     * @since 1.2
+     * Size of the buffer used to read source files.
      */
-    @Parameter(property = "cssSourceExcludes", alias = "cssExcludes")
-    private ArrayList<String> cssSourceExcludes;
+    @Parameter(property = "bufferSize", defaultValue = "4096")
+    private int bufferSize;
 
     /**
-     * JavaScript files to exclude. Specified as fileset patterns which are relative to the JavaScript source directory.
-     *
-     * @since 1.2
-     */
-    @Parameter(property = "jsSourceExcludes", alias = "jsExcludes")
-    private ArrayList<String> jsSourceExcludes;
-
-    /**
-     * CSS target directory. Takes the same value as <code>cssSourceDir</code> when empty.
+     * If a supported character set is specified, it will be used to read the input file. Otherwise, it will assume that
+     * the platform's default character set is being used. The output file is encoded using the same character set.<br/>
+     * See the <a href="http://www.iana.org/assignments/character-sets">IANA Charset Registry</a> for a list of valid
+     * encoding types.
      *
      * @since 1.3.2
      */
-    @Parameter(property = "cssTargetDir")
-    private String cssTargetDir;
-
-    /**
-     * JavaScript target directory. Takes the same value as <code>jsSourceDir</code> when empty.
-     *
-     * @since 1.3.2
-     */
-    @Parameter(property = "jsTargetDir")
-    private String jsTargetDir;
-
-    /**
-     * CSS output filename.
-     */
-    @Parameter(property = "cssFinalFile", defaultValue = "style.css")
-    private String cssFinalFile;
-
-    /**
-     * JavaScript output filename.
-     */
-    @Parameter(property = "jsFinalFile", defaultValue = "script.js")
-    private String jsFinalFile;
-
-    /**
-     * Define the CSS compressor engine to use.<br/>
-     * Possible values are:
-     * <ul>
-     * <li><code>yui</code> - <a href="http://yui.github.io/yuicompressor/">YUI Compressor</a></li>
-     * </ul>
-     *
-     * @since 1.7.1
-     */
-    @Parameter(property = "cssEngine", defaultValue = "yui")
-    private String cssEngine;
-
-    /**
-     * Define the JavaScript compressor engine to use.<br/>
-     * Possible values are:
-     * <ul>
-     * <li><code>yui</code> - <a href="http://yui.github.io/yuicompressor/">YUI Compressor</a></li>
-     * <li><code>closure</code> - <a href="https://developers.google.com/closure/compiler/">Google Closure Compiler</a></li>
-     * </ul>
-     *
-     * @since 1.6
-     */
-    @Parameter(property = "jsEngine", defaultValue = "yui")
-    private String jsEngine;
+    @Parameter(property = "charset", defaultValue = "${project.build.sourceEncoding}")
+    private String charset;
 
     /**
      * The output filename suffix.
@@ -183,39 +109,6 @@ public class MinifyMojo extends AbstractMojo {
     private boolean nosuffix;
 
     /**
-     * If a supported character set is specified, it will be used to read the input file. Otherwise, it will assume that
-     * the platform's default character set is being used. The output file is encoded using the same character set.<br/>
-     * See the <a href="http://www.iana.org/assignments/character-sets">IANA Charset Registry</a> for a list of valid
-     * encoding types.
-     *
-     * @since 1.3.2
-     */
-    @Parameter(property = "charset", defaultValue = "${project.build.sourceEncoding}")
-    private String charset;
-
-    /**
-     * Size of the buffer used to read source files.
-     */
-    @Parameter(property = "bufferSize", defaultValue = "4096")
-    private int bufferSize;
-
-    /**
-     * Show source file paths in log output.
-     *
-     * @since 1.5.2
-     * @deprecated Use {@link #verbose} instead.
-     */
-    @Deprecated
-    @Parameter(property = "debug")
-    private Boolean debug;
-
-    /**
-     * Display additional informational messages and warnings.
-     */
-    @Parameter(property = "verbose", defaultValue = "false")
-    private boolean verbose;
-
-    /**
      * Skip the merge step. Minification will be applied to each source file individually.
      *
      * @since 1.5.2
@@ -231,7 +124,138 @@ public class MinifyMojo extends AbstractMojo {
     @Parameter(property = "skipMinify", defaultValue = "false")
     private boolean skipMinify;
 
+    /**
+     * Webapp source directory.
+     */
+    @Parameter(property = "webappSourceDir", defaultValue = "${basedir}/src/main/webapp")
+    private String webappSourceDir;
+
+    /**
+     * Webapp target directory.
+     */
+    @Parameter(property = "webappTargetDir", defaultValue = "${project.build.directory}/${project.build.finalName}")
+    private String webappTargetDir;
+
+    /* *********** */
+    /* CSS Options */
+    /* *********** */
+
+    /**
+     * CSS source directory.
+     */
+    @Parameter(property = "cssSourceDir", defaultValue = "css")
+    private String cssSourceDir;
+
+    /**
+     * CSS source filenames list.
+     */
+    @Parameter(property = "cssSourceFiles", alias = "cssFiles")
+    private ArrayList<String> cssSourceFiles;
+
+    /**
+     * CSS files to include. Specified as fileset patterns which are relative to the CSS source directory.
+     *
+     * @since 1.2
+     */
+    @Parameter(property = "cssSourceIncludes", alias = "cssIncludes")
+    private ArrayList<String> cssSourceIncludes;
+
+    /**
+     * CSS files to exclude. Specified as fileset patterns which are relative to the CSS source directory.
+     *
+     * @since 1.2
+     */
+    @Parameter(property = "cssSourceExcludes", alias = "cssExcludes")
+    private ArrayList<String> cssSourceExcludes;
+
+    /**
+     * CSS target directory. Takes the same value as <code>cssSourceDir</code> when empty.
+     *
+     * @since 1.3.2
+     */
+    @Parameter(property = "cssTargetDir")
+    private String cssTargetDir;
+
+    /**
+     * CSS output filename.
+     */
+    @Parameter(property = "cssFinalFile", defaultValue = "style.css")
+    private String cssFinalFile;
+
+    /**
+     * Define the CSS compressor engine to use.<br/>
+     * Possible values are:
+     * <ul>
+     * <li><code>YUI</code> - <a href="http://yui.github.io/yuicompressor/">YUI Compressor</a></li>
+     * </ul>
+     *
+     * @since 1.7.1
+     */
+    @Parameter(property = "cssEngine", defaultValue = "YUI")
+    private Engine cssEngine;
+
+    /* ****************** */
+    /* JavaScript Options */
+    /* ****************** */
+
+    /**
+     * JavaScript source directory.
+     */
+    @Parameter(property = "jsSourceDir", defaultValue = "js")
+    private String jsSourceDir;
+
+    /**
+     * JavaScript source filenames list.
+     */
+    @Parameter(property = "jsSourceFiles", alias = "jsFiles")
+    private ArrayList<String> jsSourceFiles;
+
+    /**
+     * JavaScript files to include. Specified as fileset patterns which are relative to the JavaScript source directory.
+     *
+     * @since 1.2
+     */
+    @Parameter(property = "jsSourceIncludes", alias = "jsIncludes")
+    private ArrayList<String> jsSourceIncludes;
+
+    /**
+     * JavaScript files to exclude. Specified as fileset patterns which are relative to the JavaScript source directory.
+     *
+     * @since 1.2
+     */
+    @Parameter(property = "jsSourceExcludes", alias = "jsExcludes")
+    private ArrayList<String> jsSourceExcludes;
+
+    /**
+     * JavaScript target directory. Takes the same value as <code>jsSourceDir</code> when empty.
+     *
+     * @since 1.3.2
+     */
+    @Parameter(property = "jsTargetDir")
+    private String jsTargetDir;
+
+    /**
+     * JavaScript output filename.
+     */
+    @Parameter(property = "jsFinalFile", defaultValue = "script.js")
+    private String jsFinalFile;
+
+    /**
+     * Define the JavaScript compressor engine to use.<br/>
+     * Possible values are:
+     * <ul>
+     * <li><code>YUI</code> - <a href="http://yui.github.io/yuicompressor/">YUI Compressor</a></li>
+     * <li><code>CLOSURE</code> - <a href="https://developers.google.com/closure/compiler/">Google Closure Compiler</a></li>
+     * </ul>
+     *
+     * @since 1.6
+     */
+    @Parameter(property = "jsEngine", defaultValue = "YUI")
+    private Engine jsEngine;
+
+    /* *************************** */
     /* YUI Compressor Only Options */
+    /* *************************** */
 
     /**
      * Some source control tools don't like files containing lines longer than, say 8000 characters. The linebreak
@@ -309,7 +333,9 @@ public class MinifyMojo extends AbstractMojo {
     @Parameter(property = "yuiDisableOptimizations", defaultValue = "false")
     private boolean yuiDisableOptimizations;
 
+    /* ************************************ */
     /* Google Closure Compiler Only Options */
+    /* ************************************ */
 
     /**
      * Refers to which version of ECMAScript to assume when checking for errors in your code.<br/>
@@ -338,21 +364,18 @@ public class MinifyMojo extends AbstractMojo {
             getLog().warn("Both merge and minify steps are configured to be skipped.");
             return;
         }
-        if (Strings.isNullOrEmpty(cssTargetDir)) {
-            cssTargetDir = cssSourceDir;
-        }
-        if (Strings.isNullOrEmpty(jsTargetDir)) {
-            jsTargetDir = jsSourceDir;
-        }
+
+        fillOptionalValues();
+        YuiConfig yuiConfig = fillYuiConfig();
+        ClosureConfig closureConfig = fillClosureConfig();
 
         Collection<ProcessFilesTask> processFilesTasks = new ArrayList<ProcessFilesTask>();
-        processFilesTasks.add(new ProcessCSSFilesTask(getLog(), bufferSize, debug, skipMerge, skipMinify, cssEngine,
-                webappSourceDir, webappTargetDir, cssSourceDir, cssSourceFiles, cssSourceIncludes, cssSourceExcludes,
-                cssTargetDir, cssFinalFile, suffix, nosuffix, charset, linebreak));
-        processFilesTasks.add(new ProcessJSFilesTask(getLog(), bufferSize, debug, skipMerge, skipMinify, jsEngine,
-                webappSourceDir, webappTargetDir, jsSourceDir, jsSourceFiles, jsSourceIncludes, jsSourceExcludes,
-                jsTargetDir, jsFinalFile, suffix, nosuffix, charset, linebreak, munge, verbose, preserveAllSemiColons,
-                disableOptimizations, closureLanguage));
+        processFilesTasks.add(new ProcessCSSFilesTask(getLog(), debug, bufferSize, charset, suffix, nosuffix,
+                skipMerge, skipMinify, webappSourceDir, webappTargetDir, cssSourceDir, cssSourceFiles,
+                cssSourceIncludes, cssSourceExcludes, cssTargetDir, cssFinalFile, cssEngine, yuiConfig));
+        processFilesTasks.add(new ProcessJSFilesTask(getLog(), debug, bufferSize, charset, suffix, nosuffix, skipMerge,
+                skipMinify, webappSourceDir, webappTargetDir, jsSourceDir, jsSourceFiles, jsSourceIncludes,
+                jsSourceExcludes, jsTargetDir, jsFinalFile, jsEngine, yuiConfig, closureConfig));
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
         try {
@@ -402,5 +425,22 @@ public class MinifyMojo extends AbstractMojo {
             getLog().warn(
                     "The option 'disableOptimizations' is deprecated and will be removed on the next version. Use 'yuiDisableOptimizations' instead.");
         }
+    }
+
+    private void fillOptionalValues() {
+        if (Strings.isNullOrEmpty(cssTargetDir)) {
+            cssTargetDir = cssSourceDir;
+        }
+        if (Strings.isNullOrEmpty(jsTargetDir)) {
+            jsTargetDir = jsSourceDir;
+        }
+    }
+
+    private YuiConfig fillYuiConfig() {
+        return new YuiConfig(linebreak, munge, preserveAllSemiColons, disableOptimizations);
+    }
+
+    private ClosureConfig fillClosureConfig() {
+        return new ClosureConfig(closureLanguage);
     }
 }

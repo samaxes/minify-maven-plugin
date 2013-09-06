@@ -39,7 +39,9 @@ import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 
 import com.samaxes.maven.minify.common.FilenameComparator;
-import com.samaxes.maven.minify.common.ListOfFiles;
+import com.samaxes.maven.minify.common.SourceFilesEnumeration;
+import com.samaxes.maven.minify.common.YuiConfig;
+import com.samaxes.maven.minify.plugin.MinifyMojo.Engine;
 
 /**
  * Abstract class for merging and compressing a files list.
@@ -50,77 +52,78 @@ public abstract class ProcessFilesTask implements Callable<Object> {
 
     protected final Log log;
 
+    protected final boolean verbose;
+
     protected final Integer bufferSize;
 
-    protected final boolean debug;
+    protected final String charset;
+
+    protected final String suffix;
+
+    protected final boolean nosuffix;
 
     protected final boolean skipMerge;
 
     protected final boolean skipMinify;
 
-    protected final String engine;
+    protected final Engine engine;
 
-    protected final String charset;
-
-    protected final int linebreak;
-
-    protected final boolean nosuffix;
-
-    protected final String suffix;
-
-    private final String mergedFilename;
+    protected final YuiConfig yuiConfig;
 
     private final File sourceDir;
 
     private final File targetDir;
 
+    private final String mergedFilename;
+
+    private final List<File> files = new ArrayList<File>();
+
     private final boolean sourceFilesEmpty;
 
     private final boolean sourceIncludesEmpty;
-
-    private final List<File> files = new ArrayList<File>();
 
     /**
      * Task constructor.
      *
      * @param log Maven plugin log
+     * @param verbose display additional info
      * @param bufferSize size of the buffer used to read source files
-     * @param debug show source file paths in log output
+     * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.
+     *        Otherwise, only byte-to-byte operations are used
+     * @param suffix final filename suffix
+     * @param nosuffix whether to use a suffix for the minified filename or not
      * @param skipMerge whether to skip the merge step or not
      * @param skipMinify whether to skip the minify step or not
-     * @param engine minify processor engine selected
      * @param webappSourceDir web resources source directory
      * @param webappTargetDir web resources target directory
      * @param inputDir directory containing source files
-     * @param sourceFilenames list of source files to include
+     * @param sourceFiles list of source files to include
      * @param sourceIncludes list of source files to include
      * @param sourceExcludes list of source files to exclude
      * @param outputDir directory to write the final file
      * @param outputFilename the output file name
-     * @param suffix final filename suffix
-     * @param nosuffix whether to use a suffix for the minified filename or not
-     * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.
-     *        Otherwise, only byte-to-byte operations are used
-     * @param linebreak split long lines after a specific column
+     * @param engine minify processor engine selected
+     * @param yuiConfig YUI Compressor configuration
      */
-    public ProcessFilesTask(Log log, Integer bufferSize, boolean debug, boolean skipMerge, boolean skipMinify,
-            String engine, String webappSourceDir, String webappTargetDir, String inputDir,
-            List<String> sourceFilenames, List<String> sourceIncludes, List<String> sourceExcludes, String outputDir,
-            String outputFilename, String suffix, boolean nosuffix, String charset, int linebreak) {
+    public ProcessFilesTask(Log log, boolean verbose, Integer bufferSize, String charset, String suffix,
+            boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir, String webappTargetDir,
+            String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
+            String outputDir, String outputFilename, Engine engine, YuiConfig yuiConfig) {
         this.log = log;
+        this.verbose = verbose;
         this.bufferSize = bufferSize;
-        this.debug = debug;
+        this.charset = charset;
+        this.suffix = suffix + ".";
+        this.nosuffix = nosuffix;
         this.skipMerge = skipMerge;
         this.skipMinify = skipMinify;
         this.engine = engine;
-        this.charset = charset;
-        this.linebreak = linebreak;
-        this.nosuffix = nosuffix;
-        this.mergedFilename = outputFilename;
-        this.suffix = suffix + ".";
+        this.yuiConfig = yuiConfig;
 
         this.sourceDir = new File(webappSourceDir + File.separator + inputDir);
-        for (String sourceFilename : sourceFilenames) {
+        this.targetDir = new File(webappTargetDir + File.separator + outputDir);
+        this.mergedFilename = outputFilename;
+        for (String sourceFilename : sourceFiles) {
             addNewSourceFile(mergedFilename, sourceFilename);
         }
         for (File sourceInclude : getFilesToInclude(sourceIncludes, sourceExcludes)) {
@@ -128,9 +131,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
                 addNewSourceFile(mergedFilename, sourceInclude);
             }
         }
-
-        this.targetDir = new File(webappTargetDir + File.separator + outputDir);
-        this.sourceFilesEmpty = sourceFilenames.isEmpty();
+        this.sourceFilesEmpty = sourceFiles.isEmpty();
         this.sourceIncludesEmpty = sourceIncludes.isEmpty();
     }
 
@@ -196,11 +197,11 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * @throws IOException when the merge step fails
      */
     protected void merge(File mergedFile) throws IOException {
-        try (InputStream sequence = new SequenceInputStream(new ListOfFiles(log, files, debug));
+        try (InputStream sequence = new SequenceInputStream(new SourceFilesEnumeration(log, files, verbose));
                 OutputStream out = new FileOutputStream(mergedFile);
                 InputStreamReader sequenceReader = new InputStreamReader(sequence, charset);
                 OutputStreamWriter outWriter = new OutputStreamWriter(out, charset)) {
-            log.info("Creating the merged file [" + ((debug) ? mergedFile.getPath() : mergedFile.getName()) + "].");
+            log.info("Creating the merged file [" + ((verbose) ? mergedFile.getPath() : mergedFile.getName()) + "].");
 
             IOUtil.copy(sequenceReader, outWriter, bufferSize);
         } catch (IOException e) {
@@ -265,13 +266,13 @@ public abstract class ProcessFilesTask implements Callable<Object> {
     private void addNewSourceFile(String finalFilename, File sourceFile) {
         if (sourceFile.exists()) {
             if (finalFilename.equalsIgnoreCase(sourceFile.getName())) {
-                log.warn("The source file [" + ((debug) ? sourceFile.getPath() : sourceFile.getName())
+                log.warn("The source file [" + ((verbose) ? sourceFile.getPath() : sourceFile.getName())
                         + "] has the same name as the final file.");
             }
-            log.debug("Adding source file [" + ((debug) ? sourceFile.getPath() : sourceFile.getName()) + "].");
+            log.debug("Adding source file [" + ((verbose) ? sourceFile.getPath() : sourceFile.getName()) + "].");
             files.add(sourceFile);
         } else {
-            log.warn("The source file [" + ((debug) ? sourceFile.getPath() : sourceFile.getName())
+            log.warn("The source file [" + ((verbose) ? sourceFile.getPath() : sourceFile.getName())
                     + "] does not exist.");
         }
     }

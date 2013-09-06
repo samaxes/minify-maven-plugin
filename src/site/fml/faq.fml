@@ -17,7 +17,7 @@
         <faq id="alternative-compilers">
             <question>Is it possible to use a different JavaScript compiler?</question>
             <answer>
-                <p>Yes, Google Closure Compiler can be configured using the option <code>&lt;jsEngine>closure&lt;/jsEngine></code>.</p>
+                <p>Yes, Google Closure Compiler can be configured using the option <code>&lt;jsEngine>CLOSURE&lt;/jsEngine></code>.</p>
             </answer>
         </faq>
     </part>

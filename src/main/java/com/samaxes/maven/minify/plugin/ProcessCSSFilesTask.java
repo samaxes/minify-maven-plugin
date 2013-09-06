@@ -30,6 +30,8 @@ import java.util.List;
 
 import org.apache.maven.plugin.logging.Log;
 
+import com.samaxes.maven.minify.common.YuiConfig;
+import com.samaxes.maven.minify.plugin.MinifyMojo.Engine;
 import com.yahoo.platform.yui.compressor.CssCompressor;
 
 /**
@@ -41,11 +43,14 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
      * Task constructor.
      *
      * @param log Maven plugin log
+     * @param verbose display additional info
      * @param bufferSize size of the buffer used to read source files
-     * @param debug show source file paths in log output
+     * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.
+     *        Otherwise, only byte-to-byte operations are used
+     * @param suffix final filename suffix
+     * @param nosuffix whether to use a suffix for the minified filename or not
      * @param skipMerge whether to skip the merge step or not
      * @param skipMinify whether to skip the minify step or not
-     * @param cssEngine minify processor engine selected
      * @param webappSourceDir web resources source directory
      * @param webappTargetDir web resources target directory
      * @param inputDir directory containing source files
@@ -54,19 +59,16 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
      * @param sourceExcludes list of source files to exclude
      * @param outputDir directory to write the final file
      * @param outputFilename the output file name
-     * @param suffix final filename suffix
-     * @param nosuffix whether to use a suffix for the minified filename or not
-     * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.
-     *        Otherwise, only byte-to-byte operations are used
-     * @param linebreak split long lines after a specific column
+     * @param engine minify processor engine selected
+     * @param yuiConfig YUI Compressor configuration
      */
-    public ProcessCSSFilesTask(Log log, Integer bufferSize, boolean debug, boolean skipMerge, boolean skipMinify,
-            String cssEngine, String webappSourceDir, String webappTargetDir, String inputDir,
-            List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes, String outputDir,
-            String outputFilename, String suffix, boolean nosuffix, String charset, int linebreak) {
-        super(log, bufferSize, debug, skipMerge, skipMinify, cssEngine, webappSourceDir, webappTargetDir, inputDir,
-                sourceFiles, sourceIncludes, sourceExcludes, outputDir, outputFilename, suffix, nosuffix, charset,
-                linebreak);
+    public ProcessCSSFilesTask(Log log, boolean verbose, Integer bufferSize, String charset, String suffix,
+            boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir, String webappTargetDir,
+            String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
+            String outputDir, String outputFilename, Engine engine, YuiConfig yuiConfig) {
+        super(log, verbose, bufferSize, charset, suffix, nosuffix, skipMerge, skipMinify, webappSourceDir,
+                webappTargetDir, inputDir, sourceFiles, sourceIncludes, sourceExcludes, outputDir, outputFilename,
+                engine, yuiConfig);
     }
 
     /**
@@ -82,16 +84,19 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
                 OutputStream out = new FileOutputStream(minifiedFile);
                 InputStreamReader reader = new InputStreamReader(in, charset);
                 OutputStreamWriter writer = new OutputStreamWriter(out, charset)) {
-            log.info("Creating the minified file [" + ((debug) ? minifiedFile.getPath() : minifiedFile.getName())
+            log.info("Creating the minified file [" + ((verbose) ? minifiedFile.getPath() : minifiedFile.getName())
                     + "].");
 
-            if ("yui".equals(engine)) {
-                log.debug("Using YUI Compressor engine.");
+            switch (engine) {
+                case YUI:
+                    log.debug("Using YUI Compressor engine.");
 
-                CssCompressor compressor = new CssCompressor(reader);
-                compressor.compress(writer, linebreak);
-            } else {
-                log.warn("CSS engine not supported.");
+                    CssCompressor compressor = new CssCompressor(reader);
+                    compressor.compress(writer, yuiConfig.getLinebreak());
+                    break;
+                default:
+                    log.warn("CSS engine not supported.");
+                    break;
             }
         } catch (IOException e) {
             log.error("Failed to compress the CSS file [" + mergedFile.getName() + "].", e);
