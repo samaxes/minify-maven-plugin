@@ -34,6 +34,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.google.common.base.Strings;
+import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 import com.samaxes.maven.minify.common.ClosureConfig;
 import com.samaxes.maven.minify.common.YuiConfig;
@@ -354,6 +355,23 @@ public class MinifyMojo extends AbstractMojo {
     private LanguageMode closureLanguage;
 
     /**
+     * The degree of compression and optimization to apply to your JavaScript.<br/>
+     * There are three possible compilation levels:
+     * <ul>
+     * <li><code>WHITESPACE_ONLY</code> - Just removes whitespace and comments from your JavaScript.</li>
+     * <li><code>SIMPLE_OPTIMIZATIONS</code> - Performs compression and optimization that does not interfere with the
+     * interaction between the compiled JavaScript and other JavaScript. This level renames only local variables.</li>
+     * <li><code>ADVANCED_OPTIMIZATIONS</code> - Achieves the highest level of compression by renaming symbols in your
+     * JavaScript. When using ADVANCED_OPTIMIZATIONS compilation you must perform extra steps to preserve references to
+     * external symbols.</li>
+     * </ul>
+     *
+     * @since 1.7.2
+     */
+    @Parameter(property = "closureCompilationLevel", defaultValue = "SIMPLE_OPTIMIZATIONS")
+    private CompilationLevel closureCompilationLevel;
+
+    /**
      * Executed when the goal is invoked, it will first invoke a parallel lifecycle, ending at the given phase.
      */
     @Override
@@ -441,6 +459,6 @@ public class MinifyMojo extends AbstractMojo {
     }
 
     private ClosureConfig fillClosureConfig() {
-        return new ClosureConfig(closureLanguage);
+        return new ClosureConfig(closureLanguage, closureCompilationLevel);
     }
 }

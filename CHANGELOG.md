@@ -7,17 +7,18 @@
 * Change YUI option's names to clearly indicate that they are specific to YUI Compressor.
 * Update Google Closure Compiler to v20130823.
 * Add support for Google Closure Compiler `language` option (#24).
+* Add support for Google Closure Compiler `compilation_level` option.
 
 ## 1.7.1
 
 * Update Google Closure Compiler to v20130722.
 * Preserve sub-directory structure when only minifying (#29).
-* Delete transient .tmp file on spot in case of nosuffix = true (#32).
+* Delete transient `.tmp` file on spot in case of `nosuffix = true` (#32).
 * Use annotations to generate the plugin descriptor file.
 
 ## 1.7
 
-* Added `nosuffix` option to avoid the suffix (.min) on the minified output filename (#16).
+* Added `nosuffix` option to avoid the suffix `.min` on the minified output filename (#16).
 * Option to use same subdirectory on target as in source (#17).
 * Build should fail if compiler can't parse/compile source files (#19).
 * Add `UTF-8` as the default charset.

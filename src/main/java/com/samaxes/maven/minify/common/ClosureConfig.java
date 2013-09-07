@@ -18,6 +18,7 @@
  */
 package com.samaxes.maven.minify.common;
 
+import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 
 /**
@@ -27,13 +28,17 @@ public class ClosureConfig {
 
     private final LanguageMode language;
 
+    private final CompilationLevel compilationLevel;
+
     /**
      * Init Closure Compiler values.
      *
      * @param language the version of ECMAScript used to report errors in the code
+     * @param compilationLevel the degree of compression and optimization to apply to JavaScript
      */
-    public ClosureConfig(LanguageMode language) {
+    public ClosureConfig(LanguageMode language, CompilationLevel compilationLevel) {
         this.language = language;
+        this.compilationLevel = compilationLevel;
     }
 
     /**
@@ -43,5 +48,14 @@ public class ClosureConfig {
      */
     public LanguageMode getLanguage() {
         return language;
+    }
+
+    /**
+     * Gets the compilationLevel.
+     *
+     * @return the compilationLevel
+     */
+    public CompilationLevel getCompilationLevel() {
+        return compilationLevel;
     }
 }
