@@ -23,7 +23,7 @@ import org.mozilla.javascript.ErrorReporter;
 import org.mozilla.javascript.EvaluatorException;
 
 /**
- * Reports any error occurring during JavaScript files compression.
+ * A Rhino compatible error reporter.
  */
 public class JavaScriptErrorReporter implements ErrorReporter {
 
@@ -46,7 +46,7 @@ public class JavaScriptErrorReporter implements ErrorReporter {
      * Reports a warning.
      *
      * @param message a String describing the warning
-     * @param sourceName a String describing the JavaScript source where the warning occured; typically a filename or
+     * @param sourceName a String describing the JavaScript source where the warning occurred; typically a filename or
      *        URL
      * @param line the line number associated with the warning
      * @param lineSource the text of the line (may be null)
@@ -54,11 +54,7 @@ public class JavaScriptErrorReporter implements ErrorReporter {
      */
     @Override
     public void warning(String message, String sourceName, int line, String lineSource, int lineOffset) {
-        if (line < 0) {
-            log.warn(message);
-        } else {
-            log.warn("[" + filename + ":" + line + "] " + message);
-        }
+        log.warn(constructMessage(message, sourceName, line, lineSource, lineOffset));
     }
 
     /**
@@ -66,7 +62,7 @@ public class JavaScriptErrorReporter implements ErrorReporter {
      * than terminating the translation. However, it will not execute a script that had errors.
      *
      * @param message a String describing the warning
-     * @param sourceName a String describing the JavaScript source where the warning occured; typically a filename or
+     * @param sourceName a String describing the JavaScript source where the warning occurred; typically a filename or
      *        URL
      * @param line the line number associated with the warning
      * @param lineSource the text of the line (may be null)
@@ -74,11 +70,7 @@ public class JavaScriptErrorReporter implements ErrorReporter {
      */
     @Override
     public void error(String message, String sourceName, int line, String lineSource, int lineOffset) {
-        if (line < 0) {
-            log.error(message);
-        } else {
-            log.error("[" + filename + ":" + line + "] " + message);
-        }
+        log.error(constructMessage(message, sourceName, line, lineSource, lineOffset));
     }
 
     /**
@@ -86,7 +78,7 @@ public class JavaScriptErrorReporter implements ErrorReporter {
      * script.
      *
      * @param message a String describing the warning
-     * @param sourceName a String describing the JavaScript source where the warning occured; typically a filename or
+     * @param sourceName a String describing the JavaScript source where the warning occurred; typically a filename or
      *        URL
      * @param line the line number associated with the warning
      * @param lineSource the text of the line (may be null)
@@ -95,8 +87,51 @@ public class JavaScriptErrorReporter implements ErrorReporter {
     @Override
     public EvaluatorException runtimeError(String message, String sourceName, int line, String lineSource,
             int lineOffset) {
-        error(message, sourceName, line, lineSource, lineOffset);
+        log.error(message);
 
-        return new EvaluatorException(message);
+        return new EvaluatorException(message, sourceName, line, lineSource, lineOffset);
+    }
+
+    private String constructMessage(String message, String sourceName, int line, String lineSource, int lineOffset) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append(message).append(" at ");
+        if (sourceName != null) {
+            stringBuilder.append(sourceName);
+        } else if (filename != null) {
+            stringBuilder.append(filename);
+        } else {
+            stringBuilder.append("(unknown source)");
+        }
+        stringBuilder.append(" line ");
+        if (line > 0) {
+            stringBuilder.append(line);
+        } else {
+            stringBuilder.append("(unknown line)");
+        }
+        stringBuilder.append(":");
+        if (lineOffset >= 0) {
+            stringBuilder.append(lineOffset);
+        } else {
+            stringBuilder.append("(unknown column)");
+        }
+        if (lineSource != null) {
+            stringBuilder.append('\n');
+            stringBuilder.append(lineSource);
+            if (lineOffset >= 0 && lineOffset <= lineSource.length()) {
+                stringBuilder.append('\n');
+                for (int i = 0; i < lineOffset; i++) {
+                    char c = lineSource.charAt(i);
+                    if (Character.isWhitespace(c)) {
+                        stringBuilder.append(c);
+                    } else {
+                        stringBuilder.append(' ');
+                    }
+                }
+                stringBuilder.append("^\n");
+            }
+        }
+
+        return stringBuilder.toString();
     }
 }

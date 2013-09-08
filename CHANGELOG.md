@@ -8,6 +8,7 @@
 * Update Google Closure Compiler to v20130823.
 * Add support for Google Closure Compiler `language` option (#24).
 * Add support for Google Closure Compiler `compilation_level` option.
+* Fail build with Google Closure Compiler on parse errors.
 
 ## 1.7.1
 
