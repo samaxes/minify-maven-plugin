@@ -3,21 +3,16 @@
  ------
  Samuel Santos
  ------
- 2011-11-09
+ 2013-09-08
  ------
 
 Exclude source files from WAR package
 
   Sometimes we need to exclude the original source files from the final WAR package.
 
-  A possible scenario is when you do not want to make them publicly available via your site for security reasons,
-  or simply want to include only the minified (obfuscated) file resulting from the Minify Maven Plugin execution.
+  A possible scenario is when you do not want to make them publicly available via your site for security reasons, or simply want to include only the minified (obfuscated) file resulting from the plugin execution.
 
-  This example shows how that can be achieved.
-
-* Configure Maven WAR Plugin
-
-  Use the following configuration in your <<<pom.xml>>> plugin section to exclude source files from the WAR package.
+  The example below illustrates how to configure Maven WAR Plugin to exclude the undesired source files from the final WAR package.
 
 +---+
 <project>
@@ -40,7 +35,6 @@ Exclude source files from WAR package
         <executions>
           <execution>
             <id>default-minify</id>
-            <phase>process-resources</phase>
             <configuration>
               <cssSourceFiles>
                 <cssSourceFile>file-1.css</cssSourceFile>
@@ -64,12 +58,4 @@ Exclude source files from WAR package
   </build>
   <!-- ... -->
 </project>
-+---+
-
-* Invoke from the command-line
-
-  Only merged and minified files will be included in your package.
-
-+---+
-mvn package
 +---+

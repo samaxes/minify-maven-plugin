@@ -4,20 +4,21 @@
         <faq id="execution-bundles">
             <question>Is it possible to create multiple CSS &amp; JavaScript bundles?</question>
             <answer>
-                <p>Yes, it is. Just use multiple <code>&lt;execution></code> tags with different final names.</p>
+                <p>Yes! Use multiple <code>&lt;execution></code> tags with different final names.</p>
                 <p>Note that execution id's have to be unique among all executions of a single plugin within a POM.</p>
             </answer>
         </faq>
         <faq id="minify-goal">
-            <question>Where can I find the complete list of configuration parameters?</question>
+            <question>Where can I find a complete list of the available options to configure Minify Maven Plugin?</question>
             <answer>
-                <p>See <a href="minify-mojo.html">minify:minify</a> goal for more info.</p>
+                <p>See <a href="minify-mojo.html">minify:minify</a> goal overview page.</p>
             </answer>
         </faq>
         <faq id="alternative-compilers">
-            <question>Is it possible to use a different JavaScript compiler?</question>
+            <question>Which JavaScript compressor engines does Minify Maven Plugin support?</question>
             <answer>
-                <p>Yes, Google Closure Compiler can be configured using the option <code>&lt;jsEngine>CLOSURE&lt;/jsEngine></code>.</p>
+                <p>Minify Maven Plugin supports <a href="http://yui.github.com/yuicompressor/">YUI Compressor</a> and <a href="https://developers.google.com/closure/compiler/">Google Closure Compiler</a>.</p>
+                <p>Use the values <code>YUI</code> or <code>CLOSURE</code> with the option <code>&lt;jsEngine&gt;</code> to select the engine to use.</p>
             </answer>
         </faq>
     </part>

@@ -35,7 +35,7 @@ public class JavaScriptErrorReporter implements ErrorReporter {
      * Error reporter constructor.
      *
      * @param log Maven plugin log
-     * @param filename JavaScript source filename
+     * @param filename JavaScript source file name
      */
     public JavaScriptErrorReporter(Log log, String filename) {
         this.log = log;
@@ -46,7 +46,7 @@ public class JavaScriptErrorReporter implements ErrorReporter {
      * Reports a warning.
      *
      * @param message a String describing the warning
-     * @param sourceName a String describing the JavaScript source where the warning occurred; typically a filename or
+     * @param sourceName a String describing the JavaScript source where the warning occurred; typically a file name or
      *        URL
      * @param line the line number associated with the warning
      * @param lineSource the text of the line (may be null)
@@ -62,7 +62,7 @@ public class JavaScriptErrorReporter implements ErrorReporter {
      * than terminating the translation. However, it will not execute a script that had errors.
      *
      * @param message a String describing the warning
-     * @param sourceName a String describing the JavaScript source where the warning occurred; typically a filename or
+     * @param sourceName a String describing the JavaScript source where the warning occurred; typically a file name or
      *        URL
      * @param line the line number associated with the warning
      * @param lineSource the text of the line (may be null)
@@ -78,7 +78,7 @@ public class JavaScriptErrorReporter implements ErrorReporter {
      * script.
      *
      * @param message a String describing the warning
-     * @param sourceName a String describing the JavaScript source where the warning occurred; typically a filename or
+     * @param sourceName a String describing the JavaScript source where the warning occurred; typically a file name or
      *        URL
      * @param line the line number associated with the warning
      * @param lineSource the text of the line (may be null)

@@ -57,8 +57,8 @@ public class SourceFilesEnumeration implements Enumeration<InputStream> {
     /**
      * Tests if this enumeration contains more elements.
      *
-     * @return <code>true</code> if and only if this enumeration object contains at least one more element to provide;
-     *         <code>false</code> otherwise.
+     * @return {@code true} if and only if this enumeration object contains at least one more element to provide;
+     *         {@code false} otherwise.
      */
     @Override
     public boolean hasMoreElements() {

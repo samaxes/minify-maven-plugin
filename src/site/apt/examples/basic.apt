@@ -3,14 +3,12 @@
  ------
  Samuel Santos
  ------
- 2010-11-08
+ 2013-09-08
  ------
 
 Basic Configuration
 
-* Configure Minify Maven Plugin
-
-  This is the most basic configuration to run Minify Maven Plugin everytime the project is built.
+  The only requirement for Minify Maven Plugin to run is to have source files to process.
 
 +---+
 <project>
@@ -22,31 +20,30 @@ Basic Configuration
         <groupId>com.samaxes.maven</groupId>
         <artifactId>minify-maven-plugin</artifactId>
         <version>1.7.2-SNAPSHOT</version>
-        <configuration>
-          <cssSourceFiles>
-            <cssSourceFile>file-1.css</cssSourceFile>
-            <!-- ... -->
-            <cssSourceFile>file-n.css</cssSourceFile>
-          </cssSourceFiles>
-          <jsSourceFiles>
-            <jsSourceFile>file-1.js</jsSourceFile>
-            <!-- ... -->
-            <jsSourceFile>file-n.js</jsSourceFile>
-          </jsSourceFiles>
-        </configuration>
+        <executions>
+          <execution>
+            <id>default-minify</id>
+            <configuration>
+              <cssSourceFiles>
+                <cssSourceFile>file-1.css</cssSourceFile>
+                <!-- ... -->
+                <cssSourceFile>file-n.css</cssSourceFile>
+              </cssSourceFiles>
+              <jsSourceFiles>
+                <jsSourceFile>file-1.js</jsSourceFile>
+                <!-- ... -->
+                <jsSourceFile>file-n.js</jsSourceFile>
+              </jsSourceFiles>
+            </configuration>
+            <goals>
+              <goal>minify</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <!-- ... -->
     </plugins>
   </build>
   <!-- ... -->
 </project>
-+---+
-
-* Invoke from the command-line
-
-  Since the <<<minify>>> goal is not bound to any phase in the build cycle, you need to explicitly invoke
-  <<<minify:minify>>> goal to create a package containing the new files.
-
-+---+
-mvn minify:minify package
 +---+

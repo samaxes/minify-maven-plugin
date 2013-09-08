@@ -20,7 +20,7 @@
 
 ## 1.7
 
-* Added `nosuffix` option to avoid the suffix `.min` on the minified output filename (#16).
+* Added `nosuffix` option to avoid the suffix `.min` on the minified output file name (#16).
 * Option to use same subdirectory on target as in source (#17).
 * Build should fail if compiler can't parse/compile source files (#19).
 * Add `UTF-8` as the default charset.
@@ -43,7 +43,7 @@
 
 ## 1.5.1
 
-* Cannot process the same filename of files in different directories (#2).
+* Cannot process the same file name of files in different directories (#2).
 * CSS minification fails for base64 encoded background images (#3).
 
 ## 1.5
@@ -77,7 +77,7 @@
 
 ## 1.3.5
 
-* Lift restriction that prevented the final filename to be the same as an existing source filename.
+* Lift restriction that prevented the final file name to be the same as an existing source file name.
 
 ## 1.3.4
 

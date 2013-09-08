@@ -3,14 +3,14 @@
  ------
  Samuel Santos
  ------
- 2009-06-10
+ 2013-09-08
  ------
 
 Minify Maven Plugin
 
-  This plugin combines and minimizes JavaScript and CSS files using
-  {{{http://yui.github.com/yuicompressor/}YUI Compressor}} for faster page loading. Optionally the
-  {{{https://developers.google.com/closure/compiler/}Google Closure Compiler}} can be used to minimize JavaScript files. 
+  This plugin combines and minimizes your CSS and JavaScript files for faster page loading. It produces a merged and a minified version of your CSS and JavaScript resources which can be re-used across your project.
+
+  Under the hood, it uses the {{{http://yui.github.com/yuicompressor/}YUI Compressor}} and {{{https://developers.google.com/closure/compiler/}Google Closure Compiler}} but has a layer of abstraction around these tools which allows for other tools to be added in the future.
 
 * Goals Overview
 
@@ -18,24 +18,16 @@ Minify Maven Plugin
 
 * Usage
 
-  General instructions on how to use the Minify Maven Plugin can be found on the {{{./usage.html}usage page}}. Some more
-  specific use cases are described in the examples given below.
+  General instructions on how to use the Minify Maven Plugin can be found on the {{{./usage.html}usage page}}. Some more specific use cases are described in the examples given below.
 
-  If you feel like the plugin is missing a feature or has a defect, you can fill a feature request or bug report in our
-  {{{./issue-tracking.html}issue tracker}}. When creating a new issue, please provide a comprehensive description of your
-  concern. Especially for fixing bugs it is crucial that the developers can reproduce your problem. For this reason,
-  entire debug logs, POMs or most preferably little demo projects attached to the issue are very much appreciated.
-  Of course, patches are welcome, too. Contributors can check out the project from our
-  {{{./source-repository.html}source repository}} and will find supplementary information in the
-  {{{http://maven.apache.org/guides/development/guide-helping.html}guide to helping with Maven}}.
+  If you feel like the plugin is missing a feature or has a defect, you can fill a feature request or bug report in our {{{./issue-tracking.html}issue tracker}}. When creating a new issue, please provide a comprehensive description of your concern. Especially for fixing bugs it is crucial that the developers can reproduce your problem. For this reason, entire debug logs, POMs or most preferably little demo projects attached to the issue are very much appreciated. Of course, patches are welcome, too. Contributors can check out the project from our {{{./source-repository.html}source repository}} and will find supplementary information in the {{{http://maven.apache.org/guides/development/guide-helping.html}guide to helping with Maven}}.
 
 * Examples
 
-  To provide you with better understanding of some usages of the Minify Maven Plugin,
-  you can take a look into the following examples:
+  To provide you with better understanding of some usages of the Minify Maven Plugin, you can take a look into the following examples:
 
   * {{{./examples/basic.html}Basic Configuration}}
 
-  * {{{./examples/patterns.html}Lexicographical ordering (include/exclude patterns)}}
+  * {{{./examples/patterns.html}Using include/exclude patterns}}
 
   * {{{./examples/exclude.html}Exclude source files from WAR package}}

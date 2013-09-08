@@ -47,8 +47,8 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
      * @param bufferSize size of the buffer used to read source files
      * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.
      *        Otherwise, only byte-to-byte operations are used
-     * @param suffix final filename suffix
-     * @param nosuffix whether to use a suffix for the minified filename or not
+     * @param suffix final file name suffix
+     * @param nosuffix whether to use a suffix for the minified file name or not
      * @param skipMerge whether to skip the merge step or not
      * @param skipMinify whether to skip the minify step or not
      * @param webappSourceDir web resources source directory

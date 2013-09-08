@@ -3,7 +3,7 @@
  ------
  Samuel Santos
  ------
- 2010-11-08
+ 2013-09-08
  ------
 
 Usage
@@ -17,14 +17,11 @@ Usage
 
 * Configure Minify Maven Plugin
 
-  By tying the goals of the plugin to a phase in the build cycle, the specified goals will run each time that
-  phase of the build cycle is executed. Doing this can make it easier to add the plugin to your project, because it
-  eliminates the need to run the plugin standalone.
+  By tying the goals of the plugin to a phase in the build cycle, the specified goals will run each time that phase of the build cycle is executed. Doing this can make it easier to add the plugin to your project, because it eliminates the need to run the plugin standalone.
 
-  To bind the minify goal of the Minify Maven Plugin to a phase in the build cycle, you will need to add the
-  <<<execution>>> tag with the <<<phase>>> set to the build phase and the <<<goal>>> set to <<<minify>>>. For instance,
-  using <<<process-resources>>> in the phase will force the minify goal to run each time this phase of the build
-  cycle occurs.
+  To bind the minify goal of the Minify Maven Plugin to a phase in the build cycle, you will need to add the <<<execution>>> tag with the <<<goal>>> set to <<<minify>>>. Optionally, you can bind the plugin to a different build phase by using the <<<phase>>> option. For instance, using <<<prepare-package>>> in the <<<phase>>> option will force the minify goal to run each time this phase of the build cycle occurs.
+
+  For a complete list of the available configuration options see {{{./minify-mojo.html}minify:minify}} goal overview page.
 
 +---+
 <project>
@@ -39,10 +36,9 @@ Usage
         <executions>
           <execution>
             <id>default-minify</id>
-            <phase>process-resources</phase>
+            <phase>prepare-package</phase><!-- When omitted defaults to <phase>process-resources</phase> -->
             <configuration>
-              <charset>utf-8</charset>
-              <jsEngine>CLOSURE</jsEngine>
+              <charset>UTF-8</charset>
               <cssSourceDir>css</cssSourceDir>
               <cssSourceFiles>
                 <cssSourceFile>file-1.css</cssSourceFile>
@@ -57,6 +53,7 @@ Usage
                 <jsSourceFile>file-n.js</jsSourceFile>
               </jsSourceFiles>
               <jsFinalFile>script.js</jsFinalFile>
+              <jsEngine>CLOSURE</jsEngine>
             </configuration>
             <goals>
               <goal>minify</goal>

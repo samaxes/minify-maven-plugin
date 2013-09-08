@@ -96,7 +96,7 @@ public class MinifyMojo extends AbstractMojo {
     private String charset;
 
     /**
-     * The output filename suffix.
+     * The output file name suffix.
      *
      * @since 1.3.2
      */
@@ -104,7 +104,7 @@ public class MinifyMojo extends AbstractMojo {
     private String suffix;
 
     /**
-     * Do not append a suffix to the minified output filename, independently of the value in the <code>suffix</code>
+     * Do not append a suffix to the minified output file name, independently of the value in the {@code suffix}
      * parameter.
      *
      * @since 1.7
@@ -151,7 +151,7 @@ public class MinifyMojo extends AbstractMojo {
     private String cssSourceDir;
 
     /**
-     * CSS source filenames list.
+     * CSS source file names list.
      */
     @Parameter(property = "cssSourceFiles", alias = "cssFiles")
     private ArrayList<String> cssSourceFiles;
@@ -173,7 +173,7 @@ public class MinifyMojo extends AbstractMojo {
     private ArrayList<String> cssSourceExcludes;
 
     /**
-     * CSS target directory. Takes the same value as <code>cssSourceDir</code> when empty.
+     * CSS target directory. Takes the same value as {@code cssSourceDir} when empty.
      *
      * @since 1.3.2
      */
@@ -181,7 +181,7 @@ public class MinifyMojo extends AbstractMojo {
     private String cssTargetDir;
 
     /**
-     * CSS output filename.
+     * CSS output file name.
      */
     @Parameter(property = "cssFinalFile", defaultValue = "style.css")
     private String cssFinalFile;
@@ -190,7 +190,7 @@ public class MinifyMojo extends AbstractMojo {
      * Define the CSS compressor engine to use.<br/>
      * Possible values are:
      * <ul>
-     * <li><code>YUI</code> - <a href="http://yui.github.io/yuicompressor/">YUI Compressor</a></li>
+     * <li>{@code YUI}: <a href="http://yui.github.io/yuicompressor/">YUI Compressor</a></li>
      * </ul>
      *
      * @since 1.7.1
@@ -209,7 +209,7 @@ public class MinifyMojo extends AbstractMojo {
     private String jsSourceDir;
 
     /**
-     * JavaScript source filenames list.
+     * JavaScript source file names list.
      */
     @Parameter(property = "jsSourceFiles", alias = "jsFiles")
     private ArrayList<String> jsSourceFiles;
@@ -231,7 +231,7 @@ public class MinifyMojo extends AbstractMojo {
     private ArrayList<String> jsSourceExcludes;
 
     /**
-     * JavaScript target directory. Takes the same value as <code>jsSourceDir</code> when empty.
+     * JavaScript target directory. Takes the same value as {@code jsSourceDir} when empty.
      *
      * @since 1.3.2
      */
@@ -239,7 +239,7 @@ public class MinifyMojo extends AbstractMojo {
     private String jsTargetDir;
 
     /**
-     * JavaScript output filename.
+     * JavaScript output file name.
      */
     @Parameter(property = "jsFinalFile", defaultValue = "script.js")
     private String jsFinalFile;
@@ -248,8 +248,8 @@ public class MinifyMojo extends AbstractMojo {
      * Define the JavaScript compressor engine to use.<br/>
      * Possible values are:
      * <ul>
-     * <li><code>YUI</code> - <a href="http://yui.github.io/yuicompressor/">YUI Compressor</a></li>
-     * <li><code>CLOSURE</code> - <a href="https://developers.google.com/closure/compiler/">Google Closure Compiler</a></li>
+     * <li>{@code YUI}: <a href="http://yui.github.io/yuicompressor/">YUI Compressor</a></li>
+     * <li>{@code CLOSURE}: <a href="https://developers.google.com/closure/compiler/">Google Closure Compiler</a></li>
      * </ul>
      *
      * @since 1.6
@@ -265,8 +265,7 @@ public class MinifyMojo extends AbstractMojo {
      * Some source control tools don't like files containing lines longer than, say 8000 characters. The linebreak
      * option is used in that case to split long lines after a specific column. It can also be used to make the code
      * more readable and easier to debug. Specify {@code 0} to get a line break after each semi-colon in JavaScript, and
-     * after each rule in CSS. Specify {@code -1} to disallow line breaks.<br/>
-     * <strong>Supported engine is</strong>: YUI Compressor [ Global Option ]
+     * after each rule in CSS. Specify {@code -1} to disallow line breaks.
      *
      * @deprecated Use {@link #yuiLinebreak} instead.
      */
@@ -278,15 +277,13 @@ public class MinifyMojo extends AbstractMojo {
      * Some source control tools don't like files containing lines longer than, say 8000 characters. The linebreak
      * option is used in that case to split long lines after a specific column. It can also be used to make the code
      * more readable and easier to debug. Specify {@code 0} to get a line break after each semi-colon in JavaScript, and
-     * after each rule in CSS. Specify {@code -1} to disallow line breaks.<br/>
-     * <strong>Supported engine is</strong>: YUI Compressor [ Global Option ]
+     * after each rule in CSS. Specify {@code -1} to disallow line breaks.
      */
     @Parameter(property = "yuiLinebreak", defaultValue = "-1")
     private int yuiLinebreak;
 
     /**
-     * Minify only. Do not obfuscate local symbols.<br/>
-     * <strong>Supported engine is</strong>: YUI Compressor [ JavaScript Only Option ]
+     * Minify only. Do not obfuscate local symbols.
      *
      * @deprecated Use {@link #yuiMunge} instead.
      */
@@ -295,16 +292,14 @@ public class MinifyMojo extends AbstractMojo {
     private Boolean munge;
 
     /**
-     * Minify only. Do not obfuscate local symbols.<br/>
-     * <strong>Supported engine is</strong>: YUI Compressor [ JavaScript Only Option ]
+     * Minify only. Do not obfuscate local symbols.
      */
     @Parameter(property = "yuiMunge", defaultValue = "true")
     private boolean yuiMunge;
 
     /**
      * Preserve unnecessary semicolons (such as right before a '}'). This option is useful when compressed code has to
-     * be run through JSLint.<br/>
-     * <strong>Supported engine is</strong>: YUI Compressor [ JavaScript Only Option ]
+     * be run through JSLint.
      *
      * @deprecated Use {@link #yuiPreserveAllSemiColons} instead.
      */
@@ -314,15 +309,13 @@ public class MinifyMojo extends AbstractMojo {
 
     /**
      * Preserve unnecessary semicolons (such as right before a '}'). This option is useful when compressed code has to
-     * be run through JSLint.<br/>
-     * <strong>Supported engine is</strong>: YUI Compressor [ JavaScript Only Option ]
+     * be run through JSLint.
      */
     @Parameter(property = "yuiPreserveAllSemiColons", defaultValue = "false")
     private boolean yuiPreserveAllSemiColons;
 
     /**
-     * Disable all the built-in micro-optimizations.<br/>
-     * <strong>Supported engine is</strong>: YUI Compressor [ JavaScript Only Option ]
+     * Disable all the built-in micro-optimizations.
      *
      * @deprecated Use {@link #yuiDisableOptimizations} instead.
      */
@@ -331,8 +324,7 @@ public class MinifyMojo extends AbstractMojo {
     private Boolean disableOptimizations;
 
     /**
-     * Disable all the built-in micro-optimizations.<br/>
-     * <strong>Supported engine is</strong>: YUI Compressor [ JavaScript Only Option ]
+     * Disable all the built-in micro-optimizations.
      */
     @Parameter(property = "yuiDisableOptimizations", defaultValue = "false")
     private boolean yuiDisableOptimizations;
@@ -345,11 +337,12 @@ public class MinifyMojo extends AbstractMojo {
      * Refers to which version of ECMAScript to assume when checking for errors in your code.<br/>
      * Possible values are:
      * <ul>
-     * <li><code>ECMASCRIPT3</code> - Checks code assuming ECMAScript 3 compliance, and gives errors for code using
-     * features only present in ECMAScript 5.</li>
-     * <li><code>ECMASCRIPT5</code> - Checks code assuming ECMAScript 5 compliance, allowing new features not present in
+     * <li>{@code ECMASCRIPT3}: Checks code assuming ECMAScript 3 compliance, and gives errors for code using features
+     * only present in ECMAScript 5.</li>
+     * <li>{@code ECMASCRIPT5}: Checks code assuming ECMAScript 5 compliance, allowing new features not present in
      * ECMAScript 3.</li>
-     * <li><code>ECMASCRIPT5_STRICT</code> - Like ECMASCRIPT5 but assumes compliance with strict mode ('use strict';).</li>
+     * <li>{@code ECMASCRIPT5_STRICT}: Like {@code ECMASCRIPT5} but assumes compliance with strict mode ('use strict';).
+     * </li>
      * </ul>
      *
      * @since 1.7.2
@@ -361,12 +354,13 @@ public class MinifyMojo extends AbstractMojo {
      * The degree of compression and optimization to apply to your JavaScript.<br/>
      * There are three possible compilation levels:
      * <ul>
-     * <li><code>WHITESPACE_ONLY</code> - Just removes whitespace and comments from your JavaScript.</li>
-     * <li><code>SIMPLE_OPTIMIZATIONS</code> - Performs compression and optimization that does not interfere with the
+     * <li>{@code WHITESPACE_ONLY}: Just removes whitespace and comments from your JavaScript.</li>
+     * <li>{@code SIMPLE_OPTIMIZATIONS}: Performs compression and optimization that does not interfere with the
      * interaction between the compiled JavaScript and other JavaScript. This level renames only local variables.</li>
-     * <li><code>ADVANCED_OPTIMIZATIONS</code> - Achieves the highest level of compression by renaming symbols in your
-     * JavaScript. When using ADVANCED_OPTIMIZATIONS compilation you must perform extra steps to preserve references to
-     * external symbols.</li>
+     * <li>{@code ADVANCED_OPTIMIZATIONS}: Achieves the highest level of compression by renaming symbols in your
+     * JavaScript. When using {@code ADVANCED_OPTIMIZATIONS} compilation you must perform extra steps to preserve
+     * references to external symbols. See <a href="/closure/compiler/docs/api-tutorial3">Advanced Compilation and
+     * Externs</a> for more information about {@code ADVANCED_OPTIMIZATIONS}.</li>
      * </ul>
      *
      * @since 1.7.2
@@ -375,9 +369,10 @@ public class MinifyMojo extends AbstractMojo {
     private CompilationLevel closureCompilationLevel;
 
     /**
-     * JavaScript code that declares function names or other symbols. Use {@code closureExterns} to preserve symbols
-     * that are defined outside of the code you are compiling. The {@code closureExterns} parameter only has an effect
-     * if you are using a {@code CompilationLevel} of {@code ADVANCED_OPTIMIZATIONS}.<br/>
+     * List of JavaScript files containing code that declares function names or other symbols. Use
+     * {@code closureExterns} to preserve symbols that are defined outside of the code you are compiling. The
+     * {@code closureExterns} parameter only has an effect if you are using a {@code CompilationLevel} of
+     * {@code ADVANCED_OPTIMIZATIONS}.<br/>
      * These file names are relative to {@link #webappSourceDir} directory.
      *
      * @since 1.7.2

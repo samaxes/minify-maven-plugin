@@ -22,12 +22,12 @@ import java.io.File;
 import java.util.Comparator;
 
 /**
- * Custom filename comparator. Compares file name instead of file path.
+ * Custom file name comparator. Compares file name instead of file path.
  */
 public class FilenameComparator implements Comparator<File> {
 
     /**
-     * Compares two filenames lexicographically, ignoring case differences. This method returns an integer whose sign is
+     * Compares two file names lexicographically, ignoring case differences. This method returns an integer whose sign is
      * that of calling compareTo with normalized versions of the strings where case differences have been eliminated by
      * calling Character.toLowerCase(Character.toUpperCase(character)) on each character.
      *

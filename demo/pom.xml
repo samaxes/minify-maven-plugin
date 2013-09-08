@@ -77,10 +77,10 @@
                                 <jsSourceFile>subdir/samaxesjs.toc.js</jsSourceFile>
                             </jsSourceFiles>
                             <jsEngine>CLOSURE</jsEngine>
-                            <closureCompilationLevel>ADVANCED_OPTIMIZATIONS</closureCompilationLevel>
-                            <closureExterns>
+                            <!--closureCompilationLevel>ADVANCED_OPTIMIZATIONS</closureCompilationLevel-->
+                            <!--closureExterns>
                                 <closureExtern>extern/external-lib.js</closureExtern>
-                            </closureExterns>
+                            </closureExterns-->
                         </configuration>
                         <goals>
                             <goal>minify</goal>

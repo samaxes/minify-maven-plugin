@@ -1,6 +1,8 @@
 # Minify Maven Plugin
 
-Minify Maven Plugin combines and minimizes JavaScript and CSS files using [YUI Compressor](http://yui.github.com/yuicompressor/) for faster page loading. Optionally the [Google Closure Compiler](https://developers.google.com/closure/compiler/) can be used to minimize JavaScript files.
+Minify Maven Plugin combines and minimizes your CSS and JavaScript files for faster page loading. It produces a merged and a minified version of your CSS and JavaScript resources which can be re-used across your project.
+
+Under the hood, it uses the [YUI Compressor](http://yui.github.com/yuicompressor/) and [Google Closure Compiler](https://developers.google.com/closure/compiler/) but has a layer of abstraction around these tools which allows for other tools to be added in the future.
 
 ## Benefits
 
@@ -12,56 +14,52 @@ Minify Maven Plugin combines and minimizes JavaScript and CSS files using [YUI C
 
 ### Compress JavaScript and CSS
 
-> Minification/compression is the practice of removing unnecessary characters from code to reduce its size thereby improving load times. A JavaScript compressor, in addition to removing comments and white-spaces, obfuscates local variables using the smallest possible variable name. This improves response time performance because the size of the downloaded file is reduced. Some popular tools for minifying JavaScript code are [UglifyJS](http://lisperator.net/uglifyjs/), [Closure Compiler](https://developers.google.com/closure/compiler/) and [YUI Compressor](http://yui.github.com/yuicompressor/). The YUI Compressor is also able to safely compress CSS files.
+> Minification/compression is the practice of removing unnecessary characters from code to reduce its size thereby improving load times. A JavaScript compressor, in addition to removing comments and white-spaces, obfuscates local variables using the smallest possible variable name. This improves response time performance because the size of the downloaded file is reduced.
 
-## Usage & Information
+## Usage
 
 Configure your project's `pom.xml` to run the plugin during the project's build cycle.
 
 ```xml
 <build>
-    <plugins>
-        <plugin>
-            <groupId>com.samaxes.maven</groupId>
-            <artifactId>minify-maven-plugin</artifactId>
-            <version>VERSION</version>
-            <executions>
-                <execution>
-                    <id>default-minify</id>
-                    <phase>process-resources</phase>
-                    <configuration>
-                        <charset>utf-8</charset>
-                        <!-- Google Closure Compiler as an 
-                             optional alternative to the 
-                             default YUI Compressor -->
-                        <jsEngine>CLOSURE</jsEngine>
-                        <cssSourceDir>css</cssSourceDir>
-                        <cssSourceFiles>
-                            <cssSourceFile>file-1.css</cssSourceFile>
-                            <!-- ... -->
-                            <cssSourceFile>file-n.css</cssSourceFile>
-                        </cssSourceFiles>
-                        <cssFinalFile>style.css</cssFinalFile>
-                        <jsSourceDir>js</jsSourceDir>
-                        <jsSourceFiles>
-                            <jsSourceFile>file-1.js</jsSourceFile>
-                            <!-- ... -->
-                            <jsSourceFile>file-n.js</jsSourceFile>
-                        </jsSourceFiles>
-                        <jsFinalFile>script.js</jsFinalFile>
-                    </configuration>
-                    <goals>
-                        <goal>minify</goal>
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>
-    </plugins>
+  <plugins>
+    <plugin>
+      <groupId>com.samaxes.maven</groupId>
+      <artifactId>minify-maven-plugin</artifactId>
+      <version>1.7.2-SNAPSHOT</version>
+      <executions>
+        <execution>
+          <id>default-minify</id>
+          <configuration>
+            <charset>UTF-8</charset>
+            <cssSourceFiles>
+              <cssSourceFile>file-1.css</cssSourceFile>
+              <!-- ... -->
+              <cssSourceFile>file-n.css</cssSourceFile>
+            </cssSourceFiles>
+            <jsSourceFiles>
+              <jsSourceFile>file-1.js</jsSourceFile>
+              <!-- ... -->
+              <jsSourceFile>file-n.js</jsSourceFile>
+            </jsSourceFiles>
+            <jsEngine>CLOSURE</jsEngine>
+          </configuration>
+          <goals>
+            <goal>minify</goal>
+          </goals>
+        </execution>
+      </executions>
+    </plugin>
+  </plugins>
 </build>
 ```
 
-For more information, check the plugin [documentation](http://samaxes.github.com/minify-maven-plugin/) and the [demo application](https://github.com/samaxes/minify-maven-plugin/releases/download/minify-maven-plugin-1.7.1/minify-maven-plugin-demo-1.7.1-src.zip).  
-**Note:** For version 1.7 or greater of Minify Maven Plugin, Java SE 7 is required. If you need to support older versions of Java please use the version 1.6 of this plugin.
+For more information, check the [plugin documentation](http://samaxes.github.com/minify-maven-plugin/) or the [demo application](https://github.com/samaxes/minify-maven-plugin/releases/download/minify-maven-plugin-1.7.1/minify-maven-plugin-demo-1.7.1-src.zip).
+
+## System Requirements
+  
+Since the version 1.7, Minify Maven Plugin requires Java 7 to run.  
+If you need to support older versions of Java please use the version 1.6 or bellow.
 
 ## License
 
