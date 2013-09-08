@@ -40,77 +40,82 @@
 <a class="jxr_linenumber" name="30" href="#30">30</a>  
 <a class="jxr_linenumber" name="31" href="#31">31</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.plugin.logging.Log;
 <a class="jxr_linenumber" name="32" href="#32">32</a>  
-<a class="jxr_linenumber" name="33" href="#33">33</a>  <strong class="jxr_keyword">import</strong> com.yahoo.platform.yui.compressor.CssCompressor;
-<a class="jxr_linenumber" name="34" href="#34">34</a>  
-<a class="jxr_linenumber" name="35" href="#35">35</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="36" href="#36">36</a>  <em class="jxr_javadoccomment"> * Task for merging and compressing CSS files.</em>
-<a class="jxr_linenumber" name="37" href="#37">37</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="38" href="#38">38</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../com/samaxes/maven/minify/plugin/ProcessCSSFilesTask.html">ProcessCSSFilesTask</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../com/samaxes/maven/minify/plugin/ProcessFilesTask.html">ProcessFilesTask</a> {
-<a class="jxr_linenumber" name="39" href="#39">39</a>  
-<a class="jxr_linenumber" name="40" href="#40">40</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="41" href="#41">41</a>  <em class="jxr_javadoccomment">     * Task constructor.</em>
-<a class="jxr_linenumber" name="42" href="#42">42</a>  <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="43" href="#43">43</a>  <em class="jxr_javadoccomment">     * @param log Maven plugin log</em>
-<a class="jxr_linenumber" name="44" href="#44">44</a>  <em class="jxr_javadoccomment">     * @param bufferSize size of the buffer used to read source files</em>
-<a class="jxr_linenumber" name="45" href="#45">45</a>  <em class="jxr_javadoccomment">     * @param debug show source file paths in log output</em>
-<a class="jxr_linenumber" name="46" href="#46">46</a>  <em class="jxr_javadoccomment">     * @param skipMerge whether to skip the merge step or not</em>
-<a class="jxr_linenumber" name="47" href="#47">47</a>  <em class="jxr_javadoccomment">     * @param skipMinify whether to skip the minify step or not</em>
-<a class="jxr_linenumber" name="48" href="#48">48</a>  <em class="jxr_javadoccomment">     * @param cssEngine minify processor engine selected</em>
-<a class="jxr_linenumber" name="49" href="#49">49</a>  <em class="jxr_javadoccomment">     * @param webappSourceDir web resources source directory</em>
-<a class="jxr_linenumber" name="50" href="#50">50</a>  <em class="jxr_javadoccomment">     * @param webappTargetDir web resources target directory</em>
-<a class="jxr_linenumber" name="51" href="#51">51</a>  <em class="jxr_javadoccomment">     * @param inputDir directory containing source files</em>
-<a class="jxr_linenumber" name="52" href="#52">52</a>  <em class="jxr_javadoccomment">     * @param sourceFiles list of source files to include</em>
-<a class="jxr_linenumber" name="53" href="#53">53</a>  <em class="jxr_javadoccomment">     * @param sourceIncludes list of source files to include</em>
-<a class="jxr_linenumber" name="54" href="#54">54</a>  <em class="jxr_javadoccomment">     * @param sourceExcludes list of source files to exclude</em>
-<a class="jxr_linenumber" name="55" href="#55">55</a>  <em class="jxr_javadoccomment">     * @param outputDir directory to write the final file</em>
-<a class="jxr_linenumber" name="56" href="#56">56</a>  <em class="jxr_javadoccomment">     * @param outputFilename the output file name</em>
-<a class="jxr_linenumber" name="57" href="#57">57</a>  <em class="jxr_javadoccomment">     * @param suffix final filename suffix</em>
-<a class="jxr_linenumber" name="58" href="#58">58</a>  <em class="jxr_javadoccomment">     * @param nosuffix whether to use a suffix for the minified filename or not</em>
-<a class="jxr_linenumber" name="59" href="#59">59</a>  <em class="jxr_javadoccomment">     * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.</em>
-<a class="jxr_linenumber" name="60" href="#60">60</a>  <em class="jxr_javadoccomment">     *        Otherwise, only byte-to-byte operations are used</em>
-<a class="jxr_linenumber" name="61" href="#61">61</a>  <em class="jxr_javadoccomment">     * @param linebreak split long lines after a specific column</em>
-<a class="jxr_linenumber" name="62" href="#62">62</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="63" href="#63">63</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../../com/samaxes/maven/minify/plugin/ProcessCSSFilesTask.html">ProcessCSSFilesTask</a>(Log log, Integer bufferSize, <strong class="jxr_keyword">boolean</strong> debug, <strong class="jxr_keyword">boolean</strong> skipMerge, <strong class="jxr_keyword">boolean</strong> skipMinify,
-<a class="jxr_linenumber" name="64" href="#64">64</a>              String cssEngine, String webappSourceDir, String webappTargetDir, String inputDir,
-<a class="jxr_linenumber" name="65" href="#65">65</a>              List&lt;String&gt; sourceFiles, List&lt;String&gt; sourceIncludes, List&lt;String&gt; sourceExcludes, String outputDir,
-<a class="jxr_linenumber" name="66" href="#66">66</a>              String outputFilename, String suffix, <strong class="jxr_keyword">boolean</strong> nosuffix, String charset, <strong class="jxr_keyword">int</strong> linebreak) {
-<a class="jxr_linenumber" name="67" href="#67">67</a>          <strong class="jxr_keyword">super</strong>(log, bufferSize, debug, skipMerge, skipMinify, cssEngine, webappSourceDir, webappTargetDir, inputDir,
-<a class="jxr_linenumber" name="68" href="#68">68</a>                  sourceFiles, sourceIncludes, sourceExcludes, outputDir, outputFilename, suffix, nosuffix, charset,
-<a class="jxr_linenumber" name="69" href="#69">69</a>                  linebreak);
-<a class="jxr_linenumber" name="70" href="#70">70</a>      }
-<a class="jxr_linenumber" name="71" href="#71">71</a>  
-<a class="jxr_linenumber" name="72" href="#72">72</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="73" href="#73">73</a>  <em class="jxr_javadoccomment">     * Minifies a CSS file.</em>
-<a class="jxr_linenumber" name="74" href="#74">74</a>  <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="75" href="#75">75</a>  <em class="jxr_javadoccomment">     * @param mergedFile input file resulting from the merged step</em>
-<a class="jxr_linenumber" name="76" href="#76">76</a>  <em class="jxr_javadoccomment">     * @param minifiedFile output file resulting from the minify step</em>
-<a class="jxr_linenumber" name="77" href="#77">77</a>  <em class="jxr_javadoccomment">     * @throws IOException when the minify step fails</em>
-<a class="jxr_linenumber" name="78" href="#78">78</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="79" href="#79">79</a>      @Override
-<a class="jxr_linenumber" name="80" href="#80">80</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> minify(File mergedFile, File minifiedFile) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="81" href="#81">81</a>          <strong class="jxr_keyword">try</strong> (InputStream in = <strong class="jxr_keyword">new</strong> FileInputStream(mergedFile);
-<a class="jxr_linenumber" name="82" href="#82">82</a>                  OutputStream out = <strong class="jxr_keyword">new</strong> FileOutputStream(minifiedFile);
-<a class="jxr_linenumber" name="83" href="#83">83</a>                  InputStreamReader reader = <strong class="jxr_keyword">new</strong> InputStreamReader(in, charset);
-<a class="jxr_linenumber" name="84" href="#84">84</a>                  OutputStreamWriter writer = <strong class="jxr_keyword">new</strong> OutputStreamWriter(out, charset)) {
-<a class="jxr_linenumber" name="85" href="#85">85</a>              log.info(<span class="jxr_string">"Creating the minified file ["</span> + ((debug) ? minifiedFile.getPath() : minifiedFile.getName())
-<a class="jxr_linenumber" name="86" href="#86">86</a>                      + <span class="jxr_string">"]."</span>);
-<a class="jxr_linenumber" name="87" href="#87">87</a>  
-<a class="jxr_linenumber" name="88" href="#88">88</a>              <strong class="jxr_keyword">if</strong> (<span class="jxr_string">"yui"</span>.equals(engine)) {
-<a class="jxr_linenumber" name="89" href="#89">89</a>                  log.debug(<span class="jxr_string">"Using YUI Compressor engine."</span>);
-<a class="jxr_linenumber" name="90" href="#90">90</a>  
-<a class="jxr_linenumber" name="91" href="#91">91</a>                  CssCompressor compressor = <strong class="jxr_keyword">new</strong> CssCompressor(reader);
-<a class="jxr_linenumber" name="92" href="#92">92</a>                  compressor.compress(writer, linebreak);
-<a class="jxr_linenumber" name="93" href="#93">93</a>              } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="94" href="#94">94</a>                  log.warn(<span class="jxr_string">"CSS engine not supported."</span>);
-<a class="jxr_linenumber" name="95" href="#95">95</a>              }
-<a class="jxr_linenumber" name="96" href="#96">96</a>          } <strong class="jxr_keyword">catch</strong> (IOException e) {
-<a class="jxr_linenumber" name="97" href="#97">97</a>              log.error(<span class="jxr_string">"Failed to compress the CSS file ["</span> + mergedFile.getName() + <span class="jxr_string">"]."</span>, e);
-<a class="jxr_linenumber" name="98" href="#98">98</a>              <strong class="jxr_keyword">throw</strong> e;
-<a class="jxr_linenumber" name="99" href="#99">99</a>          }
-<a class="jxr_linenumber" name="100" href="#100">100</a> 
-<a class="jxr_linenumber" name="101" href="#101">101</a>         logCompressionGains(mergedFile, minifiedFile);
-<a class="jxr_linenumber" name="102" href="#102">102</a>     }
-<a class="jxr_linenumber" name="103" href="#103">103</a> }
+<a class="jxr_linenumber" name="33" href="#33">33</a>  <strong class="jxr_keyword">import</strong> com.samaxes.maven.minify.common.YuiConfig;
+<a class="jxr_linenumber" name="34" href="#34">34</a>  <strong class="jxr_keyword">import</strong> com.samaxes.maven.minify.plugin.MinifyMojo.Engine;
+<a class="jxr_linenumber" name="35" href="#35">35</a>  <strong class="jxr_keyword">import</strong> com.yahoo.platform.yui.compressor.CssCompressor;
+<a class="jxr_linenumber" name="36" href="#36">36</a>  
+<a class="jxr_linenumber" name="37" href="#37">37</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="38" href="#38">38</a>  <em class="jxr_javadoccomment"> * Task for merging and compressing CSS files.</em>
+<a class="jxr_linenumber" name="39" href="#39">39</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="40" href="#40">40</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../com/samaxes/maven/minify/plugin/ProcessCSSFilesTask.html">ProcessCSSFilesTask</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../com/samaxes/maven/minify/plugin/ProcessFilesTask.html">ProcessFilesTask</a> {
+<a class="jxr_linenumber" name="41" href="#41">41</a>  
+<a class="jxr_linenumber" name="42" href="#42">42</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="43" href="#43">43</a>  <em class="jxr_javadoccomment">     * Task constructor.</em>
+<a class="jxr_linenumber" name="44" href="#44">44</a>  <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="45" href="#45">45</a>  <em class="jxr_javadoccomment">     * @param log Maven plugin log</em>
+<a class="jxr_linenumber" name="46" href="#46">46</a>  <em class="jxr_javadoccomment">     * @param verbose display additional info</em>
+<a class="jxr_linenumber" name="47" href="#47">47</a>  <em class="jxr_javadoccomment">     * @param bufferSize size of the buffer used to read source files</em>
+<a class="jxr_linenumber" name="48" href="#48">48</a>  <em class="jxr_javadoccomment">     * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.</em>
+<a class="jxr_linenumber" name="49" href="#49">49</a>  <em class="jxr_javadoccomment">     *        Otherwise, only byte-to-byte operations are used</em>
+<a class="jxr_linenumber" name="50" href="#50">50</a>  <em class="jxr_javadoccomment">     * @param suffix final file name suffix</em>
+<a class="jxr_linenumber" name="51" href="#51">51</a>  <em class="jxr_javadoccomment">     * @param nosuffix whether to use a suffix for the minified file name or not</em>
+<a class="jxr_linenumber" name="52" href="#52">52</a>  <em class="jxr_javadoccomment">     * @param skipMerge whether to skip the merge step or not</em>
+<a class="jxr_linenumber" name="53" href="#53">53</a>  <em class="jxr_javadoccomment">     * @param skipMinify whether to skip the minify step or not</em>
+<a class="jxr_linenumber" name="54" href="#54">54</a>  <em class="jxr_javadoccomment">     * @param webappSourceDir web resources source directory</em>
+<a class="jxr_linenumber" name="55" href="#55">55</a>  <em class="jxr_javadoccomment">     * @param webappTargetDir web resources target directory</em>
+<a class="jxr_linenumber" name="56" href="#56">56</a>  <em class="jxr_javadoccomment">     * @param inputDir directory containing source files</em>
+<a class="jxr_linenumber" name="57" href="#57">57</a>  <em class="jxr_javadoccomment">     * @param sourceFiles list of source files to include</em>
+<a class="jxr_linenumber" name="58" href="#58">58</a>  <em class="jxr_javadoccomment">     * @param sourceIncludes list of source files to include</em>
+<a class="jxr_linenumber" name="59" href="#59">59</a>  <em class="jxr_javadoccomment">     * @param sourceExcludes list of source files to exclude</em>
+<a class="jxr_linenumber" name="60" href="#60">60</a>  <em class="jxr_javadoccomment">     * @param outputDir directory to write the final file</em>
+<a class="jxr_linenumber" name="61" href="#61">61</a>  <em class="jxr_javadoccomment">     * @param outputFilename the output file name</em>
+<a class="jxr_linenumber" name="62" href="#62">62</a>  <em class="jxr_javadoccomment">     * @param engine minify processor engine selected</em>
+<a class="jxr_linenumber" name="63" href="#63">63</a>  <em class="jxr_javadoccomment">     * @param yuiConfig YUI Compressor configuration</em>
+<a class="jxr_linenumber" name="64" href="#64">64</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="65" href="#65">65</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../../com/samaxes/maven/minify/plugin/ProcessCSSFilesTask.html">ProcessCSSFilesTask</a>(Log log, <strong class="jxr_keyword">boolean</strong> verbose, Integer bufferSize, String charset, String suffix,
+<a class="jxr_linenumber" name="66" href="#66">66</a>              <strong class="jxr_keyword">boolean</strong> nosuffix, <strong class="jxr_keyword">boolean</strong> skipMerge, <strong class="jxr_keyword">boolean</strong> skipMinify, String webappSourceDir, String webappTargetDir,
+<a class="jxr_linenumber" name="67" href="#67">67</a>              String inputDir, List&lt;String&gt; sourceFiles, List&lt;String&gt; sourceIncludes, List&lt;String&gt; sourceExcludes,
+<a class="jxr_linenumber" name="68" href="#68">68</a>              String outputDir, String outputFilename, <a href="../../../../../com/samaxes/maven/minify/plugin/MinifyMojo.html">Engine</a> engine, <a href="../../../../../com/samaxes/maven/minify/common/YuiConfig.html">YuiConfig</a> yuiConfig) {
+<a class="jxr_linenumber" name="69" href="#69">69</a>          <strong class="jxr_keyword">super</strong>(log, verbose, bufferSize, charset, suffix, nosuffix, skipMerge, skipMinify, webappSourceDir,
+<a class="jxr_linenumber" name="70" href="#70">70</a>                  webappTargetDir, inputDir, sourceFiles, sourceIncludes, sourceExcludes, outputDir, outputFilename,
+<a class="jxr_linenumber" name="71" href="#71">71</a>                  engine, yuiConfig);
+<a class="jxr_linenumber" name="72" href="#72">72</a>      }
+<a class="jxr_linenumber" name="73" href="#73">73</a>  
+<a class="jxr_linenumber" name="74" href="#74">74</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="75" href="#75">75</a>  <em class="jxr_javadoccomment">     * Minifies a CSS file.</em>
+<a class="jxr_linenumber" name="76" href="#76">76</a>  <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="77" href="#77">77</a>  <em class="jxr_javadoccomment">     * @param mergedFile input file resulting from the merged step</em>
+<a class="jxr_linenumber" name="78" href="#78">78</a>  <em class="jxr_javadoccomment">     * @param minifiedFile output file resulting from the minify step</em>
+<a class="jxr_linenumber" name="79" href="#79">79</a>  <em class="jxr_javadoccomment">     * @throws IOException when the minify step fails</em>
+<a class="jxr_linenumber" name="80" href="#80">80</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="81" href="#81">81</a>      @Override
+<a class="jxr_linenumber" name="82" href="#82">82</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> minify(File mergedFile, File minifiedFile) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="83" href="#83">83</a>          <strong class="jxr_keyword">try</strong> (InputStream in = <strong class="jxr_keyword">new</strong> FileInputStream(mergedFile);
+<a class="jxr_linenumber" name="84" href="#84">84</a>                  OutputStream out = <strong class="jxr_keyword">new</strong> FileOutputStream(minifiedFile);
+<a class="jxr_linenumber" name="85" href="#85">85</a>                  InputStreamReader reader = <strong class="jxr_keyword">new</strong> InputStreamReader(in, charset);
+<a class="jxr_linenumber" name="86" href="#86">86</a>                  OutputStreamWriter writer = <strong class="jxr_keyword">new</strong> OutputStreamWriter(out, charset)) {
+<a class="jxr_linenumber" name="87" href="#87">87</a>              log.info(<span class="jxr_string">"Creating the minified file ["</span> + ((verbose) ? minifiedFile.getPath() : minifiedFile.getName())
+<a class="jxr_linenumber" name="88" href="#88">88</a>                      + <span class="jxr_string">"]."</span>);
+<a class="jxr_linenumber" name="89" href="#89">89</a>  
+<a class="jxr_linenumber" name="90" href="#90">90</a>              <strong class="jxr_keyword">switch</strong> (engine) {
+<a class="jxr_linenumber" name="91" href="#91">91</a>                  <strong class="jxr_keyword">case</strong> YUI:
+<a class="jxr_linenumber" name="92" href="#92">92</a>                      log.debug(<span class="jxr_string">"Using YUI Compressor engine."</span>);
+<a class="jxr_linenumber" name="93" href="#93">93</a>  
+<a class="jxr_linenumber" name="94" href="#94">94</a>                      CssCompressor compressor = <strong class="jxr_keyword">new</strong> CssCompressor(reader);
+<a class="jxr_linenumber" name="95" href="#95">95</a>                      compressor.compress(writer, yuiConfig.getLinebreak());
+<a class="jxr_linenumber" name="96" href="#96">96</a>                      <strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="97" href="#97">97</a>                  <strong class="jxr_keyword">default</strong>:
+<a class="jxr_linenumber" name="98" href="#98">98</a>                      log.warn(<span class="jxr_string">"CSS engine not supported."</span>);
+<a class="jxr_linenumber" name="99" href="#99">99</a>                      <strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="100" href="#100">100</a>             }
+<a class="jxr_linenumber" name="101" href="#101">101</a>         } <strong class="jxr_keyword">catch</strong> (IOException e) {
+<a class="jxr_linenumber" name="102" href="#102">102</a>             log.error(<span class="jxr_string">"Failed to compress the CSS file ["</span> + mergedFile.getName() + <span class="jxr_string">"]."</span>, e);
+<a class="jxr_linenumber" name="103" href="#103">103</a>             <strong class="jxr_keyword">throw</strong> e;
+<a class="jxr_linenumber" name="104" href="#104">104</a>         }
+<a class="jxr_linenumber" name="105" href="#105">105</a> 
+<a class="jxr_linenumber" name="106" href="#106">106</a>         logCompressionGains(mergedFile, minifiedFile);
+<a class="jxr_linenumber" name="107" href="#107">107</a>     }
+<a class="jxr_linenumber" name="108" href="#108">108</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
