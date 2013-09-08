@@ -19,7 +19,7 @@ Using include/exclude patterns
       <plugin>
         <groupId>com.samaxes.maven</groupId>
         <artifactId>minify-maven-plugin</artifactId>
-        <version>1.7.2-SNAPSHOT</version>
+        <version>1.7.2</version>
         <executions>
           <execution>
             <id>default-minify</id>
