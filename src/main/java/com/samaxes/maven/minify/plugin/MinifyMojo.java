@@ -18,6 +18,8 @@
  */
 package com.samaxes.maven.minify.plugin;
 
+import java.io.File;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -36,6 +38,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import com.google.common.base.Strings;
 import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
+import com.google.javascript.jscomp.SourceFile;
 import com.samaxes.maven.minify.common.ClosureConfig;
 import com.samaxes.maven.minify.common.YuiConfig;
 
@@ -372,6 +375,17 @@ public class MinifyMojo extends AbstractMojo {
     private CompilationLevel closureCompilationLevel;
 
     /**
+     * JavaScript code that declares function names or other symbols. Use {@code closureExterns} to preserve symbols
+     * that are defined outside of the code you are compiling. The {@code closureExterns} parameter only has an effect
+     * if you are using a {@code CompilationLevel} of {@code ADVANCED_OPTIMIZATIONS}.<br/>
+     * These file names are relative to {@link #webappSourceDir} directory.
+     *
+     * @since 1.7.2
+     */
+    @Parameter(property = "closureExterns")
+    private ArrayList<String> closureExterns;
+
+    /**
      * Executed when the goal is invoked, it will first invoke a parallel lifecycle, ending at the given phase.
      */
     @Override
@@ -459,6 +473,10 @@ public class MinifyMojo extends AbstractMojo {
     }
 
     private ClosureConfig fillClosureConfig() {
-        return new ClosureConfig(closureLanguage, closureCompilationLevel);
+        List<SourceFile> externs = new ArrayList<>();
+        for (String extern : closureExterns) {
+            externs.add(SourceFile.fromFile(webappSourceDir + File.separator + extern, Charset.forName(charset)));
+        }
+        return new ClosureConfig(closureLanguage, closureCompilationLevel, externs);
     }
 }

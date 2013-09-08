@@ -23,7 +23,8 @@
  */
 var samaxesJS = function() {};
 
-function testEncoding() {
-    return '你好，中文测试';
+try {
+    testEncoding('你好，中文测试');
+} catch (e) {
 }
 

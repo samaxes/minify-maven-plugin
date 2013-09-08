@@ -18,8 +18,11 @@
  */
 package com.samaxes.maven.minify.common;
 
+import java.util.List;
+
 import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
+import com.google.javascript.jscomp.SourceFile;
 
 /**
  * <a href="https://developers.google.com/closure/compiler/">Google Closure Compiler</a> configuration.
@@ -30,15 +33,19 @@ public class ClosureConfig {
 
     private final CompilationLevel compilationLevel;
 
+    private final List<SourceFile> externs;
+
     /**
      * Init Closure Compiler values.
      *
      * @param language the version of ECMAScript used to report errors in the code
      * @param compilationLevel the degree of compression and optimization to apply to JavaScript
+     * @param externs preserve symbols that are defined outside of the code you are compiling
      */
-    public ClosureConfig(LanguageMode language, CompilationLevel compilationLevel) {
+    public ClosureConfig(LanguageMode language, CompilationLevel compilationLevel, List<SourceFile> externs) {
         this.language = language;
         this.compilationLevel = compilationLevel;
+        this.externs = externs;
     }
 
     /**
@@ -57,5 +64,14 @@ public class ClosureConfig {
      */
     public CompilationLevel getCompilationLevel() {
         return compilationLevel;
+    }
+
+    /**
+     * Gets the externs.
+     *
+     * @return the externs
+     */
+    public List<SourceFile> getExterns() {
+        return externs;
     }
 }

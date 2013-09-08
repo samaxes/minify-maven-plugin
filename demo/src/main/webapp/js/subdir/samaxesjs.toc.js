@@ -66,3 +66,7 @@ samaxesJS.toc = function() {
         }
     };
 }();
+
+// Export the symbols you want to keep when using a CompilationLevel of ADVANCED_OPTIMIZATIONS
+window['samaxesJS'] = samaxesJS;
+samaxesJS['toc'] = samaxesJS.toc;

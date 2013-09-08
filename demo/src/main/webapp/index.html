@@ -12,7 +12,7 @@
     <!-- CSS -->
     <link rel="stylesheet" href="css/style.min.css" type="text/css" />
     <!-- JavaScript -->
-    <script type="text/javascript" src="js/samaxesjs.min.js"></script>
+    <script type="text/javascript" src="js/script.min.js"></script>
 </head>
 <body>
     <h1 id="install_apache">Install Apache</h1>
@@ -42,7 +42,7 @@
     <p>
         When you install Apache, you'll get a prompt for <em>Server Information</em>. Here are the settings I've used:
     </p>
-    <p><img src="http://samaxes.appspot.com/images/install-apache-1.png" alt="Apache Server Information" /></p>
+    <p><img src="http://www.php-tutorials.info/img/install-apache-1.png" alt="Apache Server Information" /></p>
     <dl class="example">
         <dt>Network Domain</dt> <dd><kbd>localhost</kbd></dd>
         <dt>Server Name</dt> <dd><kbd>localhost</kbd></dd>
@@ -66,11 +66,11 @@
     <p>After installing, Apache2 will automatically start.</p>
     <ul>
         <li>
-            The <img src="http://samaxes.appspot.com/images/apache-start.gif" alt="Apache Start" />
+            The <img src="http://www.php-tutorials.info/img/apache-start.gif" alt="Apache Start" />
             start icon in the system tray means it is running.
         </li>
         <li>
-            The <img src="http://samaxes.appspot.com/images/apache-stop.gif" alt="Apache Stop" />
+            The <img src="http://www.php-tutorials.info/img/apache-stop.gif" alt="Apache Stop" />
             stop icon means that the Apache server monitor is running, but Apache2 hasn't started.
         </li>
     </ul>
@@ -87,23 +87,23 @@
         Open your browser and head to <a href="http://127.0.0.1/">http://127.0.0.1/</a> or
         <a href="http://localhost/">http://localhost/</a>.
     </p>
-    <p><img src="http://samaxes.appspot.com/images/install-apache-2.png" alt="Apache Installed" /></p>
+    <p><img src="http://www.php-tutorials.info/img/install-apache-2.png" alt="Apache Installed" /></p>
     <p>If you see the above Apache installation's test page then you have your server configured and running.</p>
 
     <h2 id="configuration">Making Apache point to your files</h2>
     <ol>
         <li>
-            Using a text editor open <code class="path">C:\&lt;APACHE_INSTALLATION_FOLDER>\conf\httpd.conf</code>
+            Using a text editor open <code class="path">C:\&lt;APACHE_INSTALLATION_FOLDER&gt;\conf\httpd.conf</code>
             (in the start-menu there should also be a <em>Edit the Apache httpd.conf Configuration File</em> shortcut)
             and search for <var>DocumentRoot</var>.
         </li>
         <li>
-            Change it from something like <code>DocumentRoot C:/&lt;APACHE_INSTALLATION_FOLDER>/htdocs</code> to the
+            Change it from something like <code>DocumentRoot C:/&lt;APACHE_INSTALLATION_FOLDER&gt;/htdocs</code> to the
             location where your HTML files are located (e.g. <code>DocumentRoot C:/public_html</code>).
         </li>
         <li>
             Then scroll down about one page and change
-            <code>&lt;Directory "C:/&lt;APACHE_INSTALLATION_FOLDER>/htdocs"></code> to point to the same location
+            <code>&lt;Directory "C:/&lt;APACHE_INSTALLATION_FOLDER&gt;/htdocs"&gt;</code> to point to the same location
             you set <var>DocumentRoot</var> to in the last step.
         </li>
         <li>Restart apache so the changes take effect.</li>
