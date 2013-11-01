@@ -203,6 +203,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
         }
 
         logCompressionGains(mergedFile, minifiedFile);
+        compressionFile(mergedFile);
         compressionFile(minifiedFile);
     }
 
