@@ -57,9 +57,9 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
      * @param outputDir directory to write the final file
      * @param outputFilename the output file name
      * @param suffix final filename suffix
-     * @param nosuffix whether to use a suffix for the minified file name or not
+     * @param nosuffix whether to use a suffix for the minified filename or not
      * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.
-     * Otherwise, only byte-to-byte operations are used
+     *        Otherwise, only byte-to-byte operations are used
      * @param linebreak split long lines after a specific column
      */
     public ProcessCSSFilesTask(Log log, Integer bufferSize, boolean debug, boolean skipMerge, boolean skipMinify,
@@ -77,10 +77,12 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
      * @param minifiedFile output file resulting from the minify step
      */
     @Override
-    protected void minify(File mergedFile, File minifiedFile) {
+    void minify(File mergedFile, File minifiedFile) {
         if (minifiedFile != null) {
             try {
-                
+                log.info("Creating minified file [" + ((debug) ? minifiedFile.getPath() : minifiedFile.getName())
+                        + "].");
+
                 InputStream in = new FileInputStream(mergedFile);
                 OutputStream out = new FileOutputStream(minifiedFile);
                 InputStreamReader reader;
@@ -93,13 +95,6 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
                     writer = new OutputStreamWriter(out, charset);
                 }
 
-                if (debug) {
-                    log.info("Creating minified file [" + minifiedFile.getPath() + "].");
-                } else {
-                    File temp = (nosuffix) ? mergedFile : minifiedFile;
-                    log.info("Creating minified file [" + temp.getName() + "].");
-                }
-                
                 CssCompressor compressor = new CssCompressor(reader);
                 compressor.compress(writer, linebreak);
 
@@ -110,8 +105,6 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
             }
-            
-            cleanupFiles(mergedFile, minifiedFile);
         }
     }
 }

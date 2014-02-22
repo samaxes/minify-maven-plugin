@@ -151,14 +151,14 @@ public class MinifyMojo extends AbstractMojo {
     private String suffix;
 
     /**
-     * Do not append a suffix to the minified output file name, independently of the value in the {@code suffix}
+     * Do not append a suffix to the minified output filename, independently of the value in the <code>suffix</code>
      * parameter.
      *
      * @parameter expression="${nosuffix}" default-value="false"
      * @since 1.6.2
      */
     private boolean nosuffix;
-    
+
     /**
      * <p>
      * If a supported character set is specified, it will be used to read the input file. Otherwise, it will assume that
