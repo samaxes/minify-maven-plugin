@@ -22,6 +22,18 @@ Usage
   To bind the minify goal of the Minify Maven Plugin to a phase in the build cycle, you will need to add the <<<execution>>> tag with the <<<goal>>> set to <<<minify>>>. Optionally, you can bind the plugin to a different build phase by using the <<<phase>>> option. For instance, using <<<prepare-package>>> in the <<<phase>>> option will force the minify goal to run each time this phase of the build cycle occurs.
 
   For a complete list of the available configuration options see {{{./minify-mojo.html}minify:minify}} goal overview page.
+  
+* Merge order
+
+  The following rules for file order are applied when input CSS  files are merged into single output files
+  
+    [[1]] Input files defined in <<cssSourceFiles>> are merged before files defined in <<cssSourceIncludes>>
+    
+    [[2]] Input files defined in <<cssSourceIncludes>> are sorted by filename before merging
+    
+    [[3]] If single file is configured both in <<cssSourceFiles>> and <<cssSourceIncludes>> then configuration in  <<cssSourceIncludes>> is ignored
+  
+  The same rules for JS files are applied for tags <<jsSourceFile>> and <<jsSourceIncludes>> respectively
 
 +---+
 <project>
