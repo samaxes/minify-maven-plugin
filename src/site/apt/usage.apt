@@ -25,15 +25,15 @@ Usage
   
 * Merge order
 
-  The following rules for file order are applied when input CSS  files are merged into single output files
-  
-    [[1]] Input files defined in <<cssSourceFiles>> are merged before files defined in <<cssSourceIncludes>>
-    
-    [[2]] Input files defined in <<cssSourceIncludes>> are sorted by filename before merging
-    
-    [[3]] If single file is configured both in <<cssSourceFiles>> and <<cssSourceIncludes>> then configuration in  <<cssSourceIncludes>> is ignored
-  
-  The same rules for JS files are applied for tags <<jsSourceFile>> and <<jsSourceIncludes>> respectively
+  The following rules for file order are applied when input CSS  files are merged and minified into a single output file:
+
+    [[1]] Input files defined in <<<cssSourceFiles>>> are merged before files defined in <<<cssSourceIncludes>>>.
+
+    [[2]] Input files defined in <<<cssSourceIncludes>>> are sorted by filename before merging (see {{{./examples/patterns.html}Using include/exclude patterns}}).
+
+    [[3]] If a file is configured both in <<<cssSourceFiles>>> and <<<cssSourceIncludes>>> then only the one defined in <<<cssSourceFiles>>> will be processed.
+
+  The same rules for JavaScript files are applied for tags <<<jsSourceFile>>> and <<<jsSourceIncludes>>> respectively.
 
 +---+
 <project>

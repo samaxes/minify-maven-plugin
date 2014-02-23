@@ -1,5 +1,9 @@
 # Minify Maven Plugin
 
+## 1.7.3
+
+* Improve docs: missing information about file order (#45).
+
 ## 1.7.2
 
 * Update default `charset` value to `${project.build.sourceEncoding}`.
@@ -26,10 +30,6 @@
 * Add `UTF-8` as the default charset.
 * Log compression gains.
 * Require Java SE 7 for better resource management. See [AutoCloseable](http://docs.oracle.com/javase/7/docs/api/java/lang/AutoCloseable.html) interface and [try-with-resources](http://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html) statements.
-
-## 1.6.1
-
-* Preserve sub-directory structure when only minifying (#29).
 
 ## 1.6
 
