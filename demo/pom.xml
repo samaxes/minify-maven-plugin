@@ -61,11 +61,13 @@
             <plugin>
                 <groupId>com.samaxes.maven</groupId>
                 <artifactId>minify-maven-plugin</artifactId>
-                <version>1.7.2</version>
+                <version>1.7.3-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <id>default-minify</id>
                         <configuration>
+                            <webappSourceDir>${basedir}/src/main/webapp</webappSourceDir>
+                            <webappTargetDir>${basedir}/src/main/webapp</webappTargetDir>
                             <cssSourceFiles>
                                 <cssSourceFile>reset.css</cssSourceFile>
                                 <cssSourceFile>fonts.css</cssSourceFile>
@@ -77,6 +79,9 @@
                                 <jsSourceFile>subdir/samaxesjs.toc.js</jsSourceFile>
                             </jsSourceFiles>
                             <jsEngine>CLOSURE</jsEngine>
+                            <jsFinalFile>js.js</jsFinalFile>
+                            <sourceMapGeneration>true</sourceMapGeneration>
+                            <gzip>true</gzip>
                             <!--closureCompilationLevel>ADVANCED_OPTIMIZATIONS</closureCompilationLevel-->
                             <!--closureExterns>
                                 <closureExtern>extern/external-lib.js</closureExtern>

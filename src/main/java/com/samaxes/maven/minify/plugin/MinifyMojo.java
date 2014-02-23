@@ -380,6 +380,13 @@ public class MinifyMojo extends AbstractMojo {
     @Parameter(property = "closureExterns")
     private ArrayList<String> closureExterns;
 
+
+    @Parameter(property = "sourceMapGeneration", defaultValue = "false")
+    private boolean sourceMapGeneration;
+
+    @Parameter(property = "gzip", defaultValue = "false")
+    private boolean gzip;
+
     /**
      * Executed when the goal is invoked, it will first invoke a parallel lifecycle, ending at the given phase.
      */
@@ -399,10 +406,12 @@ public class MinifyMojo extends AbstractMojo {
         Collection<ProcessFilesTask> processFilesTasks = new ArrayList<ProcessFilesTask>();
         processFilesTasks.add(new ProcessCSSFilesTask(getLog(), debug, bufferSize, charset, suffix, nosuffix,
                 skipMerge, skipMinify, webappSourceDir, webappTargetDir, cssSourceDir, cssSourceFiles,
-                cssSourceIncludes, cssSourceExcludes, cssTargetDir, cssFinalFile, cssEngine, yuiConfig));
+                cssSourceIncludes, cssSourceExcludes, cssTargetDir, cssFinalFile, cssEngine, yuiConfig,
+                sourceMapGeneration, gzip));
         processFilesTasks.add(new ProcessJSFilesTask(getLog(), debug, bufferSize, charset, suffix, nosuffix, skipMerge,
                 skipMinify, webappSourceDir, webappTargetDir, jsSourceDir, jsSourceFiles, jsSourceIncludes,
-                jsSourceExcludes, jsTargetDir, jsFinalFile, jsEngine, yuiConfig, closureConfig));
+                jsSourceExcludes, jsTargetDir, jsFinalFile, jsEngine, yuiConfig, closureConfig,
+                sourceMapGeneration, gzip));
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
         try {

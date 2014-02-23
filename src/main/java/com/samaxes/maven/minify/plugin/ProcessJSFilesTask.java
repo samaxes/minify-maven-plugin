@@ -18,16 +18,12 @@
  */
 package com.samaxes.maven.minify.plugin;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
+import java.util.Collections;
 import java.util.List;
 
+import com.google.common.collect.Collections2;
+import com.google.javascript.jscomp.SourceMap;
 import org.apache.maven.plugin.logging.Log;
 
 import com.google.common.collect.Lists;
@@ -51,34 +47,35 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
     /**
      * Task constructor.
      *
-     * @param log Maven plugin log
-     * @param verbose display additional info
-     * @param bufferSize size of the buffer used to read source files
-     * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.
-     *        Otherwise, only byte-to-byte operations are used
-     * @param suffix final file name suffix
-     * @param nosuffix whether to use a suffix for the minified file name or not
-     * @param skipMerge whether to skip the merge step or not
-     * @param skipMinify whether to skip the minify step or not
+     * @param log             Maven plugin log
+     * @param verbose         display additional info
+     * @param bufferSize      size of the buffer used to read source files
+     * @param charset         if a character set is specified, a byte-to-char variant allows the encoding to be selected.
+     *                        Otherwise, only byte-to-byte operations are used
+     * @param suffix          final file name suffix
+     * @param nosuffix        whether to use a suffix for the minified file name or not
+     * @param skipMerge       whether to skip the merge step or not
+     * @param skipMinify      whether to skip the minify step or not
      * @param webappSourceDir web resources source directory
      * @param webappTargetDir web resources target directory
-     * @param inputDir directory containing source files
-     * @param sourceFiles list of source files to include
-     * @param sourceIncludes list of source files to include
-     * @param sourceExcludes list of source files to exclude
-     * @param outputDir directory to write the final file
-     * @param outputFilename the output file name
-     * @param engine minify processor engine selected
-     * @param yuiConfig YUI Compressor configuration
-     * @param closureConfig Google Closure Compiler configuration
+     * @param inputDir        directory containing source files
+     * @param sourceFiles     list of source files to include
+     * @param sourceIncludes  list of source files to include
+     * @param sourceExcludes  list of source files to exclude
+     * @param outputDir       directory to write the final file
+     * @param outputFilename  the output file name
+     * @param engine          minify processor engine selected
+     * @param yuiConfig       YUI Compressor configuration
+     * @param closureConfig   Google Closure Compiler configuration
      */
     public ProcessJSFilesTask(Log log, boolean verbose, Integer bufferSize, String charset, String suffix,
-            boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir, String webappTargetDir,
-            String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
-            String outputDir, String outputFilename, Engine engine, YuiConfig yuiConfig, ClosureConfig closureConfig) {
+                              boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir, String webappTargetDir,
+                              String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
+                              String outputDir, String outputFilename, Engine engine, YuiConfig yuiConfig, ClosureConfig closureConfig,
+                              boolean sourceMapGeneration, boolean gzip) {
         super(log, verbose, bufferSize, charset, suffix, nosuffix, skipMerge, skipMinify, webappSourceDir,
                 webappTargetDir, inputDir, sourceFiles, sourceIncludes, sourceExcludes, outputDir, outputFilename,
-                engine, yuiConfig);
+                engine, yuiConfig, sourceMapGeneration, gzip);
 
         this.closureConfig = closureConfig;
     }
@@ -86,7 +83,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
     /**
      * Minifies a JavaScript file.
      *
-     * @param mergedFile input file resulting from the merged step
+     * @param mergedFile   input file resulting from the merged step
      * @param minifiedFile output file resulting from the minify step
      * @throws IOException when the minify step fails
      */
@@ -138,5 +135,81 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
         }
 
         logCompressionGains(mergedFile, minifiedFile);
+    }
+
+
+    @Override
+    protected void mergeAndMinify(List<File> filesToMinify, File mergedFile, File minifiedFile) throws IOException {
+        merge(mergedFile);
+        try (InputStream in = new FileInputStream(mergedFile);
+             OutputStream out = new FileOutputStream(minifiedFile);
+             InputStreamReader reader = new InputStreamReader(in, charset);
+             OutputStreamWriter writer = new OutputStreamWriter(out, charset)) {
+            log.info("Creating the minified file [" + ((verbose) ? minifiedFile.getPath() : minifiedFile.getName())
+                    + "].");
+
+
+            switch (engine) {
+                case CLOSURE:
+                    log.debug("Using Google Closure Compiler engine.");
+
+                    CompilerOptions options = new CompilerOptions();
+                    closureConfig.getCompilationLevel().setOptionsForCompilationLevel(options);
+                    options.setOutputCharset(charset);
+                    options.setLanguageIn(closureConfig.getLanguage());
+
+                    File sourceMapResult = null;
+                    if (sourceMapGeneration) {
+                        sourceMapResult = new File(minifiedFile.getPath() + ".map");
+                        log.info("SourceMapOutputPath [" + sourceMapResult.getPath() + "].");
+                        options.setSourceMapFormat(SourceMap.Format.V3);
+                        options.setSourceMapOutputPath(sourceMapResult.getPath());
+                        options.setSourceMapLocationMappings(Lists.newArrayList(new SourceMap.LocationMapping(sourceDir.getPath() + File.separator, "")));
+                    }
+
+                    List<SourceFile> externs = closureConfig.getExterns();
+                    List<SourceFile> sourceFiles = Lists.newArrayList();
+                    for(File file : filesToMinify){
+                        sourceFiles.add(SourceFile.fromFile(file));
+                    }
+
+                    Compiler compiler = new Compiler();
+                    compiler.compile(externs, sourceFiles, options);
+
+                    if (compiler.hasErrors()) {
+                        throw new EvaluatorException(compiler.getErrors()[0].description);
+                    }
+
+                    writer.append(compiler.toSource());
+
+                    if (sourceMapGeneration) {
+                        log.info("Creating the minified file map [" + sourceMapResult.getPath() + "].");
+                        sourceMapResult.createNewFile();
+                        flushSourceMap(sourceMapResult, minifiedFile.getName(), compiler.getSourceMap());
+                        writer.append(System.getProperty("line.separator"));
+                        writer.append("//@ sourceMappingURL=" + sourceMapResult.getName());
+                    }
+                    break;
+                case YUI:
+                    minify(mergedFile, minifiedFile);
+                    break;
+                default:
+                    log.warn("JavaScript engine not supported.");
+                    break;
+            }
+        } catch (IOException e) {
+            log.error("Failed to compress the JavaScript file [" + mergedFile.getName() + "].", e);
+            throw e;
+        }
+
+        logCompressionGains(mergedFile, minifiedFile);
+        compressionFile(mergedFile);
+        compressionFile(minifiedFile);
+    }
+
+    private void flushSourceMap(File sourceMapOutputFile, String minifyFileName, SourceMap sourceMap) throws IOException {
+        FileWriter out = new FileWriter(sourceMapOutputFile);
+        sourceMap.appendTo(out, minifyFileName);
+        out.close();
     }
 }
