@@ -3,6 +3,7 @@
 ## 1.7.3
 
 * Improve docs: missing information about file order (#45).
+* Select the JVM default charset as the value for the `charset` option when none is defined (#48).
 
 ## 1.7.2
 

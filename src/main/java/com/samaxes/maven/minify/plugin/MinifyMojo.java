@@ -461,6 +461,9 @@ public class MinifyMojo extends AbstractMojo {
         if (Strings.isNullOrEmpty(jsTargetDir)) {
             jsTargetDir = jsSourceDir;
         }
+        if (Strings.isNullOrEmpty(charset)) {
+            charset = Charset.defaultCharset().name();
+        }
     }
 
     private YuiConfig fillYuiConfig() {
