@@ -381,6 +381,18 @@ public class MinifyMojo extends AbstractMojo {
     private ArrayList<String> closureExterns;
 
     /**
+     * <p>
+     * Collects information mapping the generated (compiled) source back to its original source for debugging purposes.
+     * </p>
+     * Source Map Revision 3 Proposal:<br />
+     * https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-_2gc6fAH0KY0k/edit
+     *
+     * @since 1.7.3
+     */
+    @Parameter(property = "closureCreateSourceMap", defaultValue = "false")
+    private boolean closureCreateSourceMap;
+
+    /**
      * Executed when the goal is invoked, it will first invoke a parallel lifecycle, ending at the given phase.
      */
     @Override
@@ -475,6 +487,6 @@ public class MinifyMojo extends AbstractMojo {
         for (String extern : closureExterns) {
             externs.add(SourceFile.fromFile(webappSourceDir + File.separator + extern, Charset.forName(charset)));
         }
-        return new ClosureConfig(closureLanguage, closureCompilationLevel, externs);
+        return new ClosureConfig(closureLanguage, closureCompilationLevel, externs, closureCreateSourceMap);
     }
 }
