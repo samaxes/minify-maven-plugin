@@ -10,7 +10,7 @@
 
     <groupId>com.samaxes.maven</groupId>
     <artifactId>minify-maven-plugin</artifactId>
-    <version>1.6.2</version>
+    <version>1.6.3-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <name>Minify Maven Plugin</name>
