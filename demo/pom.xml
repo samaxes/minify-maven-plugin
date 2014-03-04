@@ -78,7 +78,7 @@
                 <executions>
                     <execution>
                         <id>default-minify</id>
-                        <phase>process-resources</phase>
+                        <phase>package</phase>
                         <configuration>
                             <charset>utf-8</charset>
                             <jsEngine>closure</jsEngine>
