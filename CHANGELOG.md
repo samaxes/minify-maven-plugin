@@ -2,7 +2,7 @@
 
 ## 1.6.2
 
-* Cherry picked from commit 31fe5c91bf2d24c29251595206c3c4ebada1c712: [MINIFY-16] Added nosuffix option to avoid the suffix (.min) on the minified output filename.
+* Cherry picked from commit 31fe5c91bf2d24c29251595206c3c4ebada1c712: Added `nosuffix` option to avoid the suffix `.min` on the minified output file name (#16).
 
 ## 1.6.1
 
