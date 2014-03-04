@@ -105,7 +105,10 @@ public class MinifyMojo extends AbstractMojo {
 
     /**
      * Do not append a suffix to the minified output file name, independently of the value in the {@code suffix}
-     * parameter.
+     * parameter.<br/>
+     * <strong>Warning:</strong> when both the options {@code nosuffix} and {@code skipMerge} are set to {@code true},
+     * the plugin execution phase needs to be set to {@code package}, otherwise the output files will be overridden by
+     * the source files during the packaging.
      *
      * @since 1.7
      */
