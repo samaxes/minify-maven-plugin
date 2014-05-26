@@ -26,6 +26,7 @@
                     </descriptorRefs>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -34,11 +35,22 @@
                     <warSourceExcludes>**/reset.css,**/fonts.css,**/base.css,**/toc.css,**/samaxesjs.core.js,**/samaxesjs.toc.js</warSourceExcludes>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>com.samaxes.maven</groupId>
                 <artifactId>minify-maven-plugin</artifactId>
                 <version>1.7.3-SNAPSHOT</version>
                 <executions>
+                    <execution>
+                        <id>minify-via-aggregation-configuration</id>
+                        <goals>
+                            <goal>minify</goal>
+                        </goals>
+                        <configuration>
+                            <bundleConfiguration>src/main/resources/static-bundles.json</bundleConfiguration>
+                            <jsEngine>CLOSURE</jsEngine>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>default-minify</id>
                         <configuration>

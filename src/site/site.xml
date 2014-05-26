@@ -9,6 +9,7 @@
         </menu>
         <menu name="Examples">
             <item name="Basic Configuration" href="examples/basic.html" />
+			<item name="Bundle Configuration" href="examples/bundle.html" />
             <item name="Using include/exclude patterns" href="examples/patterns.html" />
             <item name="Exclude source files from WAR package" href="examples/exclude.html" />
         </menu>

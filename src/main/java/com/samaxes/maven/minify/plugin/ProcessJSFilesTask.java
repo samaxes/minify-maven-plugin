@@ -18,18 +18,6 @@
  */
 package com.samaxes.maven.minify.plugin;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.util.List;
-
-import org.apache.maven.plugin.logging.Log;
-
 import com.google.common.collect.Lists;
 import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.CompilerOptions;
@@ -40,42 +28,174 @@ import com.samaxes.maven.minify.common.JavaScriptErrorReporter;
 import com.samaxes.maven.minify.common.YuiConfig;
 import com.samaxes.maven.minify.plugin.MinifyMojo.Engine;
 import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
+import org.apache.maven.plugin.logging.Log;
+
+import java.io.*;
+import java.util.List;
 
 /**
  * Task for merging and compressing JavaScript files.
  */
 public class ProcessJSFilesTask extends ProcessFilesTask {
 
+    public static Builder create() {
+        return new Builder();
+    }
+
+    public static final class Builder {
+        private Log log;
+        private boolean verbose;
+        private Integer bufferSize;
+        private String charset;
+        private String suffix;
+        private boolean nosuffix;
+        private boolean skipMerge;
+        private boolean skipMinify;
+        private String webappSourceDir;
+        private String webappTargetDir;
+        private String inputDir;
+        private List<String> sourceFiles;
+        private List<String> sourceIncludes;
+        private List<String> sourceExcludes;
+        private String outputDir;
+        private String outputFilename;
+        private Engine engine;
+        private YuiConfig yuiConfig;
+        private ClosureConfig closureConfig;
+
+        public ProcessJSFilesTask build() {
+            return new ProcessJSFilesTask(log, verbose, bufferSize, charset, suffix,
+                    nosuffix, skipMerge, skipMinify, webappSourceDir, webappTargetDir,
+                    inputDir, sourceFiles, sourceIncludes, sourceExcludes,
+                    outputDir, outputFilename, engine, yuiConfig, closureConfig);
+        }
+
+        public Builder setClosureConfig(ClosureConfig closureConfig) {
+            this.closureConfig = closureConfig;
+            return this;
+        }
+
+        public Builder setYuiConfig(YuiConfig yuiConfig) {
+            this.yuiConfig = yuiConfig;
+            return this;
+        }
+
+        public Builder setEngine(Engine engine) {
+            this.engine = engine;
+            return this;
+        }
+
+        public Builder setOutputFilename(String outputFilename) {
+            this.outputFilename = outputFilename;
+            return this;
+        }
+
+        public Builder setOutputDir(String outputDir) {
+            this.outputDir = outputDir;
+            return this;
+        }
+
+        public Builder setSourceExcludes(List<String> sourceExcludes) {
+            this.sourceExcludes = sourceExcludes;
+            return this;
+        }
+
+        public Builder setSourceIncludes(List<String> sourceIncludes) {
+            this.sourceIncludes = sourceIncludes;
+            return this;
+        }
+
+        public Builder setSourceFiles(List<String> sourceFiles) {
+            this.sourceFiles = sourceFiles;
+            return this;
+        }
+
+        public Builder setInputDir(String inputDir) {
+            this.inputDir = inputDir;
+            return this;
+        }
+
+        public Builder setWebappTargetDir(String webappTargetDir) {
+            this.webappTargetDir = webappTargetDir;
+            return this;
+        }
+
+        public Builder setWebappSourceDir(String webappSourceDir) {
+            this.webappSourceDir = webappSourceDir;
+            return this;
+        }
+
+        public Builder setSkipMinify(boolean skipMinify) {
+            this.skipMinify = skipMinify;
+            return this;
+        }
+
+        public Builder setSkipMerge(boolean skipMerge) {
+            this.skipMerge = skipMerge;
+            return this;
+        }
+
+        public Builder setNosuffix(boolean nosuffix) {
+            this.nosuffix = nosuffix;
+            return this;
+        }
+
+        public Builder setSuffix(String suffix) {
+            this.suffix = suffix;
+            return this;
+        }
+
+        public Builder setCharset(String charset) {
+            this.charset = charset;
+            return this;
+        }
+
+        public Builder setBufferSize(Integer bufferSize) {
+            this.bufferSize = bufferSize;
+            return this;
+        }
+
+        public Builder setVerbose(boolean verbose) {
+            this.verbose = verbose;
+            return this;
+        }
+
+        public Builder setLog(Log log) {
+            this.log = log;
+            return this;
+        }
+    }
+
     private final ClosureConfig closureConfig;
 
     /**
      * Task constructor.
      *
-     * @param log Maven plugin log
-     * @param verbose display additional info
-     * @param bufferSize size of the buffer used to read source files
-     * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.
-     *        Otherwise, only byte-to-byte operations are used
-     * @param suffix final file name suffix
-     * @param nosuffix whether to use a suffix for the minified file name or not
-     * @param skipMerge whether to skip the merge step or not
-     * @param skipMinify whether to skip the minify step or not
+     * @param log             Maven plugin log
+     * @param verbose         display additional info
+     * @param bufferSize      size of the buffer used to read source files
+     * @param charset         if a character set is specified, a byte-to-char variant allows the encoding to be selected.
+     *                        Otherwise, only byte-to-byte operations are used
+     * @param suffix          final file name suffix
+     * @param nosuffix        whether to use a suffix for the minified file name or not
+     * @param skipMerge       whether to skip the merge step or not
+     * @param skipMinify      whether to skip the minify step or not
      * @param webappSourceDir web resources source directory
      * @param webappTargetDir web resources target directory
-     * @param inputDir directory containing source files
-     * @param sourceFiles list of source files to include
-     * @param sourceIncludes list of source files to include
-     * @param sourceExcludes list of source files to exclude
-     * @param outputDir directory to write the final file
-     * @param outputFilename the output file name
-     * @param engine minify processor engine selected
-     * @param yuiConfig YUI Compressor configuration
-     * @param closureConfig Google Closure Compiler configuration
+     * @param inputDir        directory containing source files
+     * @param sourceFiles     list of source files to include
+     * @param sourceIncludes  list of source files to include
+     * @param sourceExcludes  list of source files to exclude
+     * @param outputDir       directory to write the final file
+     * @param outputFilename  the output file name
+     * @param engine          minify processor engine selected
+     * @param yuiConfig       YUI Compressor configuration
+     * @param closureConfig   Google Closure Compiler configuration
      */
     public ProcessJSFilesTask(Log log, boolean verbose, Integer bufferSize, String charset, String suffix,
-            boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir, String webappTargetDir,
-            String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
-            String outputDir, String outputFilename, Engine engine, YuiConfig yuiConfig, ClosureConfig closureConfig) {
+                              boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir, String webappTargetDir,
+                              String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
+                              String outputDir, String outputFilename, Engine engine, YuiConfig yuiConfig, ClosureConfig closureConfig) {
         super(log, verbose, bufferSize, charset, suffix, nosuffix, skipMerge, skipMinify, webappSourceDir,
                 webappTargetDir, inputDir, sourceFiles, sourceIncludes, sourceExcludes, outputDir, outputFilename,
                 engine, yuiConfig);
@@ -86,16 +206,16 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
     /**
      * Minifies a JavaScript file.
      *
-     * @param mergedFile input file resulting from the merged step
+     * @param mergedFile   input file resulting from the merged step
      * @param minifiedFile output file resulting from the minify step
      * @throws IOException when the minify step fails
      */
     @Override
     protected void minify(File mergedFile, File minifiedFile) throws IOException {
         try (InputStream in = new FileInputStream(mergedFile);
-                OutputStream out = new FileOutputStream(minifiedFile);
-                InputStreamReader reader = new InputStreamReader(in, charset);
-                OutputStreamWriter writer = new OutputStreamWriter(out, charset)) {
+             OutputStream out = new FileOutputStream(minifiedFile);
+             InputStreamReader reader = new InputStreamReader(in, charset);
+             OutputStreamWriter writer = new OutputStreamWriter(out, charset)) {
             log.info("Creating the minified file [" + ((verbose) ? minifiedFile.getPath() : minifiedFile.getName())
                     + "].");
 
