@@ -21,6 +21,7 @@ package com.samaxes.maven.minify.plugin;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -29,12 +30,13 @@ import java.io.OutputStreamWriter;
 import java.util.List;
 
 import org.apache.maven.plugin.logging.Log;
+import org.mozilla.javascript.EvaluatorException;
 
 import com.google.common.collect.Lists;
 import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.CompilerOptions;
 import com.google.javascript.jscomp.SourceFile;
-import com.google.javascript.rhino.head.EvaluatorException;
+import com.google.javascript.jscomp.SourceMap;
 import com.samaxes.maven.minify.common.ClosureConfig;
 import com.samaxes.maven.minify.common.JavaScriptErrorReporter;
 import com.samaxes.maven.minify.common.YuiConfig;
@@ -108,6 +110,14 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
                     options.setOutputCharset(charset);
                     options.setLanguageIn(closureConfig.getLanguage());
 
+                    File sourceMapResult = new File(minifiedFile.getPath() + ".map");
+                    if (closureConfig.getSourceMapFormat() != null) {
+                        options.setSourceMapFormat(closureConfig.getSourceMapFormat());
+                        options.setSourceMapOutputPath(sourceMapResult.getPath());
+                        // options.setSourceMapLocationMappings(Lists.newArrayList(new
+                        // SourceMap.LocationMapping(sourceDir.getPath() + File.separator, "")));
+                    }
+
                     SourceFile input = SourceFile.fromInputStream(mergedFile.getName(), in);
                     List<SourceFile> externs = closureConfig.getExterns();
 
@@ -119,6 +129,18 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
                     }
 
                     writer.append(compiler.toSource());
+
+                    if (closureConfig.getSourceMapFormat() != null) {
+                        log.info("Creating the minified file map ["
+                                + ((verbose) ? sourceMapResult.getPath() : sourceMapResult.getName()) + "].");
+
+                        sourceMapResult.createNewFile();
+                        flushSourceMap(sourceMapResult, minifiedFile.getName(), compiler.getSourceMap());
+
+                        writer.append(System.getProperty("line.separator"));
+                        writer.append("//# sourceMappingURL=" + sourceMapResult.getName());
+                    }
+
                     break;
                 case YUI:
                     log.debug("Using YUI Compressor engine.");
@@ -133,10 +155,21 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
                     break;
             }
         } catch (IOException e) {
-            log.error("Failed to compress the JavaScript file [" + mergedFile.getName() + "].", e);
+            log.error(
+                    "Failed to compress the JavaScript file ["
+                            + ((verbose) ? mergedFile.getPath() : mergedFile.getName()) + "].", e);
             throw e;
         }
 
         logCompressionGains(mergedFile, minifiedFile);
+    }
+
+    private void flushSourceMap(File sourceMapOutputFile, String minifyFileName, SourceMap sourceMap) {
+        try (FileWriter out = new FileWriter(sourceMapOutputFile)) {
+            sourceMap.appendTo(out, minifyFileName);
+        } catch (IOException e) {
+            log.error("Failed to write the JavaScript Source Map file ["
+                    + ((verbose) ? sourceMapOutputFile.getPath() : sourceMapOutputFile.getName()) + "].", e);
+        }
     }
 }

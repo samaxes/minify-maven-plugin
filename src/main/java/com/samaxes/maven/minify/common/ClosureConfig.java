@@ -23,6 +23,8 @@ import java.util.List;
 import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 import com.google.javascript.jscomp.SourceFile;
+import com.google.javascript.jscomp.SourceMap;
+import com.google.javascript.jscomp.SourceMap.Format;
 
 /**
  * <a href="https://developers.google.com/closure/compiler/">Google Closure Compiler</a> configuration.
@@ -35,17 +37,22 @@ public class ClosureConfig {
 
     private final List<SourceFile> externs;
 
+    private final Format sourceMapFormat;
+
     /**
      * Init Closure Compiler values.
      *
      * @param language the version of ECMAScript used to report errors in the code
      * @param compilationLevel the degree of compression and optimization to apply to JavaScript
      * @param externs preserve symbols that are defined outside of the code you are compiling
+     * @param createSourceMap create a source map for the minifed/combined production files
      */
-    public ClosureConfig(LanguageMode language, CompilationLevel compilationLevel, List<SourceFile> externs) {
+    public ClosureConfig(LanguageMode language, CompilationLevel compilationLevel, List<SourceFile> externs,
+            boolean createSourceMap) {
         this.language = language;
         this.compilationLevel = compilationLevel;
         this.externs = externs;
+        this.sourceMapFormat = (createSourceMap) ? SourceMap.Format.V3 : null;
     }
 
     /**
@@ -73,5 +80,14 @@ public class ClosureConfig {
      */
     public List<SourceFile> getExterns() {
         return externs;
+    }
+
+    /**
+     * Gets the sourceMapFormat.
+     *
+     * @return the sourceMapFormat
+     */
+    public Format getSourceMapFormat() {
+        return sourceMapFormat;
     }
 }

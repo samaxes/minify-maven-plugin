@@ -99,7 +99,8 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
                     break;
             }
         } catch (IOException e) {
-            log.error("Failed to compress the CSS file [" + mergedFile.getName() + "].", e);
+            log.error("Failed to compress the CSS file [" + ((verbose) ? mergedFile.getPath() : mergedFile.getName())
+                    + "].", e);
             throw e;
         }
 

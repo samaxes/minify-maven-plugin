@@ -53,6 +53,7 @@
                                 <jsSourceFile>subdir/samaxesjs.toc.js</jsSourceFile>
                             </jsSourceFiles>
                             <jsEngine>CLOSURE</jsEngine>
+                            <closureCreateSourceMap>true</closureCreateSourceMap>
                             <!--closureCompilationLevel>ADVANCED_OPTIMIZATIONS</closureCompilationLevel-->
                             <!--closureExterns>
                                 <closureExtern>extern/external-lib.js</closureExtern>

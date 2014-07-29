@@ -44,13 +44,13 @@ public class SourceFilesEnumeration implements Enumeration<InputStream> {
      *
      * @param log Maven plugin log
      * @param files list of files
-     * @param debug show source file paths in log output
+     * @param verbose show source file paths in log output
      */
-    public SourceFilesEnumeration(Log log, List<File> files, boolean debug) {
+    public SourceFilesEnumeration(Log log, List<File> files, boolean verbose) {
         this.files = files;
 
         for (File file : files) {
-            log.info("Processing source file [" + ((debug) ? file.getPath() : file.getName()) + "].");
+            log.info("Processing source file [" + ((verbose) ? file.getPath() : file.getName()) + "].");
         }
     }
 

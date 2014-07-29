@@ -29,6 +29,7 @@ import java.io.OutputStreamWriter;
 import java.io.SequenceInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.zip.GZIPOutputStream;
@@ -38,7 +39,6 @@ import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 
-import com.samaxes.maven.minify.common.FilenameComparator;
 import com.samaxes.maven.minify.common.SourceFilesEnumeration;
 import com.samaxes.maven.minify.common.YuiConfig;
 import com.samaxes.maven.minify.plugin.MinifyMojo.Engine;
@@ -300,7 +300,12 @@ public abstract class ProcessFilesTask implements Callable<Object> {
                 includedFiles.add(new File(sourceDir, includedFilename));
             }
 
-            Collections.sort(includedFiles, new FilenameComparator());
+            Collections.sort(includedFiles, new Comparator<File>() {
+                @Override
+                public int compare(File o1, File o2) {
+                    return o1.getName().compareToIgnoreCase(o2.getName());
+                }
+            });
         }
 
         return includedFiles;

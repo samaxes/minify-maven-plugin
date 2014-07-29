@@ -5,6 +5,7 @@
 * Improve docs: missing information about file order (#45).
 * Select the JVM default charset as the value for the `charset` option when none is defined (#48).
 * Add a warning message to `nosuffix` option Javadoc (#50).
+* Add support for JavaScript Source Maps (#41).
 
 ## 1.7.2
 
