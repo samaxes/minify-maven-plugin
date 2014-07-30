@@ -396,6 +396,14 @@ public class MinifyMojo extends AbstractMojo {
     private boolean closureCreateSourceMap;
 
     /**
+     * Generate {@code $inject} properties for AngularJS for functions annotated with {@code @ngInject}.
+     *
+     * @since 1.7.3
+     */
+    @Parameter(property = "closureAngularPass", defaultValue = "false")
+    private boolean closureAngularPass;
+
+    /**
      * Executed when the goal is invoked, it will first invoke a parallel lifecycle, ending at the given phase.
      */
     @Override
@@ -490,6 +498,7 @@ public class MinifyMojo extends AbstractMojo {
         for (String extern : closureExterns) {
             externs.add(SourceFile.fromFile(webappSourceDir + File.separator + extern, Charset.forName(charset)));
         }
-        return new ClosureConfig(closureLanguage, closureCompilationLevel, externs, closureCreateSourceMap);
+        return new ClosureConfig(closureLanguage, closureCompilationLevel, externs, closureCreateSourceMap,
+                closureAngularPass);
     }
 }

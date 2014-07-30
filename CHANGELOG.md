@@ -6,6 +6,8 @@
 * Select the JVM default charset as the value for the `charset` option when none is defined (#48).
 * Add a warning message to `nosuffix` option Javadoc (#50).
 * Add support for JavaScript Source Maps (#41).
+* Update Google Closure Compiler to v20140625.
+* Add support for Google Closure Compiler `angular_pass` option (#60).
 
 ## 1.7.2
 

@@ -39,6 +39,8 @@ public class ClosureConfig {
 
     private final Format sourceMapFormat;
 
+    private final Boolean angularPass;
+
     /**
      * Init Closure Compiler values.
      *
@@ -46,13 +48,15 @@ public class ClosureConfig {
      * @param compilationLevel the degree of compression and optimization to apply to JavaScript
      * @param externs preserve symbols that are defined outside of the code you are compiling
      * @param createSourceMap create a source map for the minifed/combined production files
+     * @param angularPass use {@code @ngInject} annotation to generate Angular injections
      */
     public ClosureConfig(LanguageMode language, CompilationLevel compilationLevel, List<SourceFile> externs,
-            boolean createSourceMap) {
+            boolean createSourceMap, boolean angularPass) {
         this.language = language;
         this.compilationLevel = compilationLevel;
         this.externs = externs;
         this.sourceMapFormat = (createSourceMap) ? SourceMap.Format.V3 : null;
+        this.angularPass = angularPass;
     }
 
     /**
@@ -89,5 +93,14 @@ public class ClosureConfig {
      */
     public Format getSourceMapFormat() {
         return sourceMapFormat;
+    }
+
+    /**
+     * Gets the angularPass.
+     *
+     * @return the angularPass
+     */
+    public Boolean getAngularPass() {
+        return angularPass;
     }
 }
