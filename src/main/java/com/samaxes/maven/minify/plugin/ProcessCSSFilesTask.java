@@ -92,7 +92,7 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
                     log.debug("Using YUI Compressor engine.");
 
                     CssCompressor compressor = new CssCompressor(reader);
-                    compressor.compress(writer, yuiConfig.getLinebreak());
+                    compressor.compress(writer, yuiConfig.getLineBreak());
                     break;
                 default:
                     log.warn("CSS engine not supported.");

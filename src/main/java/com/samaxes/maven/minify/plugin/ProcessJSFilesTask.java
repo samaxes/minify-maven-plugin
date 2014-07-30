@@ -148,8 +148,8 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
 
                     JavaScriptCompressor compressor = new JavaScriptCompressor(reader, new JavaScriptErrorReporter(log,
                             mergedFile.getName()));
-                    compressor.compress(writer, yuiConfig.getLinebreak(), yuiConfig.isMunge(), verbose,
-                            yuiConfig.isPreserveAllSemiColons(), yuiConfig.isDisableOptimizations());
+                    compressor.compress(writer, yuiConfig.getLineBreak(), yuiConfig.isMunge(), verbose,
+                            yuiConfig.isPreserveSemicolons(), yuiConfig.isDisableOptimizations());
                     break;
                 default:
                     log.warn("JavaScript engine not supported.");

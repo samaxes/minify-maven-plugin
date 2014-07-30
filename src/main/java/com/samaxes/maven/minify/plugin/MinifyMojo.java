@@ -265,30 +265,30 @@ public class MinifyMojo extends AbstractMojo {
     /* *************************** */
 
     /**
-     * Some source control tools don't like files containing lines longer than, say 8000 characters. The linebreak
+     * Some source control tools don't like files containing lines longer than, say 8000 characters. The line-break
      * option is used in that case to split long lines after a specific column. It can also be used to make the code
      * more readable and easier to debug. Specify {@code 0} to get a line break after each semi-colon in JavaScript, and
      * after each rule in CSS. Specify {@code -1} to disallow line breaks.
      *
-     * @deprecated Use {@link #yuiLinebreak} instead.
+     * @deprecated Use {@link #yuiLineBreak} instead.
      */
     @Deprecated
     @Parameter(property = "linebreak")
     private Integer linebreak;
 
     /**
-     * Some source control tools don't like files containing lines longer than, say 8000 characters. The linebreak
+     * Some source control tools don't like files containing lines longer than, say 8000 characters. The line-break
      * option is used in that case to split long lines after a specific column. It can also be used to make the code
      * more readable and easier to debug. Specify {@code 0} to get a line break after each semi-colon in JavaScript, and
      * after each rule in CSS. Specify {@code -1} to disallow line breaks.
      */
-    @Parameter(property = "yuiLinebreak", defaultValue = "-1")
-    private int yuiLinebreak;
+    @Parameter(property = "yuiLineBreak", defaultValue = "-1")
+    private int yuiLineBreak;
 
     /**
-     * Minify only. Do not obfuscate local symbols.
+     * Obfuscate local symbols in addition to minification.
      *
-     * @deprecated Use {@link #yuiMunge} instead.
+     * @deprecated Use {@link #yuiNoMunge} instead.
      */
     @Deprecated
     @Parameter(property = "munge")
@@ -297,14 +297,14 @@ public class MinifyMojo extends AbstractMojo {
     /**
      * Minify only. Do not obfuscate local symbols.
      */
-    @Parameter(property = "yuiMunge", defaultValue = "true")
-    private boolean yuiMunge;
+    @Parameter(property = "yuiNoMunge", defaultValue = "false")
+    private boolean yuiNoMunge;
 
     /**
      * Preserve unnecessary semicolons (such as right before a '}'). This option is useful when compressed code has to
      * be run through JSLint.
      *
-     * @deprecated Use {@link #yuiPreserveAllSemiColons} instead.
+     * @deprecated Use {@link #yuiPreserveSemicolons} instead.
      */
     @Deprecated
     @Parameter(property = "preserveAllSemiColons")
@@ -314,8 +314,8 @@ public class MinifyMojo extends AbstractMojo {
      * Preserve unnecessary semicolons (such as right before a '}'). This option is useful when compressed code has to
      * be run through JSLint.
      */
-    @Parameter(property = "yuiPreserveAllSemiColons", defaultValue = "false")
-    private boolean yuiPreserveAllSemiColons;
+    @Parameter(property = "yuiPreserveSemicolons", defaultValue = "false")
+    private boolean yuiPreserveSemicolons;
 
     /**
      * Disable all the built-in micro-optimizations.
@@ -452,22 +452,22 @@ public class MinifyMojo extends AbstractMojo {
                     "The option 'debug' is deprecated and will be removed on the next version. Use 'verbose' instead.");
         }
         if (linebreak == null) {
-            linebreak = yuiLinebreak;
+            linebreak = yuiLineBreak;
         } else {
             getLog().warn(
-                    "The option 'linebreak' is deprecated and will be removed on the next version. Use 'yuiLinebreak' instead.");
+                    "The option 'linebreak' is deprecated and will be removed on the next version. Use 'yuiLineBreak' instead.");
         }
         if (munge == null) {
-            munge = yuiMunge;
+            munge = !yuiNoMunge;
         } else {
             getLog().warn(
-                    "The option 'munge' is deprecated and will be removed on the next version. Use 'yuiMunge' instead.");
+                    "The option 'munge' is deprecated and will be removed on the next version. Use 'yuiNoMunge' instead.");
         }
         if (preserveAllSemiColons == null) {
-            preserveAllSemiColons = yuiPreserveAllSemiColons;
+            preserveAllSemiColons = yuiPreserveSemicolons;
         } else {
             getLog().warn(
-                    "The option 'preserveAllSemiColons' is deprecated and will be removed on the next version. Use 'yuiPreserveAllSemiColons' instead.");
+                    "The option 'preserveAllSemiColons' is deprecated and will be removed on the next version. Use 'yuiPreserveSemicolons' instead.");
         }
         if (disableOptimizations == null) {
             disableOptimizations = yuiDisableOptimizations;

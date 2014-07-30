@@ -8,6 +8,9 @@
 * Add support for JavaScript Source Maps (#41).
 * Update Google Closure Compiler to v20140625.
 * Add support for Google Closure Compiler `angular_pass` option (#60).
+* Rename `yuiLinebreak` option to `yuiLineBreak`.
+* Rename `yuiMunge` option to `yuiNoMunge`.
+* Rename `yuiPreserveAllSemiColons` option to `yuiPreserveSemicolons`.
 
 ## 1.7.2
 
