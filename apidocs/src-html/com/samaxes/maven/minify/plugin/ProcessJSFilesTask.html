@@ -28,126 +28,163 @@
 <span class="sourceLineNo">020</span><a name="line.20"></a>
 <span class="sourceLineNo">021</span>import java.io.File;<a name="line.21"></a>
 <span class="sourceLineNo">022</span>import java.io.FileInputStream;<a name="line.22"></a>
-<span class="sourceLineNo">023</span>import java.io.FileOutputStream;<a name="line.23"></a>
-<span class="sourceLineNo">024</span>import java.io.IOException;<a name="line.24"></a>
-<span class="sourceLineNo">025</span>import java.io.InputStream;<a name="line.25"></a>
-<span class="sourceLineNo">026</span>import java.io.InputStreamReader;<a name="line.26"></a>
-<span class="sourceLineNo">027</span>import java.io.OutputStream;<a name="line.27"></a>
-<span class="sourceLineNo">028</span>import java.io.OutputStreamWriter;<a name="line.28"></a>
-<span class="sourceLineNo">029</span>import java.util.List;<a name="line.29"></a>
-<span class="sourceLineNo">030</span><a name="line.30"></a>
-<span class="sourceLineNo">031</span>import org.apache.maven.plugin.logging.Log;<a name="line.31"></a>
+<span class="sourceLineNo">023</span>import java.io.FileNotFoundException;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import java.io.FileOutputStream;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>import java.io.FileWriter;<a name="line.25"></a>
+<span class="sourceLineNo">026</span>import java.io.IOException;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import java.io.InputStream;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import java.io.InputStreamReader;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>import java.io.OutputStream;<a name="line.29"></a>
+<span class="sourceLineNo">030</span>import java.io.OutputStreamWriter;<a name="line.30"></a>
+<span class="sourceLineNo">031</span>import java.util.List;<a name="line.31"></a>
 <span class="sourceLineNo">032</span><a name="line.32"></a>
-<span class="sourceLineNo">033</span>import com.google.common.collect.Lists;<a name="line.33"></a>
-<span class="sourceLineNo">034</span>import com.google.javascript.jscomp.Compiler;<a name="line.34"></a>
-<span class="sourceLineNo">035</span>import com.google.javascript.jscomp.CompilerOptions;<a name="line.35"></a>
-<span class="sourceLineNo">036</span>import com.google.javascript.jscomp.SourceFile;<a name="line.36"></a>
-<span class="sourceLineNo">037</span>import com.google.javascript.rhino.head.EvaluatorException;<a name="line.37"></a>
-<span class="sourceLineNo">038</span>import com.samaxes.maven.minify.common.ClosureConfig;<a name="line.38"></a>
-<span class="sourceLineNo">039</span>import com.samaxes.maven.minify.common.JavaScriptErrorReporter;<a name="line.39"></a>
-<span class="sourceLineNo">040</span>import com.samaxes.maven.minify.common.YuiConfig;<a name="line.40"></a>
-<span class="sourceLineNo">041</span>import com.samaxes.maven.minify.plugin.MinifyMojo.Engine;<a name="line.41"></a>
-<span class="sourceLineNo">042</span>import com.yahoo.platform.yui.compressor.JavaScriptCompressor;<a name="line.42"></a>
-<span class="sourceLineNo">043</span><a name="line.43"></a>
-<span class="sourceLineNo">044</span>/**<a name="line.44"></a>
-<span class="sourceLineNo">045</span> * Task for merging and compressing JavaScript files.<a name="line.45"></a>
-<span class="sourceLineNo">046</span> */<a name="line.46"></a>
-<span class="sourceLineNo">047</span>public class ProcessJSFilesTask extends ProcessFilesTask {<a name="line.47"></a>
-<span class="sourceLineNo">048</span><a name="line.48"></a>
-<span class="sourceLineNo">049</span>    private final ClosureConfig closureConfig;<a name="line.49"></a>
-<span class="sourceLineNo">050</span><a name="line.50"></a>
-<span class="sourceLineNo">051</span>    /**<a name="line.51"></a>
-<span class="sourceLineNo">052</span>     * Task constructor.<a name="line.52"></a>
-<span class="sourceLineNo">053</span>     *<a name="line.53"></a>
-<span class="sourceLineNo">054</span>     * @param log Maven plugin log<a name="line.54"></a>
-<span class="sourceLineNo">055</span>     * @param verbose display additional info<a name="line.55"></a>
-<span class="sourceLineNo">056</span>     * @param bufferSize size of the buffer used to read source files<a name="line.56"></a>
-<span class="sourceLineNo">057</span>     * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.<a name="line.57"></a>
-<span class="sourceLineNo">058</span>     *        Otherwise, only byte-to-byte operations are used<a name="line.58"></a>
-<span class="sourceLineNo">059</span>     * @param suffix final file name suffix<a name="line.59"></a>
-<span class="sourceLineNo">060</span>     * @param nosuffix whether to use a suffix for the minified file name or not<a name="line.60"></a>
-<span class="sourceLineNo">061</span>     * @param skipMerge whether to skip the merge step or not<a name="line.61"></a>
-<span class="sourceLineNo">062</span>     * @param skipMinify whether to skip the minify step or not<a name="line.62"></a>
-<span class="sourceLineNo">063</span>     * @param webappSourceDir web resources source directory<a name="line.63"></a>
-<span class="sourceLineNo">064</span>     * @param webappTargetDir web resources target directory<a name="line.64"></a>
-<span class="sourceLineNo">065</span>     * @param inputDir directory containing source files<a name="line.65"></a>
-<span class="sourceLineNo">066</span>     * @param sourceFiles list of source files to include<a name="line.66"></a>
-<span class="sourceLineNo">067</span>     * @param sourceIncludes list of source files to include<a name="line.67"></a>
-<span class="sourceLineNo">068</span>     * @param sourceExcludes list of source files to exclude<a name="line.68"></a>
-<span class="sourceLineNo">069</span>     * @param outputDir directory to write the final file<a name="line.69"></a>
-<span class="sourceLineNo">070</span>     * @param outputFilename the output file name<a name="line.70"></a>
-<span class="sourceLineNo">071</span>     * @param engine minify processor engine selected<a name="line.71"></a>
-<span class="sourceLineNo">072</span>     * @param yuiConfig YUI Compressor configuration<a name="line.72"></a>
-<span class="sourceLineNo">073</span>     * @param closureConfig Google Closure Compiler configuration<a name="line.73"></a>
-<span class="sourceLineNo">074</span>     */<a name="line.74"></a>
-<span class="sourceLineNo">075</span>    public ProcessJSFilesTask(Log log, boolean verbose, Integer bufferSize, String charset, String suffix,<a name="line.75"></a>
-<span class="sourceLineNo">076</span>            boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir, String webappTargetDir,<a name="line.76"></a>
-<span class="sourceLineNo">077</span>            String inputDir, List&lt;String&gt; sourceFiles, List&lt;String&gt; sourceIncludes, List&lt;String&gt; sourceExcludes,<a name="line.77"></a>
-<span class="sourceLineNo">078</span>            String outputDir, String outputFilename, Engine engine, YuiConfig yuiConfig, ClosureConfig closureConfig) {<a name="line.78"></a>
-<span class="sourceLineNo">079</span>        super(log, verbose, bufferSize, charset, suffix, nosuffix, skipMerge, skipMinify, webappSourceDir,<a name="line.79"></a>
-<span class="sourceLineNo">080</span>                webappTargetDir, inputDir, sourceFiles, sourceIncludes, sourceExcludes, outputDir, outputFilename,<a name="line.80"></a>
-<span class="sourceLineNo">081</span>                engine, yuiConfig);<a name="line.81"></a>
-<span class="sourceLineNo">082</span><a name="line.82"></a>
-<span class="sourceLineNo">083</span>        this.closureConfig = closureConfig;<a name="line.83"></a>
-<span class="sourceLineNo">084</span>    }<a name="line.84"></a>
-<span class="sourceLineNo">085</span><a name="line.85"></a>
-<span class="sourceLineNo">086</span>    /**<a name="line.86"></a>
-<span class="sourceLineNo">087</span>     * Minifies a JavaScript file.<a name="line.87"></a>
-<span class="sourceLineNo">088</span>     *<a name="line.88"></a>
-<span class="sourceLineNo">089</span>     * @param mergedFile input file resulting from the merged step<a name="line.89"></a>
-<span class="sourceLineNo">090</span>     * @param minifiedFile output file resulting from the minify step<a name="line.90"></a>
-<span class="sourceLineNo">091</span>     * @throws IOException when the minify step fails<a name="line.91"></a>
-<span class="sourceLineNo">092</span>     */<a name="line.92"></a>
-<span class="sourceLineNo">093</span>    @Override<a name="line.93"></a>
-<span class="sourceLineNo">094</span>    protected void minify(File mergedFile, File minifiedFile) throws IOException {<a name="line.94"></a>
-<span class="sourceLineNo">095</span>        try (InputStream in = new FileInputStream(mergedFile);<a name="line.95"></a>
-<span class="sourceLineNo">096</span>                OutputStream out = new FileOutputStream(minifiedFile);<a name="line.96"></a>
-<span class="sourceLineNo">097</span>                InputStreamReader reader = new InputStreamReader(in, charset);<a name="line.97"></a>
-<span class="sourceLineNo">098</span>                OutputStreamWriter writer = new OutputStreamWriter(out, charset)) {<a name="line.98"></a>
-<span class="sourceLineNo">099</span>            log.info("Creating the minified file [" + ((verbose) ? minifiedFile.getPath() : minifiedFile.getName())<a name="line.99"></a>
-<span class="sourceLineNo">100</span>                    + "].");<a name="line.100"></a>
-<span class="sourceLineNo">101</span><a name="line.101"></a>
-<span class="sourceLineNo">102</span>            switch (engine) {<a name="line.102"></a>
-<span class="sourceLineNo">103</span>                case CLOSURE:<a name="line.103"></a>
-<span class="sourceLineNo">104</span>                    log.debug("Using Google Closure Compiler engine.");<a name="line.104"></a>
-<span class="sourceLineNo">105</span><a name="line.105"></a>
-<span class="sourceLineNo">106</span>                    CompilerOptions options = new CompilerOptions();<a name="line.106"></a>
-<span class="sourceLineNo">107</span>                    closureConfig.getCompilationLevel().setOptionsForCompilationLevel(options);<a name="line.107"></a>
-<span class="sourceLineNo">108</span>                    options.setOutputCharset(charset);<a name="line.108"></a>
-<span class="sourceLineNo">109</span>                    options.setLanguageIn(closureConfig.getLanguage());<a name="line.109"></a>
+<span class="sourceLineNo">033</span>import org.apache.maven.plugin.logging.Log;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import org.mozilla.javascript.EvaluatorException;<a name="line.34"></a>
+<span class="sourceLineNo">035</span><a name="line.35"></a>
+<span class="sourceLineNo">036</span>import com.google.common.collect.Lists;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import com.google.javascript.jscomp.Compiler;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import com.google.javascript.jscomp.CompilerOptions;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import com.google.javascript.jscomp.SourceFile;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import com.google.javascript.jscomp.SourceMap;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>import com.samaxes.maven.minify.common.ClosureConfig;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>import com.samaxes.maven.minify.common.JavaScriptErrorReporter;<a name="line.42"></a>
+<span class="sourceLineNo">043</span>import com.samaxes.maven.minify.common.YuiConfig;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>import com.samaxes.maven.minify.plugin.MinifyMojo.Engine;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>import com.yahoo.platform.yui.compressor.JavaScriptCompressor;<a name="line.45"></a>
+<span class="sourceLineNo">046</span><a name="line.46"></a>
+<span class="sourceLineNo">047</span>/**<a name="line.47"></a>
+<span class="sourceLineNo">048</span> * Task for merging and compressing JavaScript files.<a name="line.48"></a>
+<span class="sourceLineNo">049</span> */<a name="line.49"></a>
+<span class="sourceLineNo">050</span>public class ProcessJSFilesTask extends ProcessFilesTask {<a name="line.50"></a>
+<span class="sourceLineNo">051</span><a name="line.51"></a>
+<span class="sourceLineNo">052</span>    private final ClosureConfig closureConfig;<a name="line.52"></a>
+<span class="sourceLineNo">053</span><a name="line.53"></a>
+<span class="sourceLineNo">054</span>    /**<a name="line.54"></a>
+<span class="sourceLineNo">055</span>     * Task constructor.<a name="line.55"></a>
+<span class="sourceLineNo">056</span>     *<a name="line.56"></a>
+<span class="sourceLineNo">057</span>     * @param log Maven plugin log<a name="line.57"></a>
+<span class="sourceLineNo">058</span>     * @param verbose display additional info<a name="line.58"></a>
+<span class="sourceLineNo">059</span>     * @param bufferSize size of the buffer used to read source files<a name="line.59"></a>
+<span class="sourceLineNo">060</span>     * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.<a name="line.60"></a>
+<span class="sourceLineNo">061</span>     *        Otherwise, only byte-to-byte operations are used<a name="line.61"></a>
+<span class="sourceLineNo">062</span>     * @param suffix final file name suffix<a name="line.62"></a>
+<span class="sourceLineNo">063</span>     * @param nosuffix whether to use a suffix for the minified file name or not<a name="line.63"></a>
+<span class="sourceLineNo">064</span>     * @param skipMerge whether to skip the merge step or not<a name="line.64"></a>
+<span class="sourceLineNo">065</span>     * @param skipMinify whether to skip the minify step or not<a name="line.65"></a>
+<span class="sourceLineNo">066</span>     * @param webappSourceDir web resources source directory<a name="line.66"></a>
+<span class="sourceLineNo">067</span>     * @param webappTargetDir web resources target directory<a name="line.67"></a>
+<span class="sourceLineNo">068</span>     * @param inputDir directory containing source files<a name="line.68"></a>
+<span class="sourceLineNo">069</span>     * @param sourceFiles list of source files to include<a name="line.69"></a>
+<span class="sourceLineNo">070</span>     * @param sourceIncludes list of source files to include<a name="line.70"></a>
+<span class="sourceLineNo">071</span>     * @param sourceExcludes list of source files to exclude<a name="line.71"></a>
+<span class="sourceLineNo">072</span>     * @param outputDir directory to write the final file<a name="line.72"></a>
+<span class="sourceLineNo">073</span>     * @param outputFilename the output file name<a name="line.73"></a>
+<span class="sourceLineNo">074</span>     * @param engine minify processor engine selected<a name="line.74"></a>
+<span class="sourceLineNo">075</span>     * @param yuiConfig YUI Compressor configuration<a name="line.75"></a>
+<span class="sourceLineNo">076</span>     * @param closureConfig Google Closure Compiler configuration<a name="line.76"></a>
+<span class="sourceLineNo">077</span>     * @throws FileNotFoundException when the given source file does not exist<a name="line.77"></a>
+<span class="sourceLineNo">078</span>     */<a name="line.78"></a>
+<span class="sourceLineNo">079</span>    public ProcessJSFilesTask(Log log, boolean verbose, Integer bufferSize, String charset, String suffix,<a name="line.79"></a>
+<span class="sourceLineNo">080</span>            boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir, String webappTargetDir,<a name="line.80"></a>
+<span class="sourceLineNo">081</span>            String inputDir, List&lt;String&gt; sourceFiles, List&lt;String&gt; sourceIncludes, List&lt;String&gt; sourceExcludes,<a name="line.81"></a>
+<span class="sourceLineNo">082</span>            String outputDir, String outputFilename, Engine engine, YuiConfig yuiConfig, ClosureConfig closureConfig)<a name="line.82"></a>
+<span class="sourceLineNo">083</span>            throws FileNotFoundException {<a name="line.83"></a>
+<span class="sourceLineNo">084</span>        super(log, verbose, bufferSize, charset, suffix, nosuffix, skipMerge, skipMinify, webappSourceDir,<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                webappTargetDir, inputDir, sourceFiles, sourceIncludes, sourceExcludes, outputDir, outputFilename,<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                engine, yuiConfig);<a name="line.86"></a>
+<span class="sourceLineNo">087</span><a name="line.87"></a>
+<span class="sourceLineNo">088</span>        this.closureConfig = closureConfig;<a name="line.88"></a>
+<span class="sourceLineNo">089</span>    }<a name="line.89"></a>
+<span class="sourceLineNo">090</span><a name="line.90"></a>
+<span class="sourceLineNo">091</span>    /**<a name="line.91"></a>
+<span class="sourceLineNo">092</span>     * Minifies a JavaScript file.<a name="line.92"></a>
+<span class="sourceLineNo">093</span>     *<a name="line.93"></a>
+<span class="sourceLineNo">094</span>     * @param mergedFile input file resulting from the merged step<a name="line.94"></a>
+<span class="sourceLineNo">095</span>     * @param minifiedFile output file resulting from the minify step<a name="line.95"></a>
+<span class="sourceLineNo">096</span>     * @throws IOException when the minify step fails<a name="line.96"></a>
+<span class="sourceLineNo">097</span>     */<a name="line.97"></a>
+<span class="sourceLineNo">098</span>    @Override<a name="line.98"></a>
+<span class="sourceLineNo">099</span>    protected void minify(File mergedFile, File minifiedFile) throws IOException {<a name="line.99"></a>
+<span class="sourceLineNo">100</span>        try (InputStream in = new FileInputStream(mergedFile);<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                OutputStream out = new FileOutputStream(minifiedFile);<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                InputStreamReader reader = new InputStreamReader(in, charset);<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                OutputStreamWriter writer = new OutputStreamWriter(out, charset)) {<a name="line.103"></a>
+<span class="sourceLineNo">104</span>            log.info("Creating the minified file [" + ((verbose) ? minifiedFile.getPath() : minifiedFile.getName())<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                    + "].");<a name="line.105"></a>
+<span class="sourceLineNo">106</span><a name="line.106"></a>
+<span class="sourceLineNo">107</span>            switch (engine) {<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                case CLOSURE:<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                    log.debug("Using Google Closure Compiler engine.");<a name="line.109"></a>
 <span class="sourceLineNo">110</span><a name="line.110"></a>
-<span class="sourceLineNo">111</span>                    SourceFile input = SourceFile.fromInputStream(mergedFile.getName(), in);<a name="line.111"></a>
-<span class="sourceLineNo">112</span>                    List&lt;SourceFile&gt; externs = closureConfig.getExterns();<a name="line.112"></a>
-<span class="sourceLineNo">113</span><a name="line.113"></a>
-<span class="sourceLineNo">114</span>                    Compiler compiler = new Compiler();<a name="line.114"></a>
-<span class="sourceLineNo">115</span>                    compiler.compile(externs, Lists.newArrayList(input), options);<a name="line.115"></a>
+<span class="sourceLineNo">111</span>                    CompilerOptions options = new CompilerOptions();<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                    closureConfig.getCompilationLevel().setOptionsForCompilationLevel(options);<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                    options.setOutputCharset(charset);<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                    options.setLanguageIn(closureConfig.getLanguage());<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                    options.setAngularPass(closureConfig.getAngularPass());<a name="line.115"></a>
 <span class="sourceLineNo">116</span><a name="line.116"></a>
-<span class="sourceLineNo">117</span>                    if (compiler.hasErrors()) {<a name="line.117"></a>
-<span class="sourceLineNo">118</span>                        throw new EvaluatorException(compiler.getErrors()[0].description);<a name="line.118"></a>
-<span class="sourceLineNo">119</span>                    }<a name="line.119"></a>
-<span class="sourceLineNo">120</span><a name="line.120"></a>
-<span class="sourceLineNo">121</span>                    writer.append(compiler.toSource());<a name="line.121"></a>
-<span class="sourceLineNo">122</span>                    break;<a name="line.122"></a>
-<span class="sourceLineNo">123</span>                case YUI:<a name="line.123"></a>
-<span class="sourceLineNo">124</span>                    log.debug("Using YUI Compressor engine.");<a name="line.124"></a>
-<span class="sourceLineNo">125</span><a name="line.125"></a>
-<span class="sourceLineNo">126</span>                    JavaScriptCompressor compressor = new JavaScriptCompressor(reader, new JavaScriptErrorReporter(log,<a name="line.126"></a>
-<span class="sourceLineNo">127</span>                            mergedFile.getName()));<a name="line.127"></a>
-<span class="sourceLineNo">128</span>                    compressor.compress(writer, yuiConfig.getLinebreak(), yuiConfig.isMunge(), verbose,<a name="line.128"></a>
-<span class="sourceLineNo">129</span>                            yuiConfig.isPreserveAllSemiColons(), yuiConfig.isDisableOptimizations());<a name="line.129"></a>
-<span class="sourceLineNo">130</span>                    break;<a name="line.130"></a>
-<span class="sourceLineNo">131</span>                default:<a name="line.131"></a>
-<span class="sourceLineNo">132</span>                    log.warn("JavaScript engine not supported.");<a name="line.132"></a>
-<span class="sourceLineNo">133</span>                    break;<a name="line.133"></a>
-<span class="sourceLineNo">134</span>            }<a name="line.134"></a>
-<span class="sourceLineNo">135</span>        } catch (IOException e) {<a name="line.135"></a>
-<span class="sourceLineNo">136</span>            log.error("Failed to compress the JavaScript file [" + mergedFile.getName() + "].", e);<a name="line.136"></a>
-<span class="sourceLineNo">137</span>            throw e;<a name="line.137"></a>
-<span class="sourceLineNo">138</span>        }<a name="line.138"></a>
-<span class="sourceLineNo">139</span><a name="line.139"></a>
-<span class="sourceLineNo">140</span>        logCompressionGains(mergedFile, minifiedFile);<a name="line.140"></a>
-<span class="sourceLineNo">141</span>    }<a name="line.141"></a>
-<span class="sourceLineNo">142</span>}<a name="line.142"></a>
+<span class="sourceLineNo">117</span>                    File sourceMapResult = new File(minifiedFile.getPath() + ".map");<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                    if (closureConfig.getSourceMapFormat() != null) {<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                        options.setSourceMapFormat(closureConfig.getSourceMapFormat());<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                        options.setSourceMapOutputPath(sourceMapResult.getPath());<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                        // options.setSourceMapLocationMappings(Lists.newArrayList(new<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                        // SourceMap.LocationMapping(sourceDir.getPath() + File.separator, "")));<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                    }<a name="line.123"></a>
+<span class="sourceLineNo">124</span><a name="line.124"></a>
+<span class="sourceLineNo">125</span>                    SourceFile input = SourceFile.fromInputStream(mergedFile.getName(), in);<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                    List&lt;SourceFile&gt; externs = closureConfig.getExterns();<a name="line.126"></a>
+<span class="sourceLineNo">127</span><a name="line.127"></a>
+<span class="sourceLineNo">128</span>                    Compiler compiler = new Compiler();<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                    compiler.compile(externs, Lists.newArrayList(input), options);<a name="line.129"></a>
+<span class="sourceLineNo">130</span><a name="line.130"></a>
+<span class="sourceLineNo">131</span>                    if (compiler.hasErrors()) {<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                        throw new EvaluatorException(compiler.getErrors()[0].description);<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                    }<a name="line.133"></a>
+<span class="sourceLineNo">134</span><a name="line.134"></a>
+<span class="sourceLineNo">135</span>                    writer.append(compiler.toSource());<a name="line.135"></a>
+<span class="sourceLineNo">136</span><a name="line.136"></a>
+<span class="sourceLineNo">137</span>                    if (closureConfig.getSourceMapFormat() != null) {<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                        log.info("Creating the minified file map ["<a name="line.138"></a>
+<span class="sourceLineNo">139</span>                                + ((verbose) ? sourceMapResult.getPath() : sourceMapResult.getName()) + "].");<a name="line.139"></a>
+<span class="sourceLineNo">140</span><a name="line.140"></a>
+<span class="sourceLineNo">141</span>                        sourceMapResult.createNewFile();<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                        flushSourceMap(sourceMapResult, minifiedFile.getName(), compiler.getSourceMap());<a name="line.142"></a>
+<span class="sourceLineNo">143</span><a name="line.143"></a>
+<span class="sourceLineNo">144</span>                        writer.append(System.getProperty("line.separator"));<a name="line.144"></a>
+<span class="sourceLineNo">145</span>                        writer.append("//# sourceMappingURL=" + sourceMapResult.getName());<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                    }<a name="line.146"></a>
+<span class="sourceLineNo">147</span><a name="line.147"></a>
+<span class="sourceLineNo">148</span>                    break;<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                case YUI:<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                    log.debug("Using YUI Compressor engine.");<a name="line.150"></a>
+<span class="sourceLineNo">151</span><a name="line.151"></a>
+<span class="sourceLineNo">152</span>                    JavaScriptCompressor compressor = new JavaScriptCompressor(reader, new JavaScriptErrorReporter(log,<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                            mergedFile.getName()));<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                    compressor.compress(writer, yuiConfig.getLineBreak(), yuiConfig.isMunge(), verbose,<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                            yuiConfig.isPreserveSemicolons(), yuiConfig.isDisableOptimizations());<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                    break;<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                default:<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                    log.warn("JavaScript engine not supported.");<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                    break;<a name="line.159"></a>
+<span class="sourceLineNo">160</span>            }<a name="line.160"></a>
+<span class="sourceLineNo">161</span>        } catch (IOException e) {<a name="line.161"></a>
+<span class="sourceLineNo">162</span>            log.error(<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                    "Failed to compress the JavaScript file ["<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                            + ((verbose) ? mergedFile.getPath() : mergedFile.getName()) + "].", e);<a name="line.164"></a>
+<span class="sourceLineNo">165</span>            throw e;<a name="line.165"></a>
+<span class="sourceLineNo">166</span>        }<a name="line.166"></a>
+<span class="sourceLineNo">167</span><a name="line.167"></a>
+<span class="sourceLineNo">168</span>        logCompressionGains(mergedFile, minifiedFile);<a name="line.168"></a>
+<span class="sourceLineNo">169</span>    }<a name="line.169"></a>
+<span class="sourceLineNo">170</span><a name="line.170"></a>
+<span class="sourceLineNo">171</span>    private void flushSourceMap(File sourceMapOutputFile, String minifyFileName, SourceMap sourceMap) {<a name="line.171"></a>
+<span class="sourceLineNo">172</span>        try (FileWriter out = new FileWriter(sourceMapOutputFile)) {<a name="line.172"></a>
+<span class="sourceLineNo">173</span>            sourceMap.appendTo(out, minifyFileName);<a name="line.173"></a>
+<span class="sourceLineNo">174</span>        } catch (IOException e) {<a name="line.174"></a>
+<span class="sourceLineNo">175</span>            log.error("Failed to write the JavaScript Source Map file ["<a name="line.175"></a>
+<span class="sourceLineNo">176</span>                    + ((verbose) ? sourceMapOutputFile.getPath() : sourceMapOutputFile.getName()) + "].", e);<a name="line.176"></a>
+<span class="sourceLineNo">177</span>        }<a name="line.177"></a>
+<span class="sourceLineNo">178</span>    }<a name="line.178"></a>
+<span class="sourceLineNo">179</span>}<a name="line.179"></a>
 
 
 

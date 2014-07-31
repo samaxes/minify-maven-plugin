@@ -52,13 +52,13 @@
 <span class="sourceLineNo">044</span>     *<a name="line.44"></a>
 <span class="sourceLineNo">045</span>     * @param log Maven plugin log<a name="line.45"></a>
 <span class="sourceLineNo">046</span>     * @param files list of files<a name="line.46"></a>
-<span class="sourceLineNo">047</span>     * @param debug show source file paths in log output<a name="line.47"></a>
+<span class="sourceLineNo">047</span>     * @param verbose show source file paths in log output<a name="line.47"></a>
 <span class="sourceLineNo">048</span>     */<a name="line.48"></a>
-<span class="sourceLineNo">049</span>    public SourceFilesEnumeration(Log log, List&lt;File&gt; files, boolean debug) {<a name="line.49"></a>
+<span class="sourceLineNo">049</span>    public SourceFilesEnumeration(Log log, List&lt;File&gt; files, boolean verbose) {<a name="line.49"></a>
 <span class="sourceLineNo">050</span>        this.files = files;<a name="line.50"></a>
 <span class="sourceLineNo">051</span><a name="line.51"></a>
 <span class="sourceLineNo">052</span>        for (File file : files) {<a name="line.52"></a>
-<span class="sourceLineNo">053</span>            log.info("Processing source file [" + ((debug) ? file.getPath() : file.getName()) + "].");<a name="line.53"></a>
+<span class="sourceLineNo">053</span>            log.info("Processing source file [" + ((verbose) ? file.getPath() : file.getName()) + "].");<a name="line.53"></a>
 <span class="sourceLineNo">054</span>        }<a name="line.54"></a>
 <span class="sourceLineNo">055</span>    }<a name="line.55"></a>
 <span class="sourceLineNo">056</span><a name="line.56"></a>
