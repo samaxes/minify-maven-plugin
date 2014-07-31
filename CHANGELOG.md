@@ -11,6 +11,7 @@
 * Rename `yuiLinebreak` option to `yuiLineBreak`.
 * Rename `yuiMunge` option to `yuiNoMunge`.
 * Rename `yuiPreserveAllSemiColons` option to `yuiPreserveSemicolons`.
+* Fail build when a specified source file is not found (#53).
 
 ## 1.7.2
 

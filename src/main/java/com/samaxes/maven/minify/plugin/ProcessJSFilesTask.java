@@ -20,6 +20,7 @@ package com.samaxes.maven.minify.plugin;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -73,11 +74,13 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      * @param engine minify processor engine selected
      * @param yuiConfig YUI Compressor configuration
      * @param closureConfig Google Closure Compiler configuration
+     * @throws FileNotFoundException when the given source file does not exist
      */
     public ProcessJSFilesTask(Log log, boolean verbose, Integer bufferSize, String charset, String suffix,
             boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir, String webappTargetDir,
             String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
-            String outputDir, String outputFilename, Engine engine, YuiConfig yuiConfig, ClosureConfig closureConfig) {
+            String outputDir, String outputFilename, Engine engine, YuiConfig yuiConfig, ClosureConfig closureConfig)
+            throws FileNotFoundException {
         super(log, verbose, bufferSize, charset, suffix, nosuffix, skipMerge, skipMinify, webappSourceDir,
                 webappTargetDir, inputDir, sourceFiles, sourceIncludes, sourceExcludes, outputDir, outputFilename,
                 engine, yuiConfig);

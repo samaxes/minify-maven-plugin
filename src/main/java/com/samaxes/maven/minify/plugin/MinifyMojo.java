@@ -19,6 +19,7 @@
 package com.samaxes.maven.minify.plugin;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -420,12 +421,16 @@ public class MinifyMojo extends AbstractMojo {
         ClosureConfig closureConfig = fillClosureConfig();
 
         Collection<ProcessFilesTask> processFilesTasks = new ArrayList<ProcessFilesTask>();
-        processFilesTasks.add(new ProcessCSSFilesTask(getLog(), debug, bufferSize, charset, suffix, nosuffix,
-                skipMerge, skipMinify, webappSourceDir, webappTargetDir, cssSourceDir, cssSourceFiles,
-                cssSourceIncludes, cssSourceExcludes, cssTargetDir, cssFinalFile, cssEngine, yuiConfig));
-        processFilesTasks.add(new ProcessJSFilesTask(getLog(), debug, bufferSize, charset, suffix, nosuffix, skipMerge,
-                skipMinify, webappSourceDir, webappTargetDir, jsSourceDir, jsSourceFiles, jsSourceIncludes,
-                jsSourceExcludes, jsTargetDir, jsFinalFile, jsEngine, yuiConfig, closureConfig));
+        try {
+            processFilesTasks.add(new ProcessCSSFilesTask(getLog(), debug, bufferSize, charset, suffix, nosuffix,
+                    skipMerge, skipMinify, webappSourceDir, webappTargetDir, cssSourceDir, cssSourceFiles,
+                    cssSourceIncludes, cssSourceExcludes, cssTargetDir, cssFinalFile, cssEngine, yuiConfig));
+            processFilesTasks.add(new ProcessJSFilesTask(getLog(), debug, bufferSize, charset, suffix, nosuffix,
+                    skipMerge, skipMinify, webappSourceDir, webappTargetDir, jsSourceDir, jsSourceFiles,
+                    jsSourceIncludes, jsSourceExcludes, jsTargetDir, jsFinalFile, jsEngine, yuiConfig, closureConfig));
+        } catch (FileNotFoundException e) {
+            throw new MojoFailureException(e.getMessage(), e);
+        }
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
         try {
@@ -434,13 +439,13 @@ public class MinifyMojo extends AbstractMojo {
                 try {
                     future.get();
                 } catch (ExecutionException e) {
-                    throw new MojoFailureException(e.getMessage(), e);
+                    throw new MojoExecutionException(e.getMessage(), e);
                 }
             }
             executor.shutdown();
         } catch (InterruptedException e) {
             executor.shutdownNow();
-            throw new MojoFailureException(e.getMessage(), e);
+            throw new MojoExecutionException(e.getMessage(), e);
         }
     }
 
