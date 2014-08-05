@@ -30,8 +30,11 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.List;
 
-import com.google.javascript.jscomp.*;
+import com.google.javascript.jscomp.CommandLineRunner;
 import com.google.javascript.jscomp.Compiler;
+import com.google.javascript.jscomp.CompilerOptions;
+import com.google.javascript.jscomp.SourceFile;
+import com.google.javascript.jscomp.SourceMap;
 import org.apache.maven.plugin.logging.Log;
 import org.mozilla.javascript.EvaluatorException;
 
