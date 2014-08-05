@@ -30,14 +30,12 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.List;
 
+import com.google.javascript.jscomp.*;
+import com.google.javascript.jscomp.Compiler;
 import org.apache.maven.plugin.logging.Log;
 import org.mozilla.javascript.EvaluatorException;
 
 import com.google.common.collect.Lists;
-import com.google.javascript.jscomp.Compiler;
-import com.google.javascript.jscomp.CompilerOptions;
-import com.google.javascript.jscomp.SourceFile;
-import com.google.javascript.jscomp.SourceMap;
 import com.samaxes.maven.minify.common.ClosureConfig;
 import com.samaxes.maven.minify.common.JavaScriptErrorReporter;
 import com.samaxes.maven.minify.common.YuiConfig;
@@ -124,6 +122,10 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
 
                     SourceFile input = SourceFile.fromInputStream(mergedFile.getName(), in);
                     List<SourceFile> externs = closureConfig.getExterns();
+                    if (closureConfig.getUseDefaultExterns()) {
+                        externs.addAll(CommandLineRunner.getDefaultExterns());
+                    }
+                    System.err.println(externs.size());
 
                     Compiler compiler = new Compiler();
                     compiler.compile(externs, Lists.newArrayList(input), options);
