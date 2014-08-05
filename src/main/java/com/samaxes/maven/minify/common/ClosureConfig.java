@@ -41,6 +41,8 @@ public class ClosureConfig {
 
     private final Boolean angularPass;
 
+    private final Boolean useDefaultExterns;
+
     /**
      * Init Closure Compiler values.
      *
@@ -49,14 +51,16 @@ public class ClosureConfig {
      * @param externs preserve symbols that are defined outside of the code you are compiling
      * @param createSourceMap create a source map for the minifed/combined production files
      * @param angularPass use {@code @ngInject} annotation to generate Angular injections
+     * @param useDefaultExterns use externs packed with the Google Closure Compiler
      */
     public ClosureConfig(LanguageMode language, CompilationLevel compilationLevel, List<SourceFile> externs,
-            boolean createSourceMap, boolean angularPass) {
+            boolean createSourceMap, boolean angularPass, boolean useDefaultExterns) {
         this.language = language;
         this.compilationLevel = compilationLevel;
         this.externs = externs;
         this.sourceMapFormat = (createSourceMap) ? SourceMap.Format.V3 : null;
         this.angularPass = angularPass;
+        this.useDefaultExterns = useDefaultExterns;
     }
 
     /**
@@ -102,5 +106,14 @@ public class ClosureConfig {
      */
     public Boolean getAngularPass() {
         return angularPass;
+    }
+
+    /**
+     * Gets the useDefaultExterns.
+     *
+     * @return the useDefaultExterns
+     * */
+    public Boolean getUseDefaultExterns() {
+        return useDefaultExterns;
     }
 }
