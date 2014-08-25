@@ -1,5 +1,9 @@
 # Minify Maven Plugin
 
+## 1.7.4
+
+* Update Google Closure Compiler to v20140814 (#71).
+
 ## 1.7.3
 
 * Improve docs: missing information about file order (#45).

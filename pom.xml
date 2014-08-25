@@ -184,7 +184,7 @@
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
-            <version>3.2.2</version>
+            <version>3.2.3</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -203,7 +203,7 @@
         <dependency>
             <groupId>com.google.javascript</groupId>
             <artifactId>closure-compiler</artifactId>
-            <version>v20140625</version>
+            <version>v20140814</version>
             <optional>true</optional>
         </dependency>
     </dependencies>
