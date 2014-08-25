@@ -3,6 +3,7 @@
 ## 1.7.4
 
 * Update Google Closure Compiler to v20140814 (#71).
+* Add support for Closure Library dependencies sorting (#70).
 
 ## 1.7.3
 

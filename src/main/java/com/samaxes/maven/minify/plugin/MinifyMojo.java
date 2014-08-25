@@ -39,6 +39,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import com.google.common.base.Strings;
 import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
+import com.google.javascript.jscomp.DependencyOptions;
 import com.google.javascript.jscomp.SourceFile;
 import com.samaxes.maven.minify.common.ClosureConfig;
 import com.samaxes.maven.minify.common.YuiConfig;
@@ -397,6 +398,20 @@ public class MinifyMojo extends AbstractMojo {
     private boolean closureCreateSourceMap;
 
     /**
+     * <p>
+     * Enables or disables sorting mode for Closure Library dependencies.
+     * </p>
+     * <p>
+     * If true, automatically sort dependencies so that a file that {@code goog.provides} symbol X will always come
+     * before a file that {@code goog.requires} symbol X.
+     * </p>
+     *
+     * @since 1.7.4
+     */
+    @Parameter(property = "closureSortDependencies", defaultValue = "false")
+    private boolean closureSortDependencies;
+
+    /**
      * Generate {@code $inject} properties for AngularJS for functions annotated with {@code @ngInject}.
      *
      * @since 1.7.3
@@ -499,11 +514,15 @@ public class MinifyMojo extends AbstractMojo {
     }
 
     private ClosureConfig fillClosureConfig() {
+        DependencyOptions dependencyOptions = new DependencyOptions();
+        dependencyOptions.setDependencySorting(closureSortDependencies);
+
         List<SourceFile> externs = new ArrayList<>();
         for (String extern : closureExterns) {
             externs.add(SourceFile.fromFile(webappSourceDir + File.separator + extern, Charset.forName(charset)));
         }
-        return new ClosureConfig(closureLanguage, closureCompilationLevel, externs, closureCreateSourceMap,
-                closureAngularPass);
+
+        return new ClosureConfig(closureLanguage, closureCompilationLevel, dependencyOptions, externs,
+                closureCreateSourceMap, closureAngularPass);
     }
 }
