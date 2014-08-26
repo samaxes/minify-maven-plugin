@@ -40,6 +40,8 @@ public class ClosureConfig {
 
     private final List<SourceFile> externs;
 
+    private final Boolean useDefaultExterns;
+
     private final Format sourceMapFormat;
 
     private final Boolean angularPass;
@@ -51,15 +53,17 @@ public class ClosureConfig {
      * @param compilationLevel the degree of compression and optimization to apply to JavaScript
      * @param dependencyOptions options for how to manage dependencies between input files
      * @param externs preserve symbols that are defined outside of the code you are compiling
+     * @param useDefaultExterns use default externs packed with the Closure Compiler
      * @param createSourceMap create a source map for the minifed/combined production files
      * @param angularPass use {@code @ngInject} annotation to generate Angular injections
      */
     public ClosureConfig(LanguageMode language, CompilationLevel compilationLevel, DependencyOptions dependencyOptions,
-            List<SourceFile> externs, boolean createSourceMap, boolean angularPass) {
+            List<SourceFile> externs, boolean useDefaultExterns, boolean createSourceMap, boolean angularPass) {
         this.language = language;
         this.compilationLevel = compilationLevel;
         this.dependencyOptions = dependencyOptions;
         this.externs = externs;
+        this.useDefaultExterns = useDefaultExterns;
         this.sourceMapFormat = (createSourceMap) ? SourceMap.Format.V3 : null;
         this.angularPass = angularPass;
     }
@@ -98,6 +102,15 @@ public class ClosureConfig {
      */
     public List<SourceFile> getExterns() {
         return externs;
+    }
+
+    /**
+     * Gets the useDefaultExterns.
+     *
+     * @return the useDefaultExterns
+     */
+    public Boolean getUseDefaultExterns() {
+        return useDefaultExterns;
     }
 
     /**

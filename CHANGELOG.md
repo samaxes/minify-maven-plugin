@@ -4,6 +4,7 @@
 
 * Update Google Closure Compiler to v20140814 (#71).
 * Add support for Closure Library dependencies sorting (#70).
+* Add option to use default externs provided with the Google Closure Compiler (#67).
 
 ## 1.7.3
 
