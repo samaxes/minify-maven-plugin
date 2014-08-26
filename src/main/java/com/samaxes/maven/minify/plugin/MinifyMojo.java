@@ -387,10 +387,28 @@ public class MinifyMojo extends AbstractMojo {
 
     /**
      * <p>
+     * Use default externs provided with Closure Compiler.
+     * </p>
+     * <p>
+     * For the complete list of externs please visit:<br />
+     * <a href="https://github.com/google/closure-compiler/tree/master/externs">https://github.com/google/closure-
+     * compiler/tree/master/externs</a>
+     * </p>
+     *
+     * @since 1.7.4
+     */
+    @Parameter(property = "closureUseDefaultExterns", defaultValue = "false")
+    private boolean closureUseDefaultExterns;
+
+    /**
+     * <p>
      * Collects information mapping the generated (compiled) source back to its original source for debugging purposes.
      * </p>
-     * Source Map Revision 3 Proposal:<br />
-     * https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-_2gc6fAH0KY0k/edit
+     * <p>
+     * Please visit <a
+     * href="https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-_2gc6fAH0KY0k/edit">Source Map Revision 3
+     * Proposal</a> for more information.
+     * </p>
      *
      * @since 1.7.3
      */
@@ -523,6 +541,6 @@ public class MinifyMojo extends AbstractMojo {
         }
 
         return new ClosureConfig(closureLanguage, closureCompilationLevel, dependencyOptions, externs,
-                closureCreateSourceMap, closureAngularPass);
+                closureUseDefaultExterns, closureCreateSourceMap, closureAngularPass);
     }
 }
