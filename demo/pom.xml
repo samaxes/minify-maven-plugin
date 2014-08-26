@@ -7,7 +7,7 @@
 
     <groupId>com.samaxes.maven</groupId>
     <artifactId>minify-maven-plugin-demo</artifactId>
-    <version>1.7.4-SNAPSHOT</version>
+    <version>1.7.4</version>
     <packaging>war</packaging>
 
     <name>Minify Maven Plugin Demo</name>
@@ -38,7 +38,7 @@
             <plugin>
                 <groupId>com.samaxes.maven</groupId>
                 <artifactId>minify-maven-plugin</artifactId>
-                <version>1.7.4-SNAPSHOT</version>
+                <version>1.7.4</version>
                 <executions>
                     <execution>
                         <id>default-minify</id>
