@@ -23,7 +23,9 @@ import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -37,9 +39,12 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.google.common.base.Strings;
+import com.google.javascript.jscomp.CheckLevel;
 import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 import com.google.javascript.jscomp.DependencyOptions;
+import com.google.javascript.jscomp.DiagnosticGroup;
+import com.google.javascript.jscomp.DiagnosticGroups;
 import com.google.javascript.jscomp.SourceFile;
 import com.samaxes.maven.minify.common.ClosureConfig;
 import com.samaxes.maven.minify.common.YuiConfig;
@@ -438,6 +443,14 @@ public class MinifyMojo extends AbstractMojo {
     private boolean closureAngularPass;
 
     /**
+     * Tell Closure to treat certain warnings as the specified CheckLevel (one of OFF, WARNING, or ERROR).
+     *
+     * @since 1.7.5
+     */
+    @Parameter(property = "closureWarningLevels")
+    private HashMap<String, String> closureWarningLevels;
+
+    /**
      * Executed when the goal is invoked, it will first invoke a parallel lifecycle, ending at the given phase.
      */
     @Override
@@ -531,7 +544,7 @@ public class MinifyMojo extends AbstractMojo {
         return new YuiConfig(linebreak, munge, preserveAllSemiColons, disableOptimizations);
     }
 
-    private ClosureConfig fillClosureConfig() {
+    private ClosureConfig fillClosureConfig() throws MojoFailureException {
         DependencyOptions dependencyOptions = new DependencyOptions();
         dependencyOptions.setDependencySorting(closureSortDependencies);
 
@@ -540,7 +553,23 @@ public class MinifyMojo extends AbstractMojo {
             externs.add(SourceFile.fromFile(webappSourceDir + File.separator + extern, Charset.forName(charset)));
         }
 
+        Map<DiagnosticGroup, CheckLevel> warningLevels = new HashMap<DiagnosticGroup, CheckLevel>();
+        DiagnosticGroups diagnosticGroups = new DiagnosticGroups();
+        for(Map.Entry<String, String> warningLevel : closureWarningLevels.entrySet()) {
+            DiagnosticGroup diagnosticGroup = diagnosticGroups.forName(warningLevel.getKey());
+            if(diagnosticGroup == null) {
+                throw new MojoFailureException("Failed to process closureWarningLevels: " + warningLevel.getKey() + " is an invalid DiagnosticGroup");
+            }
+            CheckLevel checkLevel;
+            try {
+                checkLevel = CheckLevel.valueOf(warningLevel.getValue());
+            } catch(IllegalArgumentException e) {
+                throw new MojoFailureException("Failed to process closureWarningLevels: " + warningLevel.getKey() + " is an invalid CheckLevel");
+            }
+            warningLevels.put(diagnosticGroup, checkLevel);
+        }
+
         return new ClosureConfig(closureLanguage, closureCompilationLevel, dependencyOptions, externs,
-                closureUseDefaultExterns, closureCreateSourceMap, closureAngularPass);
+                closureUseDefaultExterns, closureCreateSourceMap, closureAngularPass, warningLevels);
     }
 }
