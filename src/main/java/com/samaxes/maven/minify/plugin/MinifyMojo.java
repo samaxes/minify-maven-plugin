@@ -19,6 +19,7 @@
 package com.samaxes.maven.minify.plugin;
 
 import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
 import com.google.gson.Gson;
 import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
@@ -48,6 +49,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import static com.google.common.collect.Lists.newArrayList;
+
+import com.google.common.base.Strings;
+import com.google.javascript.jscomp.CompilationLevel;
+import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
+import com.google.javascript.jscomp.DependencyOptions;
+import com.google.javascript.jscomp.SourceFile;
+import com.samaxes.maven.minify.common.ClosureConfig;
+import com.samaxes.maven.minify.common.YuiConfig;
 
 /**
  * Goal for combining and minifying CSS and JavaScript files.
@@ -282,30 +291,30 @@ public class MinifyMojo extends AbstractMojo {
     /* *************************** */
 
     /**
-     * Some source control tools don't like files containing lines longer than, say 8000 characters. The linebreak
+     * Some source control tools don't like files containing lines longer than, say 8000 characters. The line-break
      * option is used in that case to split long lines after a specific column. It can also be used to make the code
      * more readable and easier to debug. Specify {@code 0} to get a line break after each semi-colon in JavaScript, and
      * after each rule in CSS. Specify {@code -1} to disallow line breaks.
      *
-     * @deprecated Use {@link #yuiLinebreak} instead.
+     * @deprecated Use {@link #yuiLineBreak} instead.
      */
     @Deprecated
     @Parameter(property = "linebreak")
     private Integer linebreak;
 
     /**
-     * Some source control tools don't like files containing lines longer than, say 8000 characters. The linebreak
+     * Some source control tools don't like files containing lines longer than, say 8000 characters. The line-break
      * option is used in that case to split long lines after a specific column. It can also be used to make the code
      * more readable and easier to debug. Specify {@code 0} to get a line break after each semi-colon in JavaScript, and
      * after each rule in CSS. Specify {@code -1} to disallow line breaks.
      */
-    @Parameter(property = "yuiLinebreak", defaultValue = "-1")
-    private int yuiLinebreak;
+    @Parameter(property = "yuiLineBreak", defaultValue = "-1")
+    private int yuiLineBreak;
 
     /**
-     * Minify only. Do not obfuscate local symbols.
+     * Obfuscate local symbols in addition to minification.
      *
-     * @deprecated Use {@link #yuiMunge} instead.
+     * @deprecated Use {@link #yuiNoMunge} instead.
      */
     @Deprecated
     @Parameter(property = "munge")
@@ -314,14 +323,14 @@ public class MinifyMojo extends AbstractMojo {
     /**
      * Minify only. Do not obfuscate local symbols.
      */
-    @Parameter(property = "yuiMunge", defaultValue = "true")
-    private boolean yuiMunge;
+    @Parameter(property = "yuiNoMunge", defaultValue = "false")
+    private boolean yuiNoMunge;
 
     /**
      * Preserve unnecessary semicolons (such as right before a '}'). This option is useful when compressed code has to
      * be run through JSLint.
      *
-     * @deprecated Use {@link #yuiPreserveAllSemiColons} instead.
+     * @deprecated Use {@link #yuiPreserveSemicolons} instead.
      */
     @Deprecated
     @Parameter(property = "preserveAllSemiColons")
@@ -331,8 +340,8 @@ public class MinifyMojo extends AbstractMojo {
      * Preserve unnecessary semicolons (such as right before a '}'). This option is useful when compressed code has to
      * be run through JSLint.
      */
-    @Parameter(property = "yuiPreserveAllSemiColons", defaultValue = "false")
-    private boolean yuiPreserveAllSemiColons;
+    @Parameter(property = "yuiPreserveSemicolons", defaultValue = "false")
+    private boolean yuiPreserveSemicolons;
 
     /**
      * Disable all the built-in micro-optimizations.
@@ -401,6 +410,58 @@ public class MinifyMojo extends AbstractMojo {
     private ArrayList<String> closureExterns;
 
     /**
+     * <p>
+     * Use default externs provided with Closure Compiler.
+     * </p>
+     * <p>
+     * For the complete list of externs please visit:<br />
+     * <a href="https://github.com/google/closure-compiler/tree/master/externs">https://github.com/google/closure-
+     * compiler/tree/master/externs</a>
+     * </p>
+     *
+     * @since 1.7.4
+     */
+    @Parameter(property = "closureUseDefaultExterns", defaultValue = "false")
+    private boolean closureUseDefaultExterns;
+
+    /**
+     * <p>
+     * Collects information mapping the generated (compiled) source back to its original source for debugging purposes.
+     * </p>
+     * <p>
+     * Please visit <a
+     * href="https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-_2gc6fAH0KY0k/edit">Source Map Revision 3
+     * Proposal</a> for more information.
+     * </p>
+     *
+     * @since 1.7.3
+     */
+    @Parameter(property = "closureCreateSourceMap", defaultValue = "false")
+    private boolean closureCreateSourceMap;
+
+    /**
+     * <p>
+     * Enables or disables sorting mode for Closure Library dependencies.
+     * </p>
+     * <p>
+     * If true, automatically sort dependencies so that a file that {@code goog.provides} symbol X will always come
+     * before a file that {@code goog.requires} symbol X.
+     * </p>
+     *
+     * @since 1.7.4
+     */
+    @Parameter(property = "closureSortDependencies", defaultValue = "false")
+    private boolean closureSortDependencies;
+
+    /**
+     * Generate {@code $inject} properties for AngularJS for functions annotated with {@code @ngInject}.
+     *
+     * @since 1.7.3
+     */
+    @Parameter(property = "closureAngularPass", defaultValue = "false")
+    private boolean closureAngularPass;
+
+    /**
      * Executed when the goal is invoked, it will first invoke a parallel lifecycle, ending at the given phase.
      */
     @Override
@@ -416,7 +477,12 @@ public class MinifyMojo extends AbstractMojo {
         YuiConfig yuiConfig = fillYuiConfig();
         ClosureConfig closureConfig = fillClosureConfig();
 
-        final Collection<ProcessFilesTask> processFilesTasks = buildTasks(yuiConfig, closureConfig);
+        Collection<ProcessFilesTask> processFilesTasks = null;
+        try {
+            processFilesTasks = buildTasks(yuiConfig, closureConfig);
+        } catch (FileNotFoundException e) {
+            Throwables.propagate(e);
+        }
 
         final ExecutorService executor = Executors.newFixedThreadPool(processFilesTasks.size());
 
@@ -426,17 +492,17 @@ public class MinifyMojo extends AbstractMojo {
                 try {
                     future.get();
                 } catch (ExecutionException e) {
-                    throw new MojoFailureException(e.getMessage(), e);
+                    throw new MojoExecutionException(e.getMessage(), e);
                 }
             }
             executor.shutdown();
         } catch (InterruptedException e) {
             executor.shutdownNow();
-            throw new MojoFailureException(e.getMessage(), e);
+            throw new MojoExecutionException(e.getMessage(), e);
         }
     }
 
-    private Collection<ProcessFilesTask> buildTasks(YuiConfig yuiConfig, ClosureConfig closureConfig) throws MojoFailureException {
+    private Collection<ProcessFilesTask> buildTasks(YuiConfig yuiConfig, ClosureConfig closureConfig) throws MojoFailureException, FileNotFoundException {
 
         final List<ProcessFilesTask> tasks = newArrayList();
 
@@ -514,7 +580,7 @@ public class MinifyMojo extends AbstractMojo {
         return tasks;
     }
 
-    private ProcessFilesTask buildCssTask(YuiConfig yuiConfig, ClosureConfig closureConfig, Aggregation a) {
+    private ProcessFilesTask buildCssTask(YuiConfig yuiConfig, ClosureConfig closureConfig, Aggregation a) throws FileNotFoundException {
         return ProcessCSSFilesTask.builder()
                 .setLog(getLog())
                 .setVerbose(debug)
@@ -537,7 +603,7 @@ public class MinifyMojo extends AbstractMojo {
                 .build();
     }
 
-    private ProcessFilesTask buildJavascriptTask(YuiConfig yuiConfig, ClosureConfig closureConfig, Aggregation a) {
+    private ProcessFilesTask buildJavascriptTask(YuiConfig yuiConfig, ClosureConfig closureConfig, Aggregation a) throws FileNotFoundException {
         return ProcessJSFilesTask.create()
                 .setLog(getLog())
                 .setVerbose(debug)
@@ -570,22 +636,22 @@ public class MinifyMojo extends AbstractMojo {
                     "The option 'debug' is deprecated and will be removed on the next version. Use 'verbose' instead.");
         }
         if (linebreak == null) {
-            linebreak = yuiLinebreak;
+            linebreak = yuiLineBreak;
         } else {
             getLog().warn(
-                    "The option 'linebreak' is deprecated and will be removed on the next version. Use 'yuiLinebreak' instead.");
+                    "The option 'linebreak' is deprecated and will be removed on the next version. Use 'yuiLineBreak' instead.");
         }
         if (munge == null) {
-            munge = yuiMunge;
+            munge = !yuiNoMunge;
         } else {
             getLog().warn(
-                    "The option 'munge' is deprecated and will be removed on the next version. Use 'yuiMunge' instead.");
+                    "The option 'munge' is deprecated and will be removed on the next version. Use 'yuiNoMunge' instead.");
         }
         if (preserveAllSemiColons == null) {
-            preserveAllSemiColons = yuiPreserveAllSemiColons;
+            preserveAllSemiColons = yuiPreserveSemicolons;
         } else {
             getLog().warn(
-                    "The option 'preserveAllSemiColons' is deprecated and will be removed on the next version. Use 'yuiPreserveAllSemiColons' instead.");
+                    "The option 'preserveAllSemiColons' is deprecated and will be removed on the next version. Use 'yuiPreserveSemicolons' instead.");
         }
         if (disableOptimizations == null) {
             disableOptimizations = yuiDisableOptimizations;
@@ -612,10 +678,15 @@ public class MinifyMojo extends AbstractMojo {
     }
 
     private ClosureConfig fillClosureConfig() {
+        DependencyOptions dependencyOptions = new DependencyOptions();
+        dependencyOptions.setDependencySorting(closureSortDependencies);
+
         List<SourceFile> externs = new ArrayList<>();
         for (String extern : closureExterns) {
             externs.add(SourceFile.fromFile(webappSourceDir + File.separator + extern, Charset.forName(charset)));
         }
-        return new ClosureConfig(closureLanguage, closureCompilationLevel, externs);
+
+        return new ClosureConfig(closureLanguage, closureCompilationLevel, dependencyOptions, externs,
+                closureUseDefaultExterns, closureCreateSourceMap, closureAngularPass);
     }
 }

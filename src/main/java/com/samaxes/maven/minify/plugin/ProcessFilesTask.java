@@ -18,21 +18,31 @@
  */
 package com.samaxes.maven.minify.plugin;
 
-import com.samaxes.maven.minify.common.FilenameComparator;
-import com.samaxes.maven.minify.common.SourceFilesEnumeration;
-import com.samaxes.maven.minify.common.YuiConfig;
-import com.samaxes.maven.minify.plugin.MinifyMojo.Engine;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.SequenceInputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.zip.GZIPOutputStream;
+
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.zip.GZIPOutputStream;
+import com.samaxes.maven.minify.common.SourceFilesEnumeration;
+import com.samaxes.maven.minify.common.YuiConfig;
+import com.samaxes.maven.minify.plugin.MinifyMojo.Engine;
 
 /**
  * Abstract class for merging and compressing a files list.
@@ -97,9 +107,9 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * @param yuiConfig       YUI Compressor configuration
      */
     public ProcessFilesTask(Log log, boolean verbose, Integer bufferSize, String charset, String suffix,
-                            boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir, String webappTargetDir,
-                            String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
-                            String outputDir, String outputFilename, Engine engine, YuiConfig yuiConfig) {
+            boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir, String webappTargetDir,
+            String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
+            String outputDir, String outputFilename, Engine engine, YuiConfig yuiConfig) throws FileNotFoundException {
         this.log = log;
         this.verbose = verbose;
         this.bufferSize = bufferSize;
@@ -243,8 +253,9 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      *
      * @param finalFilename  the final file name
      * @param sourceFilename the source file name
+     * @throws FileNotFoundException when the given source file does not exist
      */
-    private void addNewSourceFile(String finalFilename, String sourceFilename) {
+    private void addNewSourceFile(String finalFilename, String sourceFilename) throws FileNotFoundException {
         File sourceFile = new File(sourceDir, sourceFilename);
 
         addNewSourceFile(finalFilename, sourceFile);
@@ -254,9 +265,10 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * Logs an addition of a new source file.
      *
      * @param finalFilename the final file name
-     * @param sourceFile    the source file
+     * @param sourceFile the source file
+     * @throws FileNotFoundException when the given source file does not exist
      */
-    private void addNewSourceFile(String finalFilename, File sourceFile) {
+    private void addNewSourceFile(String finalFilename, File sourceFile) throws FileNotFoundException {
         if (sourceFile.exists()) {
             if (finalFilename.equalsIgnoreCase(sourceFile.getName())) {
                 log.warn("The source file [" + ((verbose) ? sourceFile.getPath() : sourceFile.getName())
@@ -265,8 +277,8 @@ public abstract class ProcessFilesTask implements Callable<Object> {
             log.debug("Adding source file [" + ((verbose) ? sourceFile.getPath() : sourceFile.getName()) + "].");
             files.add(sourceFile);
         } else {
-            log.warn("The source file [" + ((verbose) ? sourceFile.getPath() : sourceFile.getName())
-                    + "] does not exist.");
+            throw new FileNotFoundException("The source file ["
+                    + ((verbose) ? sourceFile.getPath() : sourceFile.getName()) + "] does not exist.");
         }
     }
 
@@ -293,7 +305,12 @@ public abstract class ProcessFilesTask implements Callable<Object> {
                 includedFiles.add(new File(sourceDir, includedFilename));
             }
 
-            Collections.sort(includedFiles, new FilenameComparator());
+            Collections.sort(includedFiles, new Comparator<File>() {
+                @Override
+                public int compare(File o1, File o2) {
+                    return o1.getName().compareToIgnoreCase(o2.getName());
+                }
+            });
         }
 
         return includedFiles;

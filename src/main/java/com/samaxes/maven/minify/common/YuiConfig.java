@@ -23,36 +23,36 @@ package com.samaxes.maven.minify.common;
  */
 public class YuiConfig {
 
-    private final int linebreak;
+    private final int lineBreak;
 
     private final boolean munge;
 
-    private final boolean preserveAllSemiColons;
+    private final boolean preserveSemicolons;
 
     private final boolean disableOptimizations;
 
     /**
      * Init YuiConfig values.
      *
-     * @param linebreak split long lines after a specific column
-     * @param munge minify only
-     * @param preserveAllSemiColons preserve unnecessary semicolons
-     * @param disableOptimizations disable all the built-in micro optimizations
+     * @param lineBreak split long lines after a specific column
+     * @param munge obfuscate local symbols
+     * @param preserveSemicolons preserve unnecessary semicolons
+     * @param disableOptimizations disable all the built-in micro-optimizations
      */
-    public YuiConfig(int linebreak, boolean munge, boolean preserveAllSemiColons, boolean disableOptimizations) {
-        this.linebreak = linebreak;
+    public YuiConfig(int lineBreak, boolean munge, boolean preserveSemicolons, boolean disableOptimizations) {
+        this.lineBreak = lineBreak;
         this.munge = munge;
-        this.preserveAllSemiColons = preserveAllSemiColons;
+        this.preserveSemicolons = preserveSemicolons;
         this.disableOptimizations = disableOptimizations;
     }
 
     /**
-     * Gets the linebreak.
+     * Gets the lineBreak.
      *
-     * @return the linebreak
+     * @return the lineBreak
      */
-    public int getLinebreak() {
-        return linebreak;
+    public int getLineBreak() {
+        return lineBreak;
     }
 
     /**
@@ -65,12 +65,12 @@ public class YuiConfig {
     }
 
     /**
-     * Gets the preserveAllSemiColons.
+     * Gets the preserveSemicolons.
      *
-     * @return the preserveAllSemiColons
+     * @return the preserveSemicolons
      */
-    public boolean isPreserveAllSemiColons() {
-        return preserveAllSemiColons;
+    public boolean isPreserveSemicolons() {
+        return preserveSemicolons;
     }
 
     /**

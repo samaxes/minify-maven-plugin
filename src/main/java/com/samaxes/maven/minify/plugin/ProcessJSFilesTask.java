@@ -18,11 +18,27 @@
  */
 package com.samaxes.maven.minify.plugin;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.List;
+
+import org.apache.maven.plugin.logging.Log;
+import org.mozilla.javascript.EvaluatorException;
+
 import com.google.common.collect.Lists;
+import com.google.javascript.jscomp.CommandLineRunner;
 import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.CompilerOptions;
 import com.google.javascript.jscomp.SourceFile;
-import com.google.javascript.rhino.head.EvaluatorException;
+import com.google.javascript.jscomp.SourceMap;
 import com.samaxes.maven.minify.common.ClosureConfig;
 import com.samaxes.maven.minify.common.JavaScriptErrorReporter;
 import com.samaxes.maven.minify.common.YuiConfig;
@@ -63,7 +79,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
         private YuiConfig yuiConfig;
         private ClosureConfig closureConfig;
 
-        public ProcessJSFilesTask build() {
+        public ProcessJSFilesTask build() throws FileNotFoundException {
             return new ProcessJSFilesTask(log, verbose, bufferSize, charset, suffix,
                     nosuffix, skipMerge, skipMinify, webappSourceDir, webappTargetDir,
                     inputDir, sourceFiles, sourceIncludes, sourceExcludes,
@@ -193,9 +209,10 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      * @param closureConfig   Google Closure Compiler configuration
      */
     public ProcessJSFilesTask(Log log, boolean verbose, Integer bufferSize, String charset, String suffix,
-                              boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir, String webappTargetDir,
-                              String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
-                              String outputDir, String outputFilename, Engine engine, YuiConfig yuiConfig, ClosureConfig closureConfig) {
+            boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir, String webappTargetDir,
+            String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
+            String outputDir, String outputFilename, Engine engine, YuiConfig yuiConfig, ClosureConfig closureConfig)
+            throws FileNotFoundException {
         super(log, verbose, bufferSize, charset, suffix, nosuffix, skipMerge, skipMinify, webappSourceDir,
                 webappTargetDir, inputDir, sourceFiles, sourceIncludes, sourceExcludes, outputDir, outputFilename,
                 engine, yuiConfig);
@@ -227,9 +244,22 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
                     closureConfig.getCompilationLevel().setOptionsForCompilationLevel(options);
                     options.setOutputCharset(charset);
                     options.setLanguageIn(closureConfig.getLanguage());
+                    options.setAngularPass(closureConfig.getAngularPass());
+                    options.setDependencyOptions(closureConfig.getDependencyOptions());
+
+                    File sourceMapResult = new File(minifiedFile.getPath() + ".map");
+                    if (closureConfig.getSourceMapFormat() != null) {
+                        options.setSourceMapFormat(closureConfig.getSourceMapFormat());
+                        options.setSourceMapOutputPath(sourceMapResult.getPath());
+                        // options.setSourceMapLocationMappings(Lists.newArrayList(new
+                        // SourceMap.LocationMapping(sourceDir.getPath() + File.separator, "")));
+                    }
 
                     SourceFile input = SourceFile.fromInputStream(mergedFile.getName(), in);
                     List<SourceFile> externs = closureConfig.getExterns();
+                    if (closureConfig.getUseDefaultExterns()) {
+                        externs.addAll(CommandLineRunner.getDefaultExterns());
+                    }
 
                     Compiler compiler = new Compiler();
                     compiler.compile(externs, Lists.newArrayList(input), options);
@@ -239,24 +269,47 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
                     }
 
                     writer.append(compiler.toSource());
+
+                    if (closureConfig.getSourceMapFormat() != null) {
+                        log.info("Creating the minified file map ["
+                                + ((verbose) ? sourceMapResult.getPath() : sourceMapResult.getName()) + "].");
+
+                        sourceMapResult.createNewFile();
+                        flushSourceMap(sourceMapResult, minifiedFile.getName(), compiler.getSourceMap());
+
+                        writer.append(System.getProperty("line.separator"));
+                        writer.append("//# sourceMappingURL=" + sourceMapResult.getName());
+                    }
+
                     break;
                 case YUI:
                     log.debug("Using YUI Compressor engine.");
 
                     JavaScriptCompressor compressor = new JavaScriptCompressor(reader, new JavaScriptErrorReporter(log,
                             mergedFile.getName()));
-                    compressor.compress(writer, yuiConfig.getLinebreak(), yuiConfig.isMunge(), verbose,
-                            yuiConfig.isPreserveAllSemiColons(), yuiConfig.isDisableOptimizations());
+                    compressor.compress(writer, yuiConfig.getLineBreak(), yuiConfig.isMunge(), verbose,
+                            yuiConfig.isPreserveSemicolons(), yuiConfig.isDisableOptimizations());
                     break;
                 default:
                     log.warn("JavaScript engine not supported.");
                     break;
             }
         } catch (IOException e) {
-            log.error("Failed to compress the JavaScript file [" + mergedFile.getName() + "].", e);
+            log.error(
+                    "Failed to compress the JavaScript file ["
+                            + ((verbose) ? mergedFile.getPath() : mergedFile.getName()) + "].", e);
             throw e;
         }
 
         logCompressionGains(mergedFile, minifiedFile);
+    }
+
+    private void flushSourceMap(File sourceMapOutputFile, String minifyFileName, SourceMap sourceMap) {
+        try (FileWriter out = new FileWriter(sourceMapOutputFile)) {
+            sourceMap.appendTo(out, minifyFileName);
+        } catch (IOException e) {
+            log.error("Failed to write the JavaScript Source Map file ["
+                    + ((verbose) ? sourceMapOutputFile.getPath() : sourceMapOutputFile.getName()) + "].", e);
+        }
     }
 }

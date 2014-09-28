@@ -7,7 +7,7 @@
 
     <groupId>com.samaxes.maven</groupId>
     <artifactId>minify-maven-plugin-demo</artifactId>
-    <version>1.7.2</version>
+    <version>1.7.4</version>
     <packaging>war</packaging>
 
     <name>Minify Maven Plugin Demo</name>
@@ -17,6 +17,7 @@
     <build>
         <plugins>
             <plugin>
+                <!-- mvn assembly:single -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.4</version>
@@ -39,7 +40,7 @@
             <plugin>
                 <groupId>com.samaxes.maven</groupId>
                 <artifactId>minify-maven-plugin</artifactId>
-                <version>1.7.3-SNAPSHOT</version>
+                <version>1.7.4</version>
                 <executions>
                     <execution>
                         <id>minify-via-aggregation-configuration</id>
@@ -65,6 +66,7 @@
                                 <jsSourceFile>subdir/samaxesjs.toc.js</jsSourceFile>
                             </jsSourceFiles>
                             <jsEngine>CLOSURE</jsEngine>
+                            <closureCreateSourceMap>true</closureCreateSourceMap>
                             <!--closureCompilationLevel>ADVANCED_OPTIMIZATIONS</closureCompilationLevel-->
                             <!--closureExterns>
                                 <closureExtern>extern/external-lib.js</closureExtern>

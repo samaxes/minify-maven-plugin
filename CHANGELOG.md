@@ -1,10 +1,23 @@
 # Minify Maven Plugin
 
+## 1.7.4
+
+* Update Google Closure Compiler to v20140814 (#71).
+* Add support for Closure Library dependencies sorting (#70).
+* Add option to use default externs provided with the Google Closure Compiler (#67).
+
 ## 1.7.3
 
 * Improve docs: missing information about file order (#45).
 * Select the JVM default charset as the value for the `charset` option when none is defined (#48).
 * Add a warning message to `nosuffix` option Javadoc (#50).
+* Add support for JavaScript Source Maps (#41).
+* Update Google Closure Compiler to v20140625.
+* Add support for Google Closure Compiler `angular_pass` option (#60).
+* Rename `yuiLinebreak` option to `yuiLineBreak`.
+* Rename `yuiMunge` option to `yuiNoMunge`.
+* Rename `yuiPreserveAllSemiColons` option to `yuiPreserveSemicolons`.
+* Fail build when a specified source file is not found (#53).
 
 ## 1.7.2
 

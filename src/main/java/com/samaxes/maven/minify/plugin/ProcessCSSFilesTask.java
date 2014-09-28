@@ -18,6 +18,19 @@
  */
 package com.samaxes.maven.minify.plugin;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.List;
+
+import org.apache.maven.plugin.logging.Log;
+
 import com.samaxes.maven.minify.common.YuiConfig;
 import com.samaxes.maven.minify.plugin.MinifyMojo.Engine;
 import com.yahoo.platform.yui.compressor.CssCompressor;
@@ -54,7 +67,7 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
         private Engine engine;
         private YuiConfig yuiConfig;
 
-        public ProcessCSSFilesTask build() {
+        public ProcessCSSFilesTask build() throws FileNotFoundException {
             return new ProcessCSSFilesTask(log, verbose, bufferSize, charset, suffix,
                     nosuffix, skipMerge, skipMinify, webappSourceDir, webappTargetDir,
                     inputDir, sourceFiles, sourceIncludes, sourceExcludes,
@@ -176,9 +189,9 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
      * @param yuiConfig       YUI Compressor configuration
      */
     public ProcessCSSFilesTask(Log log, boolean verbose, Integer bufferSize, String charset, String suffix,
-                               boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir, String webappTargetDir,
-                               String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
-                               String outputDir, String outputFilename, Engine engine, YuiConfig yuiConfig) {
+            boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir, String webappTargetDir,
+            String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
+            String outputDir, String outputFilename, Engine engine, YuiConfig yuiConfig) throws FileNotFoundException {
         super(log, verbose, bufferSize, charset, suffix, nosuffix, skipMerge, skipMinify, webappSourceDir,
                 webappTargetDir, inputDir, sourceFiles, sourceIncludes, sourceExcludes, outputDir, outputFilename,
                 engine, yuiConfig);
@@ -205,14 +218,15 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
                     log.debug("Using YUI Compressor engine.");
 
                     CssCompressor compressor = new CssCompressor(reader);
-                    compressor.compress(writer, yuiConfig.getLinebreak());
+                    compressor.compress(writer, yuiConfig.getLineBreak());
                     break;
                 default:
                     log.warn("CSS engine not supported.");
                     break;
             }
         } catch (IOException e) {
-            log.error("Failed to compress the CSS file [" + mergedFile.getName() + "].", e);
+            log.error("Failed to compress the CSS file [" + ((verbose) ? mergedFile.getPath() : mergedFile.getName())
+                    + "].", e);
             throw e;
         }
 
