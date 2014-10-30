@@ -86,26 +86,25 @@ public abstract class ProcessFilesTask implements Callable<Object> {
     /**
      * Task constructor.
      *
-     * @param log Maven plugin log
-     * @param verbose display additional info
-     * @param bufferSize size of the buffer used to read source files
-     * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.
-     *        Otherwise, only byte-to-byte operations are used
-     * @param suffix final file name suffix
-     * @param nosuffix whether to use a suffix for the minified file name or not
-     * @param skipMerge whether to skip the merge step or not
-     * @param skipMinify whether to skip the minify step or not
+     * @param log             Maven plugin log
+     * @param verbose         display additional info
+     * @param bufferSize      size of the buffer used to read source files
+     * @param charset         if a character set is specified, a byte-to-char variant allows the encoding to be selected.
+     *                        Otherwise, only byte-to-byte operations are used
+     * @param suffix          final file name suffix
+     * @param nosuffix        whether to use a suffix for the minified file name or not
+     * @param skipMerge       whether to skip the merge step or not
+     * @param skipMinify      whether to skip the minify step or not
      * @param webappSourceDir web resources source directory
      * @param webappTargetDir web resources target directory
-     * @param inputDir directory containing source files
-     * @param sourceFiles list of source files to include
-     * @param sourceIncludes list of source files to include
-     * @param sourceExcludes list of source files to exclude
-     * @param outputDir directory to write the final file
-     * @param outputFilename the output file name
-     * @param engine minify processor engine selected
-     * @param yuiConfig YUI Compressor configuration
-     * @throws FileNotFoundException when the given source file does not exist
+     * @param inputDir        directory containing source files
+     * @param sourceFiles     list of source files to include
+     * @param sourceIncludes  list of source files to include
+     * @param sourceExcludes  list of source files to exclude
+     * @param outputDir       directory to write the final file
+     * @param outputFilename  the output file name
+     * @param engine          minify processor engine selected
+     * @param yuiConfig       YUI Compressor configuration
      */
     public ProcessFilesTask(Log log, boolean verbose, Integer bufferSize, String charset, String suffix,
             boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir, String webappTargetDir,
@@ -163,7 +162,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
 
                         File minifiedFile = new File(targetPath, (nosuffix) ? mergedFile.getName()
                                 : FileUtils.basename(mergedFile.getName()) + suffix
-                                        + FileUtils.getExtension(mergedFile.getName()));
+                                + FileUtils.getExtension(mergedFile.getName()));
                         minify(mergedFile, minifiedFile);
                     }
                 } else if (skipMinify) {
@@ -172,9 +171,11 @@ public abstract class ProcessFilesTask implements Callable<Object> {
                     log.info("Skipping the minify step...");
                 } else {
                     File mergedFile = new File(targetDir, (nosuffix) ? mergedFilename + TEMP_SUFFIX : mergedFilename);
+                    mergedFile.getParentFile().mkdirs();
                     merge(mergedFile);
                     File minifiedFile = new File(targetDir, (nosuffix) ? mergedFilename
                             : FileUtils.basename(mergedFilename) + suffix + FileUtils.getExtension(mergedFilename));
+                    minifiedFile.getParentFile().mkdirs();
                     minify(mergedFile, minifiedFile);
                     if (nosuffix) {
                         if (!mergedFile.delete()) {
@@ -200,9 +201,9 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      */
     protected void merge(File mergedFile) throws IOException {
         try (InputStream sequence = new SequenceInputStream(new SourceFilesEnumeration(log, files, verbose));
-                OutputStream out = new FileOutputStream(mergedFile);
-                InputStreamReader sequenceReader = new InputStreamReader(sequence, charset);
-                OutputStreamWriter outWriter = new OutputStreamWriter(out, charset)) {
+             OutputStream out = new FileOutputStream(mergedFile);
+             InputStreamReader sequenceReader = new InputStreamReader(sequence, charset);
+             OutputStreamWriter outWriter = new OutputStreamWriter(out, charset)) {
             log.info("Creating the merged file [" + ((verbose) ? mergedFile.getPath() : mergedFile.getName()) + "].");
 
             IOUtil.copy(sequenceReader, outWriter, bufferSize);
@@ -215,7 +216,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
     /**
      * Minifies a source file.
      *
-     * @param mergedFile input file resulting from the merged step
+     * @param mergedFile   input file resulting from the merged step
      * @param minifiedFile output file resulting from the minify step
      * @throws IOException when the minify step fails
      */
@@ -224,7 +225,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
     /**
      * Logs compression gains.
      *
-     * @param mergedFile input file resulting from the merged step
+     * @param mergedFile   input file resulting from the merged step
      * @param minifiedFile output file resulting from the minify step
      */
     void logCompressionGains(File mergedFile, File minifiedFile) {
@@ -232,8 +233,8 @@ public abstract class ProcessFilesTask implements Callable<Object> {
             File temp = File.createTempFile(minifiedFile.getName(), ".gz");
 
             try (InputStream in = new FileInputStream(minifiedFile);
-                    OutputStream out = new FileOutputStream(temp);
-                    GZIPOutputStream outGZIP = new GZIPOutputStream(out)) {
+                 OutputStream out = new FileOutputStream(temp);
+                 GZIPOutputStream outGZIP = new GZIPOutputStream(out)) {
                 IOUtil.copy(in, outGZIP, bufferSize);
             }
 
@@ -250,7 +251,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
     /**
      * Logs an addition of a new source file.
      *
-     * @param finalFilename the final file name
+     * @param finalFilename  the final file name
      * @param sourceFilename the source file name
      * @throws FileNotFoundException when the given source file does not exist
      */

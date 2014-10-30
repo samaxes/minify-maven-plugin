@@ -18,23 +18,37 @@
  */
 package com.samaxes.maven.minify.plugin;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
+import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
+import com.google.gson.Gson;
+import com.google.javascript.jscomp.CompilationLevel;
+import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
+import com.google.javascript.jscomp.SourceFile;
+import com.samaxes.maven.minify.common.Aggregation;
+import com.samaxes.maven.minify.common.AggregationConfiguration;
+import com.samaxes.maven.minify.common.ClosureConfig;
+import com.samaxes.maven.minify.common.YuiConfig;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import static com.google.common.collect.Lists.newArrayList;
 
 import com.google.common.base.Strings;
 import com.google.javascript.jscomp.CompilationLevel;
@@ -54,9 +68,13 @@ public class MinifyMojo extends AbstractMojo {
      * Engine used for minification
      */
     public static enum Engine {
-        /** YUI Compressor */
+        /**
+         * YUI Compressor
+         */
         YUI,
-        /** Google Closure Compiler */
+        /**
+         * Google Closure Compiler
+         */
         CLOSURE;
     }
 
@@ -85,6 +103,12 @@ public class MinifyMojo extends AbstractMojo {
      */
     @Parameter(property = "bufferSize", defaultValue = "4096")
     private int bufferSize;
+
+    /**
+     * Specify aggregations in an external json formatted config file
+     */
+    @Parameter(property = "bundleConfiguration", defaultValue = "")
+    private String bundleConfiguration;
 
     /**
      * If a supported character set is specified, it will be used to read the input file. Otherwise, it will assume that
@@ -453,19 +477,15 @@ public class MinifyMojo extends AbstractMojo {
         YuiConfig yuiConfig = fillYuiConfig();
         ClosureConfig closureConfig = fillClosureConfig();
 
-        Collection<ProcessFilesTask> processFilesTasks = new ArrayList<ProcessFilesTask>();
+        Collection<ProcessFilesTask> processFilesTasks = null;
         try {
-            processFilesTasks.add(new ProcessCSSFilesTask(getLog(), debug, bufferSize, charset, suffix, nosuffix,
-                    skipMerge, skipMinify, webappSourceDir, webappTargetDir, cssSourceDir, cssSourceFiles,
-                    cssSourceIncludes, cssSourceExcludes, cssTargetDir, cssFinalFile, cssEngine, yuiConfig));
-            processFilesTasks.add(new ProcessJSFilesTask(getLog(), debug, bufferSize, charset, suffix, nosuffix,
-                    skipMerge, skipMinify, webappSourceDir, webappTargetDir, jsSourceDir, jsSourceFiles,
-                    jsSourceIncludes, jsSourceExcludes, jsTargetDir, jsFinalFile, jsEngine, yuiConfig, closureConfig));
+            processFilesTasks = buildTasks(yuiConfig, closureConfig);
         } catch (FileNotFoundException e) {
-            throw new MojoFailureException(e.getMessage(), e);
+            Throwables.propagate(e);
         }
 
-        ExecutorService executor = Executors.newFixedThreadPool(2);
+        final ExecutorService executor = Executors.newFixedThreadPool(processFilesTasks.size());
+
         try {
             List<Future<Object>> futures = executor.invokeAll(processFilesTasks);
             for (Future<Object> future : futures) {
@@ -480,6 +500,132 @@ public class MinifyMojo extends AbstractMojo {
             executor.shutdownNow();
             throw new MojoExecutionException(e.getMessage(), e);
         }
+    }
+
+    private Collection<ProcessFilesTask> buildTasks(YuiConfig yuiConfig, ClosureConfig closureConfig) throws MojoFailureException, FileNotFoundException {
+
+        final List<ProcessFilesTask> tasks = newArrayList();
+
+        /*
+         * if we have a bundleConfiguration defined, attempt to use that...
+         */
+        if (!Strings.isNullOrEmpty(bundleConfiguration)) {
+            AggregationConfiguration configuration;
+            try {
+                configuration = new Gson().fromJson(new FileReader(bundleConfiguration), AggregationConfiguration.class);
+            } catch (FileNotFoundException e) {
+                throw new MojoFailureException("unable to open:" + bundleConfiguration, e);
+            }
+
+            for (Aggregation a : configuration.getBundles()) {
+                if (Aggregation.AggregationType.javascript.equals(a.getType())) {
+                    tasks.add(buildJavascriptTask(yuiConfig, closureConfig, a));
+                }
+                if (Aggregation.AggregationType.css.equals(a.getType())) {
+                    tasks.add(buildCssTask(yuiConfig, closureConfig, a));
+                }
+            }
+            return tasks;
+        }
+
+        /*
+         * ...Otherwise, fallback to the default behavior
+         */
+        final ProcessCSSFilesTask cssTask = ProcessCSSFilesTask.builder()
+                .setLog(getLog())
+                .setVerbose(debug)
+                .setBufferSize(bufferSize)
+                .setCharset(charset)
+                .setSuffix(suffix)
+                .setNosuffix(nosuffix)
+                .setSkipMerge(skipMerge)
+                .setSkipMinify(skipMinify)
+                .setWebappSourceDir(webappSourceDir)
+                .setWebappTargetDir(webappTargetDir)
+                .setInputDir(cssSourceDir)
+                .setSourceFiles(cssSourceFiles)
+                .setSourceIncludes(cssSourceIncludes)
+                .setSourceExcludes(cssSourceExcludes)
+                .setOutputDir(cssTargetDir)
+                .setOutputFilename(cssFinalFile)
+                .setEngine(cssEngine)
+                .setYuiConfig(yuiConfig)
+                .build();
+
+
+        final ProcessJSFilesTask javascriptTask = ProcessJSFilesTask.create()
+                .setLog(getLog())
+                .setVerbose(debug)
+                .setBufferSize(bufferSize)
+                .setCharset(charset)
+                .setSuffix(suffix)
+                .setNosuffix(nosuffix)
+                .setSkipMerge(skipMerge)
+                .setSkipMinify(skipMinify)
+                .setWebappSourceDir(webappSourceDir)
+                .setWebappTargetDir(webappTargetDir)
+                .setInputDir(jsSourceDir)
+                .setSourceFiles(jsSourceFiles)
+                .setSourceIncludes(jsSourceIncludes)
+                .setSourceExcludes(jsSourceExcludes)
+                .setOutputDir(jsTargetDir)
+                .setOutputFilename(jsFinalFile)
+                .setEngine(jsEngine)
+                .setYuiConfig(yuiConfig)
+                .setClosureConfig(closureConfig)
+                .build();
+
+        tasks.add(cssTask);
+        tasks.add(javascriptTask);
+        return tasks;
+    }
+
+    private ProcessFilesTask buildCssTask(YuiConfig yuiConfig, ClosureConfig closureConfig, Aggregation a) throws FileNotFoundException {
+        return ProcessCSSFilesTask.builder()
+                .setLog(getLog())
+                .setVerbose(debug)
+                .setBufferSize(bufferSize)
+                .setCharset(charset)
+                .setSuffix(suffix)
+                .setNosuffix(nosuffix)
+                .setSkipMerge(skipMerge)
+                .setSkipMinify(skipMinify)
+                .setWebappSourceDir(webappSourceDir)
+                .setWebappTargetDir(webappTargetDir)
+                .setInputDir(cssSourceDir)
+                .setSourceFiles(a.getFiles())
+                .setSourceIncludes(Collections.<String>emptyList())
+                .setSourceExcludes(Collections.<String>emptyList())
+                .setOutputDir(cssTargetDir)
+                .setOutputFilename(a.getName())
+                .setEngine(cssEngine)
+                .setYuiConfig(yuiConfig)
+                .build();
+    }
+
+    private ProcessFilesTask buildJavascriptTask(YuiConfig yuiConfig, ClosureConfig closureConfig, Aggregation a) throws FileNotFoundException {
+        return ProcessJSFilesTask.create()
+                .setLog(getLog())
+                .setVerbose(debug)
+                .setBufferSize(bufferSize)
+                .setCharset(charset)
+                .setSuffix(suffix)
+                .setNosuffix(nosuffix)
+                .setSkipMerge(skipMerge)
+                .setSkipMinify(skipMinify)
+                .setWebappSourceDir(webappSourceDir)
+                .setWebappTargetDir(webappTargetDir)
+                .setInputDir(jsSourceDir)
+                .setSourceFiles(a.getFiles())
+                .setSourceIncludes(Collections.<String>emptyList())
+                .setSourceExcludes(Collections.<String>emptyList())
+                .setOutputDir(jsTargetDir)
+                .setOutputFilename(a.getName())
+                .setEngine(jsEngine)
+                .setYuiConfig(yuiConfig)
+                .setClosureConfig(closureConfig)
+                .build();
+
     }
 
     private void checkDeprecatedOptions() {
