@@ -28,6 +28,11 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+    <mailingLists>
+        <mailingList>
+            <name>There is no mailing list</name>
+        </mailingList>
+    </mailingLists>
 
     <developers>
         <developer>
