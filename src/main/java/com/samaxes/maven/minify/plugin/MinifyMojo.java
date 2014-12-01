@@ -46,6 +46,10 @@ import com.samaxes.maven.minify.common.YuiConfig;
 
 /**
  * Goal for combining and minifying CSS and JavaScript files.
+ *
+ * Note: The following javadocs are to make the docck plugin happy
+ * @goal "minify"
+ * @phase "process-resources"
  */
 @Mojo(name = "minify", defaultPhase = LifecyclePhase.PROCESS_RESOURCES, threadSafe = true)
 public class MinifyMojo extends AbstractMojo {
