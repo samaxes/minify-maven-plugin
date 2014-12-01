@@ -202,13 +202,13 @@
         <dependency>
             <groupId>com.yahoo.platform.yui</groupId>
             <artifactId>yuicompressor</artifactId>
-            <version>2.4.8</version>
+            <version>${yuicompressor.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.google.javascript</groupId>
             <artifactId>closure-compiler</artifactId>
-            <version>v20141023</version>
+            <version>${closure.compiler.version}</version>
             <optional>true</optional>
         </dependency>
     </dependencies>
@@ -274,6 +274,9 @@
     </reporting>
 
     <properties>
+        <yuicompressor.version>2.4.8</yuicompressor.version>
+        <closure.compiler.version>v20141120</closure.compiler.version>
+
         <github.global.server>github</github.global.server>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
