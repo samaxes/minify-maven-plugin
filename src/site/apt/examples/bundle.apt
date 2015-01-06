@@ -7,10 +7,9 @@
  ------
 
 Bundle Configuration
-  
+
   You can optionally specify the source files to process via an external configuration file. 
-  When a <bundleConfiguration> is defined, it overrides <cssSourceFiles> and <jsSourceFile> of the {{{../examples/basic.html}Basic Configuration}}.
-  
+  When a <<<bundleConfiguration>>> is defined, it overrides <<<cssSourceFiles>>> and <<<jsSourceFile>>> of the {{{../examples/basic.html}Basic Configuration}}.
 
 +---+
 <project>
@@ -21,12 +20,12 @@ Bundle Configuration
       <plugin>
         <groupId>com.samaxes.maven</groupId>
         <artifactId>minify-maven-plugin</artifactId>
-        <version>${minify.plugin.version}</version>
+        <version>1.7.4</version>
         <executions>
           <execution>
             <id>bundle-minify</id>
             <configuration>
-			<bundleConfiguration>src/main/resources/static-bundles.json</bundleConfiguration>
+            <bundleConfiguration>src/minify/static-bundles.json</bundleConfiguration>
             </configuration>
             <goals>
               <goal>minify</goal>
@@ -41,34 +40,31 @@ Bundle Configuration
 </project>
 +---+
 
-
 Configuration Format
 
-  Bundles are defined in {{{http://en.wikipedia.org/wiki/JSON}JSON}} format
+  Bundles are defined in {{{http://en.wikipedia.org/wiki/JSON}JSON}} format.
 
 +---+
 {
-"bundles": [
-	{
-		"type":"css",
-		"name":"base-combined.css",
-		"files":[
-			"carousel.css",
-			"datepicker.css",
-			"default.css",
-			"facebook-plugin.css"
-		]
-	},
-	{
-		"type":"javascript",
-		"name":"static-combined.js",
-		"files":[
-			"samaxesjs.core.js",
-			"subdir/samaxesjs.toc.js"
-		]
-	}
-	
-]
+    "bundles": [
+        {
+            "type": "css",
+            "name": "static-combined.css",
+            "files": [
+                "reset.css",
+                "fonts.css",
+                "base.css",
+                "toc.css"
+            ]
+        },
+        {
+            "type": "js",
+            "name": "static-combined.js",
+            "files": [
+                "samaxesjs.core.js",
+                "subdir/samaxesjs.toc.js"
+            ]
+        }
+    ]
 }
 +---+
-

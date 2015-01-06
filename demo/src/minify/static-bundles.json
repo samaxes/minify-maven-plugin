@@ -11,13 +11,12 @@
             ]
         },
         {
-            "type": "javascript",
+            "type": "js",
             "name": "static-combined.js",
             "files": [
                 "samaxesjs.core.js",
                 "subdir/samaxesjs.toc.js"
             ]
         }
-
     ]
 }

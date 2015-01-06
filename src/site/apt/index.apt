@@ -27,11 +27,9 @@ Minify Maven Plugin
   To provide you with better understanding of some usages of the Minify Maven Plugin, you can take a look into the following examples:
 
   * {{{./examples/basic.html}Basic Configuration}}
-  
-  * {{{./examples/bundle.html}Bundle Configuration}}
-  
+
   * {{{./examples/patterns.html}Using include/exclude patterns}}
 
-  * {{{./examples/exclude.html}Exclude source files from WAR package}}
-  
+  * {{{./examples/bundle.html}Bundle Configuration}}
 
+  * {{{./examples/exclude.html}Exclude source files from WAR package}}

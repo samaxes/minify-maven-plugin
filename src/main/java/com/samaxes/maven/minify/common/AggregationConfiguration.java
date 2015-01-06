@@ -1,4 +1,9 @@
 /*
+ * Minify Maven Plugin
+ * https://github.com/samaxes/minify-maven-plugin
+ *
+ * Copyright (c) 2009 samaxes.com
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,17 +20,28 @@ package com.samaxes.maven.minify.common;
 
 import java.util.List;
 
-
+/**
+ * Maps aggregations from an external JSON formatted config file defined in the option {@code bundleConfiguration}.
+ */
 public class AggregationConfiguration {
 
     private List<Aggregation> bundles;
 
+    /**
+     * Gets the bundles.
+     *
+     * @return the bundles
+     */
     public List<Aggregation> getBundles() {
         return bundles;
     }
 
+    /**
+     * Sets the bundles.
+     *
+     * @param bundles the bundles to set
+     */
     public void setBundles(List<Aggregation> bundles) {
         this.bundles = bundles;
     }
-
 }
