@@ -1,0 +1,22 @@
+{
+    "bundles": [
+        {
+            "type": "css",
+            "name": "static-combined.css",
+            "files": [
+                "reset.css",
+                "fonts.css",
+                "base.css",
+                "toc.css"
+            ]
+        },
+        {
+            "type": "js",
+            "name": "static-combined.js",
+            "files": [
+                "samaxesjs.core.js",
+                "subdir/samaxesjs.toc.js"
+            ]
+        }
+    ]
+}

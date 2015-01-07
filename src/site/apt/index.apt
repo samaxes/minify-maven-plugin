@@ -30,4 +30,6 @@ Minify Maven Plugin
 
   * {{{./examples/patterns.html}Using include/exclude patterns}}
 
+  * {{{./examples/bundle.html}Bundle Configuration}}
+
   * {{{./examples/exclude.html}Exclude source files from WAR package}}

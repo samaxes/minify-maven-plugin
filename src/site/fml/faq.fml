@@ -4,7 +4,7 @@
         <faq id="execution-bundles">
             <question>Is it possible to create multiple CSS &amp; JavaScript bundles?</question>
             <answer>
-                <p>Yes! Use multiple <code>&lt;execution></code> tags with different final names.</p>
+                <p>Yes! Use multiple <code>&lt;execution></code> tags with different final names or use a <code><a href="examples/bundle.html">&lt;bundleConfiguration></a></code>.</p>
                 <p>Note that execution id's have to be unique among all executions of a single plugin within a POM.</p>
             </answer>
         </faq>

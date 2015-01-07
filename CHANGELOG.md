@@ -1,5 +1,9 @@
 # Minify Maven Plugin
 
+## 1.7.5
+
+* Add support for external bundle configuration (#57).
+
 ## 1.7.4
 
 * Update Google Closure Compiler to v20140814 (#71).

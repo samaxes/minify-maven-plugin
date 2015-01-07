@@ -193,12 +193,14 @@ public abstract class ProcessFilesTask implements Callable<Object> {
     }
 
     /**
-     * Merges a list of source files.
+     * Merges a list of source files. Create missing parent directories if needed.
      *
      * @param mergedFile output file resulting from the merged step
      * @throws IOException when the merge step fails
      */
     protected void merge(File mergedFile) throws IOException {
+        mergedFile.getParentFile().mkdirs();
+
         try (InputStream sequence = new SequenceInputStream(new SourceFilesEnumeration(log, files, verbose));
                 OutputStream out = new FileOutputStream(mergedFile);
                 InputStreamReader sequenceReader = new InputStreamReader(sequence, charset);
@@ -213,7 +215,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
     }
 
     /**
-     * Minifies a source file.
+     * Minifies a source file. Create missing parent directories if needed.
      *
      * @param mergedFile input file resulting from the merged step
      * @param minifiedFile output file resulting from the minify step

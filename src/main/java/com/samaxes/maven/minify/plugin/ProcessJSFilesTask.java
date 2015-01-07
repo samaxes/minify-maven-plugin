@@ -90,7 +90,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
     }
 
     /**
-     * Minifies a JavaScript file.
+     * Minifies a JavaScript file. Create missing parent directories if needed.
      *
      * @param mergedFile input file resulting from the merged step
      * @param minifiedFile output file resulting from the minify step
@@ -98,6 +98,8 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      */
     @Override
     protected void minify(File mergedFile, File minifiedFile) throws IOException {
+        minifiedFile.getParentFile().mkdirs();
+
         try (InputStream in = new FileInputStream(mergedFile);
                 OutputStream out = new FileOutputStream(minifiedFile);
                 InputStreamReader reader = new InputStreamReader(in, charset);

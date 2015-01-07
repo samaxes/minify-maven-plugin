@@ -18,11 +18,17 @@
  */
 package com.samaxes.maven.minify.plugin;
 
+import static com.google.common.collect.Lists.newArrayList;
+
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -37,10 +43,13 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
 import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 import com.google.javascript.jscomp.DependencyOptions;
 import com.google.javascript.jscomp.SourceFile;
+import com.samaxes.maven.minify.common.Aggregation;
+import com.samaxes.maven.minify.common.AggregationConfiguration;
 import com.samaxes.maven.minify.common.ClosureConfig;
 import com.samaxes.maven.minify.common.YuiConfig;
 
@@ -51,7 +60,7 @@ import com.samaxes.maven.minify.common.YuiConfig;
 public class MinifyMojo extends AbstractMojo {
 
     /**
-     * Engine used for minification
+     * Engine used for minification.
      */
     public static enum Engine {
         /** YUI Compressor */
@@ -144,6 +153,14 @@ public class MinifyMojo extends AbstractMojo {
      */
     @Parameter(property = "webappTargetDir", defaultValue = "${project.build.directory}/${project.build.finalName}")
     private String webappTargetDir;
+
+    /**
+     * Specify aggregations in an external JSON formatted config file.
+     *
+     * @since 1.7.5
+     */
+    @Parameter(property = "bundleConfiguration")
+    private String bundleConfiguration;
 
     /* *********** */
     /* CSS Options */
@@ -450,22 +467,17 @@ public class MinifyMojo extends AbstractMojo {
         }
 
         fillOptionalValues();
+
         YuiConfig yuiConfig = fillYuiConfig();
         ClosureConfig closureConfig = fillClosureConfig();
-
-        Collection<ProcessFilesTask> processFilesTasks = new ArrayList<ProcessFilesTask>();
+        Collection<ProcessFilesTask> processFilesTasks;
         try {
-            processFilesTasks.add(new ProcessCSSFilesTask(getLog(), debug, bufferSize, charset, suffix, nosuffix,
-                    skipMerge, skipMinify, webappSourceDir, webappTargetDir, cssSourceDir, cssSourceFiles,
-                    cssSourceIncludes, cssSourceExcludes, cssTargetDir, cssFinalFile, cssEngine, yuiConfig));
-            processFilesTasks.add(new ProcessJSFilesTask(getLog(), debug, bufferSize, charset, suffix, nosuffix,
-                    skipMerge, skipMinify, webappSourceDir, webappTargetDir, jsSourceDir, jsSourceFiles,
-                    jsSourceIncludes, jsSourceExcludes, jsTargetDir, jsFinalFile, jsEngine, yuiConfig, closureConfig));
+            processFilesTasks = createTasks(yuiConfig, closureConfig);
         } catch (FileNotFoundException e) {
             throw new MojoFailureException(e.getMessage(), e);
         }
 
-        ExecutorService executor = Executors.newFixedThreadPool(2);
+        ExecutorService executor = Executors.newFixedThreadPool(processFilesTasks.size());
         try {
             List<Future<Object>> futures = executor.invokeAll(processFilesTasks);
             for (Future<Object> future : futures) {
@@ -542,5 +554,54 @@ public class MinifyMojo extends AbstractMojo {
 
         return new ClosureConfig(closureLanguage, closureCompilationLevel, dependencyOptions, externs,
                 closureUseDefaultExterns, closureCreateSourceMap, closureAngularPass);
+    }
+
+    private Collection<ProcessFilesTask> createTasks(YuiConfig yuiConfig, ClosureConfig closureConfig)
+            throws MojoFailureException, FileNotFoundException {
+        List<ProcessFilesTask> tasks = newArrayList();
+
+        if (!Strings.isNullOrEmpty(bundleConfiguration)) { // If a bundleConfiguration is defined, attempt to use that
+            AggregationConfiguration aggregationConfiguration;
+            try (Reader bundleConfigurationReader = new FileReader(bundleConfiguration)) {
+                aggregationConfiguration = new Gson().fromJson(bundleConfigurationReader,
+                        AggregationConfiguration.class);
+            } catch (IOException e) {
+                throw new MojoFailureException("Failed to open the bundle configuration file [" + bundleConfiguration
+                        + "].", e);
+            }
+
+            for (Aggregation aggregation : aggregationConfiguration.getBundles()) {
+                if (Aggregation.AggregationType.css.equals(aggregation.getType())) {
+                    tasks.add(createCSSTask(yuiConfig, closureConfig, aggregation.getFiles(),
+                            Collections.<String> emptyList(), Collections.<String> emptyList(), aggregation.getName()));
+                } else if (Aggregation.AggregationType.js.equals(aggregation.getType())) {
+                    tasks.add(createJSTask(yuiConfig, closureConfig, aggregation.getFiles(),
+                            Collections.<String> emptyList(), Collections.<String> emptyList(), aggregation.getName()));
+                }
+            }
+        } else { // Otherwise, fallback to the default behavior
+            tasks.add(createCSSTask(yuiConfig, closureConfig, cssSourceFiles, cssSourceIncludes, cssSourceExcludes,
+                    cssFinalFile));
+            tasks.add(createJSTask(yuiConfig, closureConfig, jsSourceFiles, jsSourceIncludes, jsSourceExcludes,
+                    jsFinalFile));
+        }
+
+        return tasks;
+    }
+
+    private ProcessFilesTask createCSSTask(YuiConfig yuiConfig, ClosureConfig closureConfig,
+            List<String> cssSourceFiles, List<String> cssSourceIncludes, List<String> cssSourceExcludes,
+            String cssFinalFile) throws FileNotFoundException {
+        return new ProcessCSSFilesTask(getLog(), debug, bufferSize, charset, suffix, nosuffix, skipMerge, skipMinify,
+                webappSourceDir, webappTargetDir, cssSourceDir, cssSourceFiles, cssSourceIncludes, cssSourceExcludes,
+                cssTargetDir, cssFinalFile, cssEngine, yuiConfig);
+    }
+
+    private ProcessFilesTask createJSTask(YuiConfig yuiConfig, ClosureConfig closureConfig, List<String> jsSourceFiles,
+            List<String> jsSourceIncludes, List<String> jsSourceExcludes, String jsFinalFile)
+            throws FileNotFoundException {
+        return new ProcessJSFilesTask(getLog(), debug, bufferSize, charset, suffix, nosuffix, skipMerge, skipMinify,
+                webappSourceDir, webappTargetDir, jsSourceDir, jsSourceFiles, jsSourceIncludes, jsSourceExcludes,
+                jsTargetDir, jsFinalFile, jsEngine, yuiConfig, closureConfig);
     }
 }

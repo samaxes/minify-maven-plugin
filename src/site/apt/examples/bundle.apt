@@ -1,0 +1,70 @@
+ ------
+ Bundle Configuration
+ ------
+ Sean Scanlon
+ ------
+ 2014-05-26
+ ------
+
+Bundle Configuration
+
+  You can optionally specify the source files to process via an external configuration file. 
+  When a <<<bundleConfiguration>>> is defined, it overrides <<<cssSourceFiles>>> and <<<jsSourceFile>>> of the {{{../examples/basic.html}Basic Configuration}}.
+
++---+
+<project>
+  <!-- ... -->
+  <build>
+    <plugins>
+      <!-- ... -->
+      <plugin>
+        <groupId>com.samaxes.maven</groupId>
+        <artifactId>minify-maven-plugin</artifactId>
+        <version>1.7.4</version>
+        <executions>
+          <execution>
+            <id>bundle-minify</id>
+            <configuration>
+            <bundleConfiguration>src/minify/static-bundles.json</bundleConfiguration>
+            </configuration>
+            <goals>
+              <goal>minify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- ... -->
+    </plugins>
+  </build>
+  <!-- ... -->
+</project>
++---+
+
+Configuration Format
+
+  Bundles are defined in {{{http://en.wikipedia.org/wiki/JSON}JSON}} format.
+
++---+
+{
+    "bundles": [
+        {
+            "type": "css",
+            "name": "static-combined.css",
+            "files": [
+                "reset.css",
+                "fonts.css",
+                "base.css",
+                "toc.css"
+            ]
+        },
+        {
+            "type": "js",
+            "name": "static-combined.js",
+            "files": [
+                "samaxesjs.core.js",
+                "subdir/samaxesjs.toc.js"
+            ]
+        }
+    ]
+}
++---+
