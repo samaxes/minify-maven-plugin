@@ -455,6 +455,22 @@ public class MinifyMojo extends AbstractMojo {
     private boolean closureAngularPass;
 
     /**
+     * Skips Js minification
+     * 
+     * @since 1.7.5 
+     */
+    @Parameter(property = "noJsMinify", defaultValue = "false")
+    private boolean noJsMinify;
+
+    /**
+     * Skips Css minification
+     *
+     * @since 1.7.5
+     */
+    @Parameter(property = "noCssMinify", defaultValue = "false")
+    private boolean noCssMinify;
+
+    /**
      * Executed when the goal is invoked, it will first invoke a parallel lifecycle, ending at the given phase.
      */
     @Override
@@ -466,6 +482,11 @@ public class MinifyMojo extends AbstractMojo {
             return;
         }
 
+        if (noCssMinify && noJsMinify) {
+            getLog().warn("Wont do anything, as both noCssMinify and noJsMinify are set true");
+            return;
+        }
+        
         fillOptionalValues();
 
         YuiConfig yuiConfig = fillYuiConfig();
@@ -571,17 +592,19 @@ public class MinifyMojo extends AbstractMojo {
             }
 
             for (Aggregation aggregation : aggregationConfiguration.getBundles()) {
-                if (Aggregation.AggregationType.css.equals(aggregation.getType())) {
+                if (Aggregation.AggregationType.css.equals(aggregation.getType()) && !noCssMinify) {
                     tasks.add(createCSSTask(yuiConfig, closureConfig, aggregation.getFiles(),
                             Collections.<String> emptyList(), Collections.<String> emptyList(), aggregation.getName()));
-                } else if (Aggregation.AggregationType.js.equals(aggregation.getType())) {
+                } else if (Aggregation.AggregationType.js.equals(aggregation.getType()) && !noJsMinify) {
                     tasks.add(createJSTask(yuiConfig, closureConfig, aggregation.getFiles(),
                             Collections.<String> emptyList(), Collections.<String> emptyList(), aggregation.getName()));
                 }
             }
         } else { // Otherwise, fallback to the default behavior
+            if (!noCssMinify)
             tasks.add(createCSSTask(yuiConfig, closureConfig, cssSourceFiles, cssSourceIncludes, cssSourceExcludes,
                     cssFinalFile));
+            if (!noJsMinify)
             tasks.add(createJSTask(yuiConfig, closureConfig, jsSourceFiles, jsSourceIncludes, jsSourceExcludes,
                     jsFinalFile));
         }
