@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -297,11 +298,22 @@ public class MinifyMojo extends AbstractMojo {
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
         try {
-            executor.invokeAll(processFilesTasks);
+            final Iterable<Future<Object>> futures = executor.invokeAll(processFilesTasks);
+            checkFuturesResult(futures);
             executor.shutdown();
             executor.awaitTermination(timeout, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             getLog().error(e.getMessage(), e);
+        }
+    }
+
+    private void checkFuturesResult(final Iterable<Future<Object>> futures) throws MojoExecutionException {
+        for (final Future<Object> future : futures) {
+            try {
+                future.get();
+            } catch (final Exception e) {
+                throw new MojoExecutionException(e.getMessage(), e);
+            }
         }
     }
 }
