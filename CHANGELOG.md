@@ -2,6 +2,7 @@
 
 ## 1.6.3
 * Build should fail if compiler can't parse/compile source files
+* Extends logging
 
 ## 1.6.2
 
