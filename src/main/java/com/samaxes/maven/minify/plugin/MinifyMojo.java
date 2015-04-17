@@ -434,6 +434,17 @@ public class MinifyMojo extends AbstractMojo {
 
     /**
      * <p>
+     * If true, the source map created by the Closure compiler will have one link to each of the original JavaScript
+     * source files
+     * </p>
+     *
+     * @since 1.7.5-SNAPSHOT
+     */
+    @Parameter(property = "closureMapToOriginalSourceFiles", defaultValue = "false")
+    private boolean closureMapToOriginalSourceFiles;
+
+    /**
+     * <p>
      * Enables or disables sorting mode for Closure Library dependencies.
      * </p>
      * <p>
@@ -553,7 +564,7 @@ public class MinifyMojo extends AbstractMojo {
         }
 
         return new ClosureConfig(closureLanguage, closureCompilationLevel, dependencyOptions, externs,
-                closureUseDefaultExterns, closureCreateSourceMap, closureAngularPass);
+                closureUseDefaultExterns, closureCreateSourceMap, closureAngularPass, closureMapToOriginalSourceFiles);
     }
 
     private Collection<ProcessFilesTask> createTasks(YuiConfig yuiConfig, ClosureConfig closureConfig)
