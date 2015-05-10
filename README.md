@@ -9,7 +9,7 @@ Under the hood, it uses the [YUI Compressor](http://yui.github.com/yuicompressor
 ### Reduce HTTP Requests
 
 > 80% of the end-user response time is spent on the front-end. Most of this time is tied up in downloading all the components in the page: images, stylesheets, scripts, etc. Reducing the number of components in turn reduces the number of HTTP requests required to render the page. This is the key to faster pages.
-
+>
 > Combined files are a way to reduce the number of HTTP requests by combining all scripts into a single script, and similarly combining all CSS into a single stylesheet. Combining files is more challenging when the scripts and stylesheets vary from page to page, but making this part of your release process improves response times.
 
 ### Compress JavaScript and CSS
@@ -54,12 +54,8 @@ Configure your project's `pom.xml` to run the plugin during the project's build 
 </build>
 ```
 
-For more information, check the [plugin documentation](http://samaxes.github.com/minify-maven-plugin/) or the [demo application](https://github.com/samaxes/minify-maven-plugin/releases/download/minify-maven-plugin-1.7.4/minify-maven-plugin-demo-1.7.4-src.zip).
-
-## System Requirements
-  
-Since the version 1.7, Minify Maven Plugin requires Java 7 to run.  
-If you need to support older versions of Java please use the version 1.6 or bellow.
+Notice that [1.6.2](https://github.com/samaxes/minify-maven-plugin/releases/tag/minify-maven-plugin-1.6.2) is the last Java 6 compatible release. Since then Java 7 is required.
+For more information, check the [documentation](http://samaxes.github.com/minify-maven-plugin/) or the [demo application](https://github.com/samaxes/minify-maven-plugin/releases/download/minify-maven-plugin-1.7.4/minify-maven-plugin-demo-1.7.4-src.zip).
 
 ## License
 
