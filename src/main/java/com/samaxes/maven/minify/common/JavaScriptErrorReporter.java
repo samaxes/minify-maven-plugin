@@ -33,6 +33,8 @@ public class JavaScriptErrorReporter implements ErrorReporter {
 
     private String filename;
 
+    private String lastError;
+
     /**
      * Error reporter constructor.
      *
@@ -55,11 +57,7 @@ public class JavaScriptErrorReporter implements ErrorReporter {
      * @param lineOffset the offset into lineSource where problem was detected
      */
     public void warning(String message, String sourceName, int line, String lineSource, int lineOffset) {
-        if (line < 0) {
-            log.warn(message);
-        } else {
-            log.warn("[" + filename + ":" + line + "] " + message);
-        }
+        log.warn(prepareMessage(message, sourceName, line, lineSource, lineOffset));
     }
 
     /**
@@ -74,11 +72,9 @@ public class JavaScriptErrorReporter implements ErrorReporter {
      * @param lineOffset the offset into lineSource where problem was detected
      */
     public void error(String message, String sourceName, int line, String lineSource, int lineOffset) {
-        if (line < 0) {
-            log.error(message);
-        } else {
-            log.error("[" + filename + ":" + line + "] " + message);
-        }
+        final String errorMessage = prepareMessage(message, sourceName, line, lineSource, lineOffset);
+        lastError = errorMessage;
+        log.error(errorMessage);
     }
 
     /**
@@ -94,8 +90,18 @@ public class JavaScriptErrorReporter implements ErrorReporter {
      */
     public EvaluatorException runtimeError(String message, String sourceName, int line, String lineSource,
             int lineOffset) {
-        error(message, sourceName, line, lineSource, lineOffset);
 
-        return new EvaluatorException(message);
+        final String errorMessage = prepareMessage(message, sourceName, line, lineSource, lineOffset);
+        log.error(errorMessage);
+        final String exceptionMessage = lastError != null ? message + " " + lastError : errorMessage;
+        return new EvaluatorException(exceptionMessage);
+    }
+
+    private String prepareMessage(final String message, final String sourceName, final int line, final String lineSource, final int lineOffset) {
+        if (lineSource == null) {
+            return "[" + filename + "] " + message;
+        } else {
+            return "[" + filename + ":" + line + ":" + lineOffset + "] " + message;
+        }
     }
 }

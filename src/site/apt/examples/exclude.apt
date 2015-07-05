@@ -34,9 +34,9 @@ Exclude source files from WAR package
       </plugin>
       <!-- ... -->
       <plugin>
-        <groupId>com.samaxes.maven</groupId>
+        <groupId>biz.gabrys.forks.com.samaxes.maven</groupId>
         <artifactId>minify-maven-plugin</artifactId>
-        <version>1.6.2</version>
+        <version>1.6.3</version>
         <executions>
           <execution>
             <id>default-minify</id>
