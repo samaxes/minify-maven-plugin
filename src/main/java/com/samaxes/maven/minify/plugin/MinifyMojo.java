@@ -62,11 +62,11 @@ public class MinifyMojo extends AbstractMojo {
     /**
      * Engine used for minification.
      */
-    public static enum Engine {
+    public enum Engine {
         /** YUI Compressor */
         YUI,
         /** Google Closure Compiler */
-        CLOSURE;
+        CLOSURE
     }
 
     /* ************** */
