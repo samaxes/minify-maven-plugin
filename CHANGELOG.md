@@ -3,6 +3,7 @@
 ## 1.7.5
 
 * Add support for external bundle configuration (#57).
+* Replace `prerequisites` with Maven Enforcer plugin.
 
 ## 1.7.4
 
