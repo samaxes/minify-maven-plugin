@@ -1,3 +1,6 @@
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.samaxes.maven/minify-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.samaxes.maven/minify-maven-plugin)
+[![Build Status](https://travis-ci.org/samaxes/minify-maven-plugin.png)](https://travis-ci.org/samaxes/minify-maven-plugin)
+
 # Minify Maven Plugin
 
 Minify Maven Plugin combines and minimizes your CSS and JavaScript files for faster page loading. It produces a merged and a minified version of your CSS and JavaScript resources which can be re-used across your project.
