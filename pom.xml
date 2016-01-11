@@ -42,18 +42,82 @@
         </developer>
     </developers>
 
-    <issueManagement>
-        <system>GitHub</system>
-        <url>https://github.com/samaxes/minify-maven-plugin/issues</url>
-    </issueManagement>
     <scm>
         <connection>scm:git:git@github.com:samaxes/minify-maven-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:samaxes/minify-maven-plugin.git</developerConnection>
         <url>git@github.com:samaxes/minify-maven-plugin.git</url>
     </scm>
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/samaxes/minify-maven-plugin/issues</url>
+    </issueManagement>
+    <ciManagement>
+        <system>Travis CI</system>
+        <url>https://travis-ci.org/samaxes/minify-maven-plugin</url>
+    </ciManagement>
+
+    <properties>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <skipTests>true</skipTests>
+        <github.global.server>github</github.global.server>
+        <maven.api.version>3.0</maven.api.version>
+        <maven.plugin.version>3.4</maven.plugin.version>
+    </properties>
+
+    <dependencies>
+        <!-- Test -->
+        <!-- Provided -->
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+            <version>3.2.5</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugin-tools</groupId>
+            <artifactId>maven-plugin-annotations</artifactId>
+            <version>3.4</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Compile -->
+        <dependency>
+            <groupId>com.yahoo.platform.yui</groupId>
+            <artifactId>yuicompressor</artifactId>
+            <version>2.4.7</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.google.javascript</groupId>
+            <artifactId>closure-compiler</artifactId>
+            <version>v20140814</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>tidy-maven-plugin</artifactId>
+                <version>1.0-beta-1</version>
+                <executions>
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
@@ -67,7 +131,7 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>3.0</version>
+                                    <version>${maven.api.version}</version>
                                 </requireMavenVersion>
                                 <requireJavaVersion>
                                     <version>${maven.compiler.source}</version>
@@ -148,41 +212,6 @@
         </plugins>
     </build>
 
-    <dependencies>
-        <!-- Test -->
-        <!-- Provided -->
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-plugin-api</artifactId>
-            <version>3.2.5</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.plugin-tools</groupId>
-            <artifactId>maven-plugin-annotations</artifactId>
-            <version>3.4</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- Compile -->
-        <dependency>
-            <groupId>com.yahoo.platform.yui</groupId>
-            <artifactId>yuicompressor</artifactId>
-            <version>2.4.7</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.google.javascript</groupId>
-            <artifactId>closure-compiler</artifactId>
-            <version>v20140814</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.3.1</version>
-        </dependency>
-    </dependencies>
-
     <reporting>
         <plugins>
             <plugin>
@@ -216,6 +245,8 @@
                     <links>
                         <link>http://docs.oracle.com/javase/7/docs/api/</link>
                         <link>http://docs.oracle.com/javaee/7/api/</link>
+                        <link>http://maven.apache.org/ref/${maven.api.version}/maven-core/apidocs/</link>
+                        <link>http://maven.apache.org/ref/${maven.api.version}/maven-plugin-api/apidocs/</link>
                     </links>
                 </configuration>
             </plugin>
@@ -231,14 +262,4 @@
             </plugin>
         </plugins>
     </reporting>
-
-    <properties>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <skipTests>true</skipTests>
-        <github.global.server>github</github.global.server>
-        <maven.plugin.version>3.4</maven.plugin.version>
-    </properties>
 </project>
