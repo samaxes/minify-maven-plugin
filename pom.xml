@@ -19,11 +19,11 @@
     <inceptionYear>2009</inceptionYear>
     <organization>
         <name>samaxes</name>
-        <url>http://www.samaxes.com/</url>
+        <url>http://www.samaxes.com</url>
     </organization>
     <licenses>
         <license>
-            <name>The Apache Software License, Version 2.0</name>
+            <name>The Apache License, Version 2.0</name>
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
         </license>
@@ -33,12 +33,12 @@
         <developer>
             <id>samaxes</id>
             <name>Samuel Santos</name>
-            <url>http://www.samaxes.com/</url>
+            <url>http://www.samaxes.com</url>
             <roles>
                 <role>Project Owner</role>
                 <role>Developer</role>
             </roles>
-            <timezone>0</timezone>
+            <timezone>Europe/Lisbon</timezone>
         </developer>
     </developers>
 
