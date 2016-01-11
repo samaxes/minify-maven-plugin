@@ -54,8 +54,8 @@ Configure your project's `pom.xml` to run the plugin during the project's build 
 </build>
 ```
 
-Notice that [1.6.2](https://github.com/samaxes/minify-maven-plugin/releases/tag/minify-maven-plugin-1.6.2) is the last Java 6 compatible release. Since then Java 7 is required.
-For more information, check the [documentation](http://samaxes.github.com/minify-maven-plugin/) or the [demo application](https://github.com/samaxes/minify-maven-plugin/releases/download/minify-maven-plugin-1.7.4/minify-maven-plugin-demo-1.7.4-src.zip).
+Notice that the [v1.6.X branch](https://github.com/samaxes/minify-maven-plugin/tree/v1.6.X) contains the last Java 6 compatible releases. Java 7 is required for new versions.  
+For more information, check the [documentation](http://samaxes.github.com/minify-maven-plugin/) or the [demo applications](https://github.com/samaxes/minify-maven-plugin/releases/).
 
 ## License
 
