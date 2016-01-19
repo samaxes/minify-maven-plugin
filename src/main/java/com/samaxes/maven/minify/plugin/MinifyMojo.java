@@ -208,6 +208,14 @@ public class MinifyMojo extends AbstractMojo {
     private String cssFinalFile;
 
     /**
+     * GZIP CSS output file. Does not delete the original output file.
+     *
+     * @since 1.7.5
+     */
+    @Parameter(property = "gzippCssFinalFile", defaultValue = "false")
+    private boolean gzippCssFinalFile;
+
+    /**
      * Define the CSS compressor engine to use.<br/>
      * Possible values are:
      * <ul>
@@ -593,7 +601,7 @@ public class MinifyMojo extends AbstractMojo {
                                            String cssFinalFile) throws FileNotFoundException {
         return new ProcessCSSFilesTask(getLog(), debug, bufferSize, charset, suffix, nosuffix, skipMerge, skipMinify,
                 webappSourceDir, webappTargetDir, cssSourceDir, cssSourceFiles, cssSourceIncludes, cssSourceExcludes,
-                cssTargetDir, cssFinalFile, cssEngine, yuiConfig);
+                cssTargetDir, cssFinalFile, cssEngine, yuiConfig, gzippCssFinalFile);
     }
 
     private ProcessFilesTask createJSTask(YuiConfig yuiConfig, ClosureConfig closureConfig, List<String> jsSourceFiles,
@@ -601,6 +609,6 @@ public class MinifyMojo extends AbstractMojo {
             throws FileNotFoundException {
         return new ProcessJSFilesTask(getLog(), debug, bufferSize, charset, suffix, nosuffix, skipMerge, skipMinify,
                 webappSourceDir, webappTargetDir, jsSourceDir, jsSourceFiles, jsSourceIncludes, jsSourceExcludes,
-                jsTargetDir, jsFinalFile, jsEngine, yuiConfig, closureConfig);
+                jsTargetDir, jsFinalFile, jsEngine, yuiConfig, closureConfig, false);
     }
 }

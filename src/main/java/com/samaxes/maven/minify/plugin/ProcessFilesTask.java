@@ -83,6 +83,8 @@ public abstract class ProcessFilesTask implements Callable<Object> {
 
     private final boolean sourceIncludesEmpty;
 
+    private final boolean gzipFinalFile;
+
     /**
      * Task constructor.
      *
@@ -105,16 +107,18 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * @param outputFilename the output file name
      * @param engine minify processor engine selected
      * @param yuiConfig YUI Compressor configuration
+     * @param gzipFinalFile
      * @throws FileNotFoundException when the given source file does not exist
      */
     public ProcessFilesTask(Log log, boolean verbose, Integer bufferSize, String charset, String suffix,
-            boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir, String webappTargetDir,
-            String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
-            String outputDir, String outputFilename, Engine engine, YuiConfig yuiConfig) throws FileNotFoundException {
+                            boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir, String webappTargetDir,
+                            String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
+                            String outputDir, String outputFilename, Engine engine, YuiConfig yuiConfig, boolean gzipFinalFile) throws FileNotFoundException {
         this.log = log;
         this.verbose = verbose;
         this.bufferSize = bufferSize;
         this.charset = charset;
+        this.gzipFinalFile = gzipFinalFile;
         this.suffix = suffix + ".";
         this.nosuffix = nosuffix;
         this.skipMerge = skipMerge;
@@ -233,20 +237,31 @@ public abstract class ProcessFilesTask implements Callable<Object> {
         try {
             File temp = File.createTempFile(minifiedFile.getName(), ".gz");
 
-            try (InputStream in = new FileInputStream(minifiedFile);
-                    OutputStream out = new FileOutputStream(temp);
-                    GZIPOutputStream outGZIP = new GZIPOutputStream(out)) {
-                IOUtil.copy(in, outGZIP, bufferSize);
-            }
+            gzipFile(minifiedFile, temp);
 
             log.info("Uncompressed size: " + mergedFile.length() + " bytes.");
             log.info("Compressed size: " + minifiedFile.length() + " bytes minified (" + temp.length()
                     + " bytes gzipped).");
 
+            // Copy gzipped file into target folder
+            if (gzipFinalFile) {
+                final File destination = new File(targetDir, minifiedFile.getName() + ".gz");
+                FileUtils.copyFile(temp, destination);
+                log.info("Copied gzipped file to " + destination.getAbsolutePath());
+            }
+
             temp.deleteOnExit();
         } catch (IOException e) {
             log.debug("Failed to calculate the gzipped file size.", e);
         }
+    }
+
+    private void gzipFile(File sourceFile, File targetFile) throws IOException {
+        try (InputStream in = new FileInputStream(sourceFile);
+             OutputStream out = new FileOutputStream(targetFile);
+             GZIPOutputStream outGZIP = new GZIPOutputStream(out)) {
+			IOUtil.copy(in, outGZIP, bufferSize);
+		}
     }
 
     /**
