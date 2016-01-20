@@ -148,7 +148,12 @@ public abstract class ProcessFilesTask implements Callable<Object> {
             String fileType = (this instanceof ProcessCSSFilesTask) ? "CSS" : "JavaScript";
             log.info("Starting " + fileType + " task:");
 
-            if (!files.isEmpty() && (targetDir.exists() || targetDir.mkdirs())) {
+            if (!targetDir.exists() && !targetDir.mkdirs()) {
+                log.error("Unable to create target directory: " + targetDir);
+                return null;
+            }
+            
+            if (!files.isEmpty()) {
                 if (skipMerge) {
                     log.info("Skipping the merge step...");
                     String sourceBasePath = sourceDir.getAbsolutePath();
