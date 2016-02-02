@@ -454,6 +454,14 @@ public class MinifyMojo extends AbstractMojo {
     private boolean closureAngularPass;
 
     /**
+     * List of extra annotations to make them known to the closure engine.
+     *
+     * @since 1.7.5
+     */
+    @Parameter(property = "closureExtraAnnotations")
+    private ArrayList<String> closureExtraAnnotations;
+
+    /**
      * Executed when the goal is invoked, it will first invoke a parallel lifecycle, ending at the given phase.
      */
     @Override
@@ -552,7 +560,7 @@ public class MinifyMojo extends AbstractMojo {
         }
 
         return new ClosureConfig(closureLanguage, closureCompilationLevel, dependencyOptions, externs,
-                closureUseDefaultExterns, closureCreateSourceMap, closureAngularPass);
+                closureUseDefaultExterns, closureCreateSourceMap, closureAngularPass, closureExtraAnnotations);
     }
 
     private Collection<ProcessFilesTask> createTasks(YuiConfig yuiConfig, ClosureConfig closureConfig)

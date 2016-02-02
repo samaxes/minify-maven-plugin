@@ -46,6 +46,8 @@ public class ClosureConfig {
 
     private final Boolean angularPass;
 
+    private final List<String> extraAnnotations;
+
     /**
      * Init Closure Compiler values.
      *
@@ -56,9 +58,11 @@ public class ClosureConfig {
      * @param useDefaultExterns use default externs packed with the Closure Compiler
      * @param createSourceMap create a source map for the minifed/combined production files
      * @param angularPass use {@code @ngInject} annotation to generate Angular injections
+     * @param extraAnnotations make extra annotations known to the closure engine
      */
     public ClosureConfig(LanguageMode language, CompilationLevel compilationLevel, DependencyOptions dependencyOptions,
-            List<SourceFile> externs, boolean useDefaultExterns, boolean createSourceMap, boolean angularPass) {
+            List<SourceFile> externs, boolean useDefaultExterns, boolean createSourceMap, boolean angularPass,
+            List<String> extraAnnotations) {
         this.language = language;
         this.compilationLevel = compilationLevel;
         this.dependencyOptions = dependencyOptions;
@@ -66,6 +70,7 @@ public class ClosureConfig {
         this.useDefaultExterns = useDefaultExterns;
         this.sourceMapFormat = (createSourceMap) ? SourceMap.Format.V3 : null;
         this.angularPass = angularPass;
+        this.extraAnnotations = extraAnnotations;
     }
 
     /**
@@ -130,4 +135,13 @@ public class ClosureConfig {
     public Boolean getAngularPass() {
         return angularPass;
     }
+
+	/**
+	 * Gets the extraAnnotations.
+	 *
+	 * @return the extraAnnotations
+	 */
+	public List<String> getExtraAnnotations() {
+		return extraAnnotations;
+	}
 }
