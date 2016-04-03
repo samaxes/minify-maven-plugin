@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.apache.maven.plugin.logging.Log;
@@ -113,7 +114,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
 
                     CompilerOptions options = new CompilerOptions();
                     closureConfig.getCompilationLevel().setOptionsForCompilationLevel(options);
-                    options.setOutputCharset(charset);
+                    options.setOutputCharset(Charset.forName(charset));
                     options.setLanguageIn(closureConfig.getLanguage());
                     options.setAngularPass(closureConfig.getAngularPass());
                     options.setDependencyOptions(closureConfig.getDependencyOptions());
