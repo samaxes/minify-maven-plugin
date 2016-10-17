@@ -4,3 +4,4 @@ target
 .classpath
 .idea
 minify-maven-plugin.iml
+.DS_Store

@@ -76,12 +76,16 @@
 
   > For many plugin parameters it is occasionally convenient to specify their values from the command line via system properties. In the past, this was limited to parameters of simple types like `String` or `Boolean`. The latest Maven release finally allows plugin users to configure collections or arrays from the command line via comma-separated strings. Take for example a plugin parameter like this:
   >
-  >     /** @parameter expression="${includes}" */
-  >     String[] includes;
+  > ```java
+  > /** @parameter expression="${includes}" */
+  > String[] includes;
+  > ```
   >
   > This can be configured from the command line as follows:
   >
-  >     mvn <goal> -Dincludes=Foo,Bar
+  > ```sh
+  > mvn <goal> -Dincludes=Foo,Bar
+  > ```
   >
   > Plugin authors that wish to enable CLI-based configuration of arrays/collections just need to add the `expression` tag to their parameter annotation. Note that if compatibility with older Maven versions is to be kept, the parameter type must not be an interface but a concrete collection class or an array to avoid another shortcoming in the old configurator.
 
