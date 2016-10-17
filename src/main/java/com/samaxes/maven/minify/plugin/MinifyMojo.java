@@ -45,7 +45,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.regex.Pattern;
 
 import static com.google.common.collect.Lists.newArrayList;
 
@@ -54,8 +53,6 @@ import static com.google.common.collect.Lists.newArrayList;
  */
 @Mojo(name = "minify", defaultPhase = LifecyclePhase.PROCESS_RESOURCES, threadSafe = true)
 public class MinifyMojo extends AbstractMojo {
-
-    private static Pattern LEGACY_SUFFIX = Pattern.compile("^[a-z0-9].*$", Pattern.CASE_INSENSITIVE);
 
     /**
      * Engine used for minification.
@@ -466,11 +463,6 @@ public class MinifyMojo extends AbstractMojo {
         if (skipMerge && skipMinify) {
             getLog().warn("Both merge and minify steps are configured to be skipped.");
             return;
-        }
-
-        // If suffix starts with a alphanumeric char, default to prefixing it with a dot.
-        if (LEGACY_SUFFIX.matcher(suffix).matches()) {
-            suffix = "." + suffix;
         }
 
         fillOptionalValues();
