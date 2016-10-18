@@ -6,6 +6,7 @@
 * Replace `prerequisites` with Maven Enforcer plugin.
 * Remove the deprecated oss-parent from `pom.xml` (See [OSSRH Apache Maven Guide](http://central.sonatype.org/pages/apache-maven.html)).
 * Change suffix handling to permit alternative naming schemes (#68).
+* Add support for Closure's warning levels (#74).
 
 ## 1.7.4
 

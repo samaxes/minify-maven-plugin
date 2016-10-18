@@ -34,7 +34,7 @@ public class JavaScriptErrorReporter implements ErrorReporter {
     /**
      * Error reporter constructor.
      *
-     * @param log Maven plugin log
+     * @param log      Maven plugin log
      * @param filename JavaScript source file name
      */
     public JavaScriptErrorReporter(Log log, String filename) {
@@ -45,10 +45,10 @@ public class JavaScriptErrorReporter implements ErrorReporter {
     /**
      * Reports a warning.
      *
-     * @param message a String describing the warning
+     * @param message    a String describing the warning
      * @param sourceName a String describing the JavaScript source where the warning occurred; typically a file name or
-     *        URL
-     * @param line the line number associated with the warning
+     *                   URL
+     * @param line       the line number associated with the warning
      * @param lineSource the text of the line (may be null)
      * @param lineOffset the offset into lineSource where problem was detected
      */
@@ -61,10 +61,10 @@ public class JavaScriptErrorReporter implements ErrorReporter {
      * Reports an error. If execution has not yet begun, the JavaScript engine is free to find additional errors rather
      * than terminating the translation. However, it will not execute a script that had errors.
      *
-     * @param message a String describing the warning
+     * @param message    a String describing the warning
      * @param sourceName a String describing the JavaScript source where the warning occurred; typically a file name or
-     *        URL
-     * @param line the line number associated with the warning
+     *                   URL
+     * @param line       the line number associated with the warning
      * @param lineSource the text of the line (may be null)
      * @param lineOffset the offset into lineSource where problem was detected
      */
@@ -77,16 +77,16 @@ public class JavaScriptErrorReporter implements ErrorReporter {
      * Creates an EvaluatorException that may be thrown. runtimeErrors, unlike errors, will always terminate the current
      * script.
      *
-     * @param message a String describing the warning
+     * @param message    a String describing the warning
      * @param sourceName a String describing the JavaScript source where the warning occurred; typically a file name or
-     *        URL
-     * @param line the line number associated with the warning
+     *                   URL
+     * @param line       the line number associated with the warning
      * @param lineSource the text of the line (may be null)
      * @param lineOffset the offset into lineSource where problem was detected
      */
     @Override
     public EvaluatorException runtimeError(String message, String sourceName, int line, String lineSource,
-            int lineOffset) {
+                                           int lineOffset) {
         log.error(message);
 
         return new EvaluatorException(message, sourceName, line, lineSource, lineOffset);

@@ -20,10 +20,8 @@ package com.samaxes.maven.minify.plugin;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
-import com.google.javascript.jscomp.CompilationLevel;
+import com.google.javascript.jscomp.*;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
-import com.google.javascript.jscomp.DependencyOptions;
-import com.google.javascript.jscomp.SourceFile;
 import com.samaxes.maven.minify.common.Aggregation;
 import com.samaxes.maven.minify.common.AggregationConfiguration;
 import com.samaxes.maven.minify.common.ClosureConfig;
@@ -37,10 +35,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -210,6 +205,7 @@ public class MinifyMojo extends AbstractMojo {
     /**
      * Define the CSS compressor engine to use.<br/>
      * Possible values are:
+     *
      * <ul>
      * <li>{@code YUI}: <a href="http://yui.github.io/yuicompressor/">YUI Compressor</a></li>
      * </ul>
@@ -268,6 +264,7 @@ public class MinifyMojo extends AbstractMojo {
     /**
      * Define the JavaScript compressor engine to use.<br/>
      * Possible values are:
+     *
      * <ul>
      * <li>{@code YUI}: <a href="http://yui.github.io/yuicompressor/">YUI Compressor</a></li>
      * <li>{@code CLOSURE}: <a href="https://developers.google.com/closure/compiler/">Google Closure Compiler</a></li>
@@ -357,13 +354,13 @@ public class MinifyMojo extends AbstractMojo {
     /**
      * Refers to which version of ECMAScript to assume when checking for errors in your code.<br/>
      * Possible values are:
+     *
      * <ul>
      * <li>{@code ECMASCRIPT3}: Checks code assuming ECMAScript 3 compliance, and gives errors for code using features
      * only present in ECMAScript 5.</li>
      * <li>{@code ECMASCRIPT5}: Checks code assuming ECMAScript 5 compliance, allowing new features not present in
      * ECMAScript 3.</li>
-     * <li>{@code ECMASCRIPT5_STRICT}: Like {@code ECMASCRIPT5} but assumes compliance with strict mode ('use strict';).
-     * </li>
+     * <li>{@code ECMASCRIPT5_STRICT}: Like {@code ECMASCRIPT5} but assumes compliance with strict mode ('use strict';).</li>
      * </ul>
      *
      * @since 1.7.2
@@ -374,6 +371,7 @@ public class MinifyMojo extends AbstractMojo {
     /**
      * The degree of compression and optimization to apply to your JavaScript.<br/>
      * There are three possible compilation levels:
+     *
      * <ul>
      * <li>{@code WHITESPACE_ONLY}: Just removes whitespace and comments from your JavaScript.</li>
      * <li>{@code SIMPLE_OPTIMIZATIONS}: Performs compression and optimization that does not interfere with the
@@ -402,14 +400,8 @@ public class MinifyMojo extends AbstractMojo {
     private ArrayList<String> closureExterns;
 
     /**
-     * <p>
-     * Use default externs provided with Closure Compiler.
-     * </p>
-     * <p>
-     * For the complete list of externs please visit:<br />
-     * <a href="https://github.com/google/closure-compiler/tree/master/externs">https://github.com/google/closure-
-     * compiler/tree/master/externs</a>
-     * </p>
+     * Use default externs provided with Closure Compiler.<br/>
+     * For the complete list of externs please visit <a href="https://github.com/google/closure-compiler/tree/master/externs">https://github.com/google/closure-compiler/tree/master/externs</a>.
      *
      * @since 1.7.4
      */
@@ -417,14 +409,8 @@ public class MinifyMojo extends AbstractMojo {
     private boolean closureUseDefaultExterns;
 
     /**
-     * <p>
-     * Collects information mapping the generated (compiled) source back to its original source for debugging purposes.
-     * </p>
-     * <p>
-     * Please visit <a
-     * href="https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-_2gc6fAH0KY0k/edit">Source Map Revision 3
-     * Proposal</a> for more information.
-     * </p>
+     * Collects information mapping the generated (compiled) source back to its original source for debugging purposes.<br/>
+     * Please visit <a href="https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-_2gc6fAH0KY0k/edit">Source Map Revision 3 Proposal</a> for more information.
      *
      * @since 1.7.3
      */
@@ -432,13 +418,9 @@ public class MinifyMojo extends AbstractMojo {
     private boolean closureCreateSourceMap;
 
     /**
-     * <p>
-     * Enables or disables sorting mode for Closure Library dependencies.
-     * </p>
-     * <p>
-     * If true, automatically sort dependencies so that a file that {@code goog.provides} symbol X will always come
+     * Enables or disables sorting mode for Closure Library dependencies.<br/>
+     * If {@code true}, automatically sort dependencies so that a file that {@code goog.provides} symbol X will always come
      * before a file that {@code goog.requires} symbol X.
-     * </p>
      *
      * @since 1.7.4
      */
@@ -452,6 +434,22 @@ public class MinifyMojo extends AbstractMojo {
      */
     @Parameter(property = "closureAngularPass", defaultValue = "false")
     private boolean closureAngularPass;
+
+    /**
+     * Treat certain warnings as the specified CheckLevel:
+     *
+     * <ul>
+     * <li>{@code ERROR}: Makes all warnings of the given group to build-breaking error.</li>
+     * <li>{@code WARNING}: Makes all warnings of the given group a non-breaking warning.</li>
+     * <li>{@code OFF}: Silences all warnings of the given group.</li>
+     * </ul>
+     *
+     * For the complete list of diagnostic groups please visit <a href="https://github.com/google/closure-compiler/wiki/Warnings">https://github.com/google/closure-compiler/wiki/Warnings</a>.
+     *
+     * @since 1.7.5
+     */
+    @Parameter(property = "closureWarningLevels")
+    private HashMap<String, String> closureWarningLevels;
 
     /**
      * Executed when the goal is invoked, it will first invoke a parallel lifecycle, ending at the given phase.
@@ -542,7 +540,7 @@ public class MinifyMojo extends AbstractMojo {
         return new YuiConfig(linebreak, munge, preserveAllSemiColons, disableOptimizations);
     }
 
-    private ClosureConfig fillClosureConfig() {
+    private ClosureConfig fillClosureConfig() throws MojoFailureException {
         DependencyOptions dependencyOptions = new DependencyOptions();
         dependencyOptions.setDependencySorting(closureSortDependencies);
 
@@ -551,8 +549,24 @@ public class MinifyMojo extends AbstractMojo {
             externs.add(SourceFile.fromFile(webappSourceDir + File.separator + extern, Charset.forName(charset)));
         }
 
+        Map<DiagnosticGroup, CheckLevel> warningLevels = new HashMap<>();
+        DiagnosticGroups diagnosticGroups = new DiagnosticGroups();
+        for (Map.Entry<String, String> warningLevel : closureWarningLevels.entrySet()) {
+            DiagnosticGroup diagnosticGroup = diagnosticGroups.forName(warningLevel.getKey());
+            if (diagnosticGroup == null) {
+                throw new MojoFailureException("Failed to process closureWarningLevels: " + warningLevel.getKey() + " is an invalid DiagnosticGroup");
+            }
+
+            try {
+                CheckLevel checkLevel = CheckLevel.valueOf(warningLevel.getValue());
+                warningLevels.put(diagnosticGroup, checkLevel);
+            } catch (IllegalArgumentException e) {
+                throw new MojoFailureException("Failed to process closureWarningLevels: " + warningLevel.getKey() + " is an invalid CheckLevel");
+            }
+        }
+
         return new ClosureConfig(closureLanguage, closureCompilationLevel, dependencyOptions, externs,
-                closureUseDefaultExterns, closureCreateSourceMap, closureAngularPass);
+                closureUseDefaultExterns, closureCreateSourceMap, closureAngularPass, warningLevels);
     }
 
     private Collection<ProcessFilesTask> createTasks(YuiConfig yuiConfig, ClosureConfig closureConfig)
