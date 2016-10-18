@@ -40,6 +40,7 @@ import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 
+import com.samaxes.maven.minify.common.ClosureConfig;
 import com.samaxes.maven.minify.common.SourceFilesEnumeration;
 import com.samaxes.maven.minify.common.YuiConfig;
 import com.samaxes.maven.minify.plugin.MinifyMojo.Engine;
@@ -83,6 +84,8 @@ public abstract class ProcessFilesTask implements Callable<Object> {
 
     private final boolean sourceIncludesEmpty;
 
+    protected final ClosureConfig closureConfig;
+
     /**
      * Task constructor.
      *
@@ -105,12 +108,13 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * @param outputFilename the output file name
      * @param engine minify processor engine selected
      * @param yuiConfig YUI Compressor configuration
+     * @param closureConfig Google closure configuration
      * @throws FileNotFoundException when the given source file does not exist
      */
     public ProcessFilesTask(Log log, boolean verbose, Integer bufferSize, String charset, String suffix,
             boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir, String webappTargetDir,
             String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
-            String outputDir, String outputFilename, Engine engine, YuiConfig yuiConfig) throws FileNotFoundException {
+            String outputDir, String outputFilename, Engine engine, YuiConfig yuiConfig, ClosureConfig closureConfig) throws FileNotFoundException {
         this.log = log;
         this.verbose = verbose;
         this.bufferSize = bufferSize;
@@ -135,6 +139,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
         }
         this.sourceFilesEmpty = sourceFiles.isEmpty();
         this.sourceIncludesEmpty = sourceIncludes.isEmpty();
+        this.closureConfig = closureConfig;
     }
 
     /**
@@ -149,7 +154,16 @@ public abstract class ProcessFilesTask implements Callable<Object> {
             log.info("Starting " + fileType + " task:");
 
             if (!files.isEmpty() && (targetDir.exists() || targetDir.mkdirs())) {
-                if (skipMerge) {
+
+                if (fileType.equals("JavaScript") && this.engine == Engine.CLOSURE
+                        && closureConfig.getMapToOriginalSourceFiles()) {
+
+                    File minifiedFile = new File(targetDir, (nosuffix) ? mergedFilename
+                            : FileUtils.basename(mergedFilename) + suffix + FileUtils.getExtension(mergedFilename));
+
+                    minify(files, minifiedFile);
+
+                } else if (skipMerge) {
                     log.info("Skipping the merge step...");
                     String sourceBasePath = sourceDir.getAbsolutePath();
 
@@ -225,12 +239,33 @@ public abstract class ProcessFilesTask implements Callable<Object> {
     abstract void minify(File mergedFile, File minifiedFile) throws IOException;
 
     /**
+     * Minifies a list of source files into a single file. Create missing parent directories if needed.
+     *
+     * @param srcFiles list of input files
+     * @param minifiedFile output file resulting from the minify step
+     * @throws IOException when the minify step fails
+     */
+    abstract void minify(List<File> srcFiles, File minifiedFile) throws IOException;
+
+    /**
      * Logs compression gains.
      *
      * @param mergedFile input file resulting from the merged step
      * @param minifiedFile output file resulting from the minify step
      */
     void logCompressionGains(File mergedFile, File minifiedFile) {
+        List<File> srcFiles = new ArrayList<File>();
+        srcFiles.add(mergedFile);
+        logCompressionGains(srcFiles, minifiedFile);
+    }
+
+    /**
+     * Logs compression gains.
+     *
+     * @param srcFiles list of input files to compress
+     * @param minifiedFile output file resulting from the minify step
+     */
+    void logCompressionGains(List<File> srcFiles, File minifiedFile) {
         try {
             File temp = File.createTempFile(minifiedFile.getName(), ".gz");
 
@@ -240,7 +275,14 @@ public abstract class ProcessFilesTask implements Callable<Object> {
                 IOUtil.copy(in, outGZIP, bufferSize);
             }
 
-            log.info("Uncompressed size: " + mergedFile.length() + " bytes.");
+            long uncompressedSize = 0;
+            if (srcFiles != null) {
+                for (File srcFile : srcFiles) {
+                    uncompressedSize += srcFile.length();
+                }
+            }
+
+            log.info("Uncompressed size: " + uncompressedSize + " bytes.");
             log.info("Compressed size: " + minifiedFile.length() + " bytes minified (" + temp.length()
                     + " bytes gzipped).");
 

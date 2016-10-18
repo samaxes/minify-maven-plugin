@@ -46,6 +46,8 @@ public class ClosureConfig {
 
     private final Boolean angularPass;
 
+    private final Boolean mapToOriginalSourceFiles;
+
     /**
      * Init Closure Compiler values.
      *
@@ -56,9 +58,10 @@ public class ClosureConfig {
      * @param useDefaultExterns use default externs packed with the Closure Compiler
      * @param createSourceMap create a source map for the minifed/combined production files
      * @param angularPass use {@code @ngInject} annotation to generate Angular injections
+     * @param mapToOriginalSourceFiles if true, do not merge the source js files and create a link to each of them in the source map 
      */
     public ClosureConfig(LanguageMode language, CompilationLevel compilationLevel, DependencyOptions dependencyOptions,
-            List<SourceFile> externs, boolean useDefaultExterns, boolean createSourceMap, boolean angularPass) {
+            List<SourceFile> externs, boolean useDefaultExterns, boolean createSourceMap, boolean angularPass, boolean mapToOriginalSourceFiles) {
         this.language = language;
         this.compilationLevel = compilationLevel;
         this.dependencyOptions = dependencyOptions;
@@ -66,6 +69,7 @@ public class ClosureConfig {
         this.useDefaultExterns = useDefaultExterns;
         this.sourceMapFormat = (createSourceMap) ? SourceMap.Format.V3 : null;
         this.angularPass = angularPass;
+        this.mapToOriginalSourceFiles = createSourceMap && mapToOriginalSourceFiles;
     }
 
     /**
@@ -130,4 +134,14 @@ public class ClosureConfig {
     public Boolean getAngularPass() {
         return angularPass;
     }
+
+    /**
+     * Gets the mapToOriginalSourceFiles
+     * 
+     * @return the mapToOriginalSourceFiles
+     */
+    public Boolean getMapToOriginalSourceFiles() {
+        return mapToOriginalSourceFiles;
+    }
+
 }
