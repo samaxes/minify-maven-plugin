@@ -34,9 +34,9 @@ public class YuiConfig {
     /**
      * Init YuiConfig values.
      *
-     * @param lineBreak split long lines after a specific column
-     * @param munge obfuscate local symbols
-     * @param preserveSemicolons preserve unnecessary semicolons
+     * @param lineBreak            split long lines after a specific column
+     * @param munge                obfuscate local symbols
+     * @param preserveSemicolons   preserve unnecessary semicolons
      * @param disableOptimizations disable all the built-in micro-optimizations
      */
     public YuiConfig(int lineBreak, boolean munge, boolean preserveSemicolons, boolean disableOptimizations) {

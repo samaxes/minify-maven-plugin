@@ -18,32 +18,20 @@
  */
 package com.samaxes.maven.minify.plugin;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.util.List;
-
-import org.apache.maven.plugin.logging.Log;
-import org.mozilla.javascript.EvaluatorException;
-
 import com.google.common.collect.Lists;
-import com.google.javascript.jscomp.CommandLineRunner;
+import com.google.javascript.jscomp.*;
 import com.google.javascript.jscomp.Compiler;
-import com.google.javascript.jscomp.CompilerOptions;
-import com.google.javascript.jscomp.SourceFile;
-import com.google.javascript.jscomp.SourceMap;
 import com.samaxes.maven.minify.common.ClosureConfig;
 import com.samaxes.maven.minify.common.JavaScriptErrorReporter;
 import com.samaxes.maven.minify.common.YuiConfig;
 import com.samaxes.maven.minify.plugin.MinifyMojo.Engine;
 import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
+import org.apache.maven.plugin.logging.Log;
+import org.mozilla.javascript.EvaluatorException;
+
+import java.io.*;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Task for merging and compressing JavaScript files.
@@ -55,32 +43,33 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
     /**
      * Task constructor.
      *
-     * @param log Maven plugin log
-     * @param verbose display additional info
-     * @param bufferSize size of the buffer used to read source files
-     * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.
-     *        Otherwise, only byte-to-byte operations are used
-     * @param suffix final file name suffix
-     * @param nosuffix whether to use a suffix for the minified file name or not
-     * @param skipMerge whether to skip the merge step or not
-     * @param skipMinify whether to skip the minify step or not
+     * @param log             Maven plugin log
+     * @param verbose         display additional info
+     * @param bufferSize      size of the buffer used to read source files
+     * @param charset         if a character set is specified, a byte-to-char variant allows the encoding to be selected.
+     *                        Otherwise, only byte-to-byte operations are used
+     * @param suffix          final file name suffix
+     * @param nosuffix        whether to use a suffix for the minified file name or not
+     * @param skipMerge       whether to skip the merge step or not
+     * @param skipMinify      whether to skip the minify step or not
      * @param webappSourceDir web resources source directory
      * @param webappTargetDir web resources target directory
-     * @param inputDir directory containing source files
-     * @param sourceFiles list of source files to include
-     * @param sourceIncludes list of source files to include
-     * @param sourceExcludes list of source files to exclude
-     * @param outputDir directory to write the final file
-     * @param outputFilename the output file name
-     * @param engine minify processor engine selected
-     * @param yuiConfig YUI Compressor configuration
-     * @param closureConfig Google Closure Compiler configuration
+     * @param inputDir        directory containing source files
+     * @param sourceFiles     list of source files to include
+     * @param sourceIncludes  list of source files to include
+     * @param sourceExcludes  list of source files to exclude
+     * @param outputDir       directory to write the final file
+     * @param outputFilename  the output file name
+     * @param engine          minify processor engine selected
+     * @param yuiConfig       YUI Compressor configuration
+     * @param closureConfig   Google Closure Compiler configuration
      * @throws FileNotFoundException when the given source file does not exist
      */
     public ProcessJSFilesTask(Log log, boolean verbose, Integer bufferSize, String charset, String suffix,
-            boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir, String webappTargetDir,
-            String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
-            String outputDir, String outputFilename, Engine engine, YuiConfig yuiConfig, ClosureConfig closureConfig)
+                              boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir,
+                              String webappTargetDir, String inputDir, List<String> sourceFiles,
+                              List<String> sourceIncludes, List<String> sourceExcludes, String outputDir,
+                              String outputFilename, Engine engine, YuiConfig yuiConfig, ClosureConfig closureConfig)
             throws FileNotFoundException {
         super(log, verbose, bufferSize, charset, suffix, nosuffix, skipMerge, skipMinify, webappSourceDir,
                 webappTargetDir, inputDir, sourceFiles, sourceIncludes, sourceExcludes, outputDir, outputFilename,
@@ -92,7 +81,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
     /**
      * Minifies a JavaScript file. Create missing parent directories if needed.
      *
-     * @param mergedFile input file resulting from the merged step
+     * @param mergedFile   input file resulting from the merged step
      * @param minifiedFile output file resulting from the minify step
      * @throws IOException when the minify step fails
      */
@@ -101,11 +90,10 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
         minifiedFile.getParentFile().mkdirs();
 
         try (InputStream in = new FileInputStream(mergedFile);
-                OutputStream out = new FileOutputStream(minifiedFile);
-                InputStreamReader reader = new InputStreamReader(in, charset);
-                OutputStreamWriter writer = new OutputStreamWriter(out, charset)) {
-            log.info("Creating the minified file [" + ((verbose) ? minifiedFile.getPath() : minifiedFile.getName())
-                    + "].");
+             OutputStream out = new FileOutputStream(minifiedFile);
+             InputStreamReader reader = new InputStreamReader(in, charset);
+             OutputStreamWriter writer = new OutputStreamWriter(out, charset)) {
+            log.info("Creating the minified file [" + ((verbose) ? minifiedFile.getPath() : minifiedFile.getName()) + "].");
 
             switch (engine) {
                 case CLOSURE:
@@ -124,6 +112,12 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
                         options.setSourceMapOutputPath(sourceMapResult.getPath());
                         // options.setSourceMapLocationMappings(Lists.newArrayList(new
                         // SourceMap.LocationMapping(sourceDir.getPath() + File.separator, "")));
+                    }
+
+                    if (closureConfig.getWarningLevels() != null) {
+                        for (Map.Entry<DiagnosticGroup, CheckLevel> warningLevel : closureConfig.getWarningLevels().entrySet()) {
+                            options.setWarningLevel(warningLevel.getKey(), warningLevel.getValue());
+                        }
                     }
 
                     SourceFile input = SourceFile.fromInputStream(mergedFile.getName(), in);

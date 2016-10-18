@@ -18,6 +18,8 @@
  */
 package com.samaxes.maven.minify.common;
 
+import org.apache.maven.plugin.logging.Log;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -25,8 +27,6 @@ import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.NoSuchElementException;
-
-import org.apache.maven.plugin.logging.Log;
 
 /**
  * Used to initialize a {@code SequenceInputStream} with a {@code Enumeration<? extends InputStream>}. The input streams
@@ -42,8 +42,8 @@ public class SourceFilesEnumeration implements Enumeration<InputStream> {
     /**
      * Enumeration public constructor.
      *
-     * @param log Maven plugin log
-     * @param files list of files
+     * @param log     Maven plugin log
+     * @param files   list of files
      * @param verbose show source file paths in log output
      */
     public SourceFilesEnumeration(Log log, List<File> files, boolean verbose) {
@@ -58,7 +58,7 @@ public class SourceFilesEnumeration implements Enumeration<InputStream> {
      * Tests if this enumeration contains more elements.
      *
      * @return {@code true} if and only if this enumeration object contains at least one more element to provide;
-     *         {@code false} otherwise.
+     * {@code false} otherwise.
      */
     @Override
     public boolean hasMoreElements() {
@@ -69,7 +69,7 @@ public class SourceFilesEnumeration implements Enumeration<InputStream> {
      * Returns the next element of this enumeration if this enumeration object has at least one more element to provide.
      *
      * @return the next element of this enumeration.
-     * @exception NoSuchElementException if no more elements exist.
+     * @throws NoSuchElementException if no more elements exist.
      */
     @Override
     public InputStream nextElement() {

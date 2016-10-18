@@ -18,14 +18,12 @@
  */
 package com.samaxes.maven.minify.common;
 
-import java.util.List;
-
-import com.google.javascript.jscomp.CompilationLevel;
+import com.google.javascript.jscomp.*;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
-import com.google.javascript.jscomp.DependencyOptions;
-import com.google.javascript.jscomp.SourceFile;
-import com.google.javascript.jscomp.SourceMap;
 import com.google.javascript.jscomp.SourceMap.Format;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <a href="https://developers.google.com/closure/compiler/">Google Closure Compiler</a> configuration.
@@ -46,19 +44,23 @@ public class ClosureConfig {
 
     private final Boolean angularPass;
 
+    private final Map<DiagnosticGroup, CheckLevel> warningLevels;
+
     /**
      * Init Closure Compiler values.
      *
-     * @param language the version of ECMAScript used to report errors in the code
-     * @param compilationLevel the degree of compression and optimization to apply to JavaScript
+     * @param language          the version of ECMAScript used to report errors in the code
+     * @param compilationLevel  the degree of compression and optimization to apply to JavaScript
      * @param dependencyOptions options for how to manage dependencies between input files
-     * @param externs preserve symbols that are defined outside of the code you are compiling
+     * @param externs           preserve symbols that are defined outside of the code you are compiling
      * @param useDefaultExterns use default externs packed with the Closure Compiler
-     * @param createSourceMap create a source map for the minifed/combined production files
-     * @param angularPass use {@code @ngInject} annotation to generate Angular injections
+     * @param createSourceMap   create a source map for the minifed/combined production files
+     * @param angularPass       use {@code @ngInject} annotation to generate Angular injections
+     * @param warningLevels     a map of warnings to enable or disable in the compiler
      */
     public ClosureConfig(LanguageMode language, CompilationLevel compilationLevel, DependencyOptions dependencyOptions,
-            List<SourceFile> externs, boolean useDefaultExterns, boolean createSourceMap, boolean angularPass) {
+                         List<SourceFile> externs, boolean useDefaultExterns, boolean createSourceMap,
+                         boolean angularPass, Map<DiagnosticGroup, CheckLevel> warningLevels) {
         this.language = language;
         this.compilationLevel = compilationLevel;
         this.dependencyOptions = dependencyOptions;
@@ -66,6 +68,7 @@ public class ClosureConfig {
         this.useDefaultExterns = useDefaultExterns;
         this.sourceMapFormat = (createSourceMap) ? SourceMap.Format.V3 : null;
         this.angularPass = angularPass;
+        this.warningLevels = warningLevels;
     }
 
     /**
@@ -129,5 +132,14 @@ public class ClosureConfig {
      */
     public Boolean getAngularPass() {
         return angularPass;
+    }
+
+    /**
+     * Gets the warningLevels.
+     *
+     * @return the warningLevels
+     */
+    public Map<DiagnosticGroup, CheckLevel> getWarningLevels() {
+        return warningLevels;
     }
 }
