@@ -29,6 +29,7 @@ import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
 import org.apache.maven.plugin.logging.Log;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
@@ -102,7 +103,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
 
                     CompilerOptions options = new CompilerOptions();
                     closureConfig.getCompilationLevel().setOptionsForCompilationLevel(options);
-                    options.setOutputCharset(charset);
+                    options.setOutputCharset(Charset.forName(charset));
                     options.setLanguageIn(closureConfig.getLanguage());
                     options.setDependencyOptions(closureConfig.getDependencyOptions());
                     options.setAngularPass(closureConfig.getAngularPass());
