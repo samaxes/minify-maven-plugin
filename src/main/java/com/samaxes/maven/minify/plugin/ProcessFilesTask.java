@@ -67,7 +67,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
 
     private final String mergedFilename;
 
-    private final List<File> files = new ArrayList<File>();
+    private final List<File> files = new ArrayList<>();
 
     private final boolean sourceFilesEmpty;
 
@@ -139,7 +139,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
             log.info("Starting " + fileType + " task:");
 
             if (!targetDir.exists() && !targetDir.mkdirs()) {
-                throw new RuntimeException("Unable to create target directory: " + targetDir);
+                throw new RuntimeException("Unable to create target directory for: " + targetDir);
             }
 
             if (!files.isEmpty()) {
@@ -153,7 +153,9 @@ public abstract class ProcessFilesTask implements Callable<Object> {
                         String subPath = originalPath.substring(sourceBasePath.length(),
                                 originalPath.lastIndexOf(File.separator));
                         File targetPath = new File(targetDir.getAbsolutePath() + subPath);
-                        targetPath.mkdirs();
+                        if (!targetPath.exists() && !targetPath.mkdirs()) {
+                            throw new RuntimeException("Unable to create target directory for: " + targetPath);
+                        }
 
                         String mergedFileBasename = FileUtils.basename(mergedFile.getName());
                         mergedFileBasename = mergedFileBasename.substring(0, mergedFileBasename.length() - 1);
@@ -196,7 +198,9 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * @throws IOException when the merge step fails
      */
     protected void merge(File mergedFile) throws IOException {
-        mergedFile.getParentFile().mkdirs();
+        if (!mergedFile.getParentFile().exists() && !mergedFile.getParentFile().mkdirs()) {
+            throw new RuntimeException("Unable to create target directory for: " + mergedFile.getParentFile());
+        }
 
         try (InputStream sequence = new SequenceInputStream(new SourceFilesEnumeration(log, files, verbose));
              OutputStream out = new FileOutputStream(mergedFile);
@@ -288,13 +292,13 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * @return the files to copy
      */
     private List<File> getFilesToInclude(List<String> includes, List<String> excludes) {
-        List<File> includedFiles = new ArrayList<File>();
+        List<File> includedFiles = new ArrayList<>();
 
         if (includes != null && !includes.isEmpty()) {
             DirectoryScanner scanner = new DirectoryScanner();
 
-            scanner.setIncludes(includes.toArray(new String[0]));
-            scanner.setExcludes(excludes.toArray(new String[0]));
+            scanner.setIncludes(includes.toArray(new String[includes.size()]));
+            scanner.setExcludes(excludes.toArray(new String[excludes.size()]));
             scanner.addDefaultExcludes();
             scanner.setBasedir(sourceDir);
             scanner.scan();

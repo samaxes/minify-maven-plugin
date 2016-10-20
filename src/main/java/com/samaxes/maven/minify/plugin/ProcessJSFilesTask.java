@@ -21,14 +21,12 @@ package com.samaxes.maven.minify.plugin;
 import com.google.common.collect.Lists;
 import com.google.javascript.jscomp.*;
 import com.google.javascript.jscomp.Compiler;
-import com.google.javascript.rhino.SimpleErrorReporter;
 import com.samaxes.maven.minify.common.ClosureConfig;
 import com.samaxes.maven.minify.common.JavaScriptErrorReporter;
 import com.samaxes.maven.minify.common.YuiConfig;
 import com.samaxes.maven.minify.plugin.MinifyMojo.Engine;
 import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
 import org.apache.maven.plugin.logging.Log;
-import org.mozilla.javascript.EvaluatorException;
 
 import java.io.*;
 import java.util.List;
@@ -88,7 +86,9 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      */
     @Override
     protected void minify(File mergedFile, File minifiedFile) throws IOException {
-        minifiedFile.getParentFile().mkdirs();
+        if (!minifiedFile.getParentFile().exists() && !minifiedFile.getParentFile().mkdirs()) {
+            throw new RuntimeException("Unable to create target directory for: " + minifiedFile.getParentFile());
+        }
 
         try (InputStream in = new FileInputStream(mergedFile);
              OutputStream out = new FileOutputStream(minifiedFile);
@@ -147,11 +147,12 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
                         log.info("Creating the minified file map ["
                                 + (verbose ? sourceMapResult.getPath() : sourceMapResult.getName()) + "].");
 
-                        sourceMapResult.createNewFile();
-                        flushSourceMap(sourceMapResult, minifiedFile.getName(), compiler.getSourceMap());
+                        if (sourceMapResult.createNewFile()) {
+                            flushSourceMap(sourceMapResult, minifiedFile.getName(), compiler.getSourceMap());
 
-                        writer.append(System.getProperty("line.separator"));
-                        writer.append("//# sourceMappingURL=" + sourceMapResult.getName());
+                            writer.append(System.getProperty("line.separator"));
+                            writer.append("//# sourceMappingURL=").append(sourceMapResult.getName());
+                        }
                     }
 
                     break;

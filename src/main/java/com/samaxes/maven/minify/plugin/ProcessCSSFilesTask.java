@@ -74,7 +74,9 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
      */
     @Override
     protected void minify(File mergedFile, File minifiedFile) throws IOException {
-        minifiedFile.getParentFile().mkdirs();
+        if (!minifiedFile.getParentFile().exists() && !minifiedFile.getParentFile().mkdirs()) {
+            throw new RuntimeException("Unable to create target directory for: " + minifiedFile.getParentFile());
+        }
 
         try (InputStream in = new FileInputStream(mergedFile);
              OutputStream out = new FileOutputStream(minifiedFile);

@@ -50,7 +50,7 @@ public class SourceFilesEnumeration implements Enumeration<InputStream> {
         this.files = files;
 
         for (File file : files) {
-            log.info("Processing source file [" + (verbose ? file.getPath() : file.getName()) + "].");
+            log.info("Processing source file [" + ((verbose) ? file.getPath() : file.getName()) + "].");
         }
     }
 
@@ -62,7 +62,7 @@ public class SourceFilesEnumeration implements Enumeration<InputStream> {
      */
     @Override
     public boolean hasMoreElements() {
-        return (current < files.size()) ? true : false;
+        return (current < files.size());
     }
 
     /**
@@ -73,7 +73,7 @@ public class SourceFilesEnumeration implements Enumeration<InputStream> {
      */
     @Override
     public InputStream nextElement() {
-        InputStream is = null;
+        InputStream is;
 
         if (!hasMoreElements()) {
             throw new NoSuchElementException("No more files!");
