@@ -104,8 +104,9 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
                     closureConfig.getCompilationLevel().setOptionsForCompilationLevel(options);
                     options.setOutputCharset(charset);
                     options.setLanguageIn(closureConfig.getLanguage());
-                    options.setAngularPass(closureConfig.getAngularPass());
                     options.setDependencyOptions(closureConfig.getDependencyOptions());
+                    options.setAngularPass(closureConfig.getAngularPass());
+                    options.setExtraAnnotationNames(closureConfig.getExtraAnnotations());
 
                     File sourceMapResult = new File(minifiedFile.getPath() + ".map");
                     if (closureConfig.getSourceMapFormat() != null) {

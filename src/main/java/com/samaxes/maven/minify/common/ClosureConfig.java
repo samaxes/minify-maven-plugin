@@ -42,9 +42,11 @@ public class ClosureConfig {
 
     private final Format sourceMapFormat;
 
+    private final Map<DiagnosticGroup, CheckLevel> warningLevels;
+
     private final Boolean angularPass;
 
-    private final Map<DiagnosticGroup, CheckLevel> warningLevels;
+    private final List<String> extraAnnotations;
 
     /**
      * Init Closure Compiler values.
@@ -55,20 +57,22 @@ public class ClosureConfig {
      * @param externs           preserve symbols that are defined outside of the code you are compiling
      * @param useDefaultExterns use default externs packed with the Closure Compiler
      * @param createSourceMap   create a source map for the minifed/combined production files
-     * @param angularPass       use {@code @ngInject} annotation to generate Angular injections
      * @param warningLevels     a map of warnings to enable or disable in the compiler
+     * @param angularPass       use {@code @ngInject} annotation to generate Angular injections
+     * @param extraAnnotations  make extra annotations known to the closure engine
      */
     public ClosureConfig(LanguageMode language, CompilationLevel compilationLevel, DependencyOptions dependencyOptions,
                          List<SourceFile> externs, boolean useDefaultExterns, boolean createSourceMap,
-                         boolean angularPass, Map<DiagnosticGroup, CheckLevel> warningLevels) {
+                         Map<DiagnosticGroup, CheckLevel> warningLevels, boolean angularPass, List<String> extraAnnotations) {
         this.language = language;
         this.compilationLevel = compilationLevel;
         this.dependencyOptions = dependencyOptions;
         this.externs = externs;
         this.useDefaultExterns = useDefaultExterns;
         this.sourceMapFormat = (createSourceMap) ? SourceMap.Format.V3 : null;
-        this.angularPass = angularPass;
         this.warningLevels = warningLevels;
+        this.angularPass = angularPass;
+        this.extraAnnotations = extraAnnotations;
     }
 
     /**
@@ -126,6 +130,15 @@ public class ClosureConfig {
     }
 
     /**
+     * Gets the warningLevels.
+     *
+     * @return the warningLevels
+     */
+    public Map<DiagnosticGroup, CheckLevel> getWarningLevels() {
+        return warningLevels;
+    }
+
+    /**
      * Gets the angularPass.
      *
      * @return the angularPass
@@ -135,11 +148,11 @@ public class ClosureConfig {
     }
 
     /**
-     * Gets the warningLevels.
+     * Gets the extraAnnotations.
      *
-     * @return the warningLevels
+     * @return the extraAnnotations
      */
-    public Map<DiagnosticGroup, CheckLevel> getWarningLevels() {
-        return warningLevels;
+    public List<String> getExtraAnnotations() {
+        return extraAnnotations;
     }
 }

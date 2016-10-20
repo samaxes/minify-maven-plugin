@@ -205,7 +205,6 @@ public class MinifyMojo extends AbstractMojo {
     /**
      * Define the CSS compressor engine to use.<br/>
      * Possible values are:
-     *
      * <ul>
      * <li>{@code YUI}: <a href="http://yui.github.io/yuicompressor/">YUI Compressor</a></li>
      * </ul>
@@ -264,7 +263,6 @@ public class MinifyMojo extends AbstractMojo {
     /**
      * Define the JavaScript compressor engine to use.<br/>
      * Possible values are:
-     *
      * <ul>
      * <li>{@code YUI}: <a href="http://yui.github.io/yuicompressor/">YUI Compressor</a></li>
      * <li>{@code CLOSURE}: <a href="https://developers.google.com/closure/compiler/">Google Closure Compiler</a></li>
@@ -354,7 +352,6 @@ public class MinifyMojo extends AbstractMojo {
     /**
      * Refers to which version of ECMAScript to assume when checking for errors in your code.<br/>
      * Possible values are:
-     *
      * <ul>
      * <li>{@code ECMASCRIPT3}: Checks code assuming ECMAScript 3 compliance, and gives errors for code using features
      * only present in ECMAScript 5.</li>
@@ -371,7 +368,6 @@ public class MinifyMojo extends AbstractMojo {
     /**
      * The degree of compression and optimization to apply to your JavaScript.<br/>
      * There are three possible compilation levels:
-     *
      * <ul>
      * <li>{@code WHITESPACE_ONLY}: Just removes whitespace and comments from your JavaScript.</li>
      * <li>{@code SIMPLE_OPTIMIZATIONS}: Performs compression and optimization that does not interfere with the
@@ -428,6 +424,20 @@ public class MinifyMojo extends AbstractMojo {
     private boolean closureSortDependencies;
 
     /**
+     * Treat certain warnings as the specified CheckLevel:
+     * <ul>
+     * <li>{@code ERROR}: Makes all warnings of the given group to build-breaking error.</li>
+     * <li>{@code WARNING}: Makes all warnings of the given group a non-breaking warning.</li>
+     * <li>{@code OFF}: Silences all warnings of the given group.</li>
+     * </ul>
+     * For the complete list of diagnostic groups please visit <a href="https://github.com/google/closure-compiler/wiki/Warnings">https://github.com/google/closure-compiler/wiki/Warnings</a>.
+     *
+     * @since 1.7.5
+     */
+    @Parameter(property = "closureWarningLevels")
+    private HashMap<String, String> closureWarningLevels;
+
+    /**
      * Generate {@code $inject} properties for AngularJS for functions annotated with {@code @ngInject}.
      *
      * @since 1.7.3
@@ -436,20 +446,12 @@ public class MinifyMojo extends AbstractMojo {
     private boolean closureAngularPass;
 
     /**
-     * Treat certain warnings as the specified CheckLevel:
-     *
-     * <ul>
-     * <li>{@code ERROR}: Makes all warnings of the given group to build-breaking error.</li>
-     * <li>{@code WARNING}: Makes all warnings of the given group a non-breaking warning.</li>
-     * <li>{@code OFF}: Silences all warnings of the given group.</li>
-     * </ul>
-     *
-     * For the complete list of diagnostic groups please visit <a href="https://github.com/google/closure-compiler/wiki/Warnings">https://github.com/google/closure-compiler/wiki/Warnings</a>.
+     * A whitelist of tag names in JSDoc. Needed to support JSDoc extensions like ngdoc.
      *
      * @since 1.7.5
      */
-    @Parameter(property = "closureWarningLevels")
-    private HashMap<String, String> closureWarningLevels;
+    @Parameter(property = "closureExtraAnnotations")
+    private ArrayList<String> closureExtraAnnotations;
 
     /**
      * Executed when the goal is invoked, it will first invoke a parallel lifecycle, ending at the given phase.
@@ -566,7 +568,8 @@ public class MinifyMojo extends AbstractMojo {
         }
 
         return new ClosureConfig(closureLanguage, closureCompilationLevel, dependencyOptions, externs,
-                closureUseDefaultExterns, closureCreateSourceMap, closureAngularPass, warningLevels);
+                closureUseDefaultExterns, closureCreateSourceMap, warningLevels, closureAngularPass,
+                closureExtraAnnotations);
     }
 
     private Collection<ProcessFilesTask> createTasks(YuiConfig yuiConfig, ClosureConfig closureConfig)
