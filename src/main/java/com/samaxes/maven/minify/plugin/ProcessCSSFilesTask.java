@@ -80,7 +80,7 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
              OutputStream out = new FileOutputStream(minifiedFile);
              InputStreamReader reader = new InputStreamReader(in, charset);
              OutputStreamWriter writer = new OutputStreamWriter(out, charset)) {
-            log.info("Creating the minified file [" + ((verbose) ? minifiedFile.getPath() : minifiedFile.getName())
+            log.info("Creating the minified file [" + (verbose ? minifiedFile.getPath() : minifiedFile.getName())
                     + "].");
 
             switch (engine) {
@@ -95,7 +95,7 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
                     break;
             }
         } catch (IOException e) {
-            log.error("Failed to compress the CSS file [" + ((verbose) ? mergedFile.getPath() : mergedFile.getName())
+            log.error("Failed to compress the CSS file [" + (verbose ? mergedFile.getPath() : mergedFile.getName())
                     + "].", e);
             throw e;
         }

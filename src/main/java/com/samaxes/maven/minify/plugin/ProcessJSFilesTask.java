@@ -21,6 +21,7 @@ package com.samaxes.maven.minify.plugin;
 import com.google.common.collect.Lists;
 import com.google.javascript.jscomp.*;
 import com.google.javascript.jscomp.Compiler;
+import com.google.javascript.rhino.SimpleErrorReporter;
 import com.samaxes.maven.minify.common.ClosureConfig;
 import com.samaxes.maven.minify.common.JavaScriptErrorReporter;
 import com.samaxes.maven.minify.common.YuiConfig;
@@ -93,7 +94,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
              OutputStream out = new FileOutputStream(minifiedFile);
              InputStreamReader reader = new InputStreamReader(in, charset);
              OutputStreamWriter writer = new OutputStreamWriter(out, charset)) {
-            log.info("Creating the minified file [" + ((verbose) ? minifiedFile.getPath() : minifiedFile.getName()) + "].");
+            log.info("Creating the minified file [" + (verbose ? minifiedFile.getPath() : minifiedFile.getName()) + "].");
 
             switch (engine) {
                 case CLOSURE:
@@ -129,15 +130,22 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
                     Compiler compiler = new Compiler();
                     compiler.compile(externs, Lists.newArrayList(input), options);
 
-                    if (compiler.hasErrors()) {
-                        throw new EvaluatorException(compiler.getErrors()[0].description);
+                    // Check for errors.
+                    JSError[] errors = compiler.getErrors();
+                    if (errors.length > 0) {
+                        StringBuilder msg = new StringBuilder("JSCompiler errors\n");
+                        MessageFormatter formatter = new LightweightMessageFormatter(compiler);
+                        for (JSError e : errors) {
+                            msg.append(formatter.formatError(e));
+                        }
+                        throw new RuntimeException(msg.toString());
                     }
 
                     writer.append(compiler.toSource());
 
                     if (closureConfig.getSourceMapFormat() != null) {
                         log.info("Creating the minified file map ["
-                                + ((verbose) ? sourceMapResult.getPath() : sourceMapResult.getName()) + "].");
+                                + (verbose ? sourceMapResult.getPath() : sourceMapResult.getName()) + "].");
 
                         sourceMapResult.createNewFile();
                         flushSourceMap(sourceMapResult, minifiedFile.getName(), compiler.getSourceMap());
@@ -162,7 +170,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
         } catch (IOException e) {
             log.error(
                     "Failed to compress the JavaScript file ["
-                            + ((verbose) ? mergedFile.getPath() : mergedFile.getName()) + "].", e);
+                            + (verbose ? mergedFile.getPath() : mergedFile.getName()) + "].", e);
             throw e;
         }
 
@@ -174,7 +182,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
             sourceMap.appendTo(out, minifyFileName);
         } catch (IOException e) {
             log.error("Failed to write the JavaScript Source Map file ["
-                    + ((verbose) ? sourceMapOutputFile.getPath() : sourceMapOutputFile.getName()) + "].", e);
+                    + (verbose ? sourceMapOutputFile.getPath() : sourceMapOutputFile.getName()) + "].", e);
         }
     }
 }

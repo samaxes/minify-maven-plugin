@@ -50,7 +50,7 @@ public class SourceFilesEnumeration implements Enumeration<InputStream> {
         this.files = files;
 
         for (File file : files) {
-            log.info("Processing source file [" + ((verbose) ? file.getPath() : file.getName()) + "].");
+            log.info("Processing source file [" + (verbose ? file.getPath() : file.getName()) + "].");
         }
     }
 
