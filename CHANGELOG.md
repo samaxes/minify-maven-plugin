@@ -6,7 +6,8 @@
 * Replace `prerequisites` with Maven Enforcer plugin.
 * Remove the deprecated oss-parent from `pom.xml` (See [OSSRH Apache Maven Guide](http://central.sonatype.org/pages/apache-maven.html)).
 * Change suffix handling to permit alternative naming schemes (#68).
-* Add support for Closure's warning levels (#74).
+* Add support for Google Closure Compiler's warning levels (#74).
+* Use Google Closure Compiler lightweight message formatter for printing compiler errors (#109, #110).
 
 ## 1.7.4
 

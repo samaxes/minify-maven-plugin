@@ -164,8 +164,10 @@ public abstract class ProcessFilesTask implements Callable<Object> {
                 } else {
                     File mergedFile = new File(targetDir, (nosuffix) ? mergedFilename + TEMP_SUFFIX : mergedFilename);
                     merge(mergedFile);
+                    String mergedFileBasename = FileUtils.basename(mergedFilename);
+                    mergedFileBasename = mergedFileBasename.substring(0, mergedFileBasename.length() - 1);
                     File minifiedFile = new File(targetDir, (nosuffix) ? mergedFilename
-                            : FileUtils.basename(mergedFilename) + suffix + FileUtils.getExtension(mergedFilename));
+                            : mergedFileBasename + suffix + FileUtils.getExtension(mergedFilename));
                     minify(mergedFile, minifiedFile);
                     if (nosuffix) {
                         if (!mergedFile.delete()) {
@@ -196,7 +198,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
              OutputStream out = new FileOutputStream(mergedFile);
              InputStreamReader sequenceReader = new InputStreamReader(sequence, charset);
              OutputStreamWriter outWriter = new OutputStreamWriter(out, charset)) {
-            log.info("Creating the merged file [" + ((verbose) ? mergedFile.getPath() : mergedFile.getName()) + "].");
+            log.info("Creating the merged file [" + (verbose ? mergedFile.getPath() : mergedFile.getName()) + "].");
 
             IOUtil.copy(sequenceReader, outWriter, bufferSize);
         } catch (IOException e) {
@@ -263,14 +265,14 @@ public abstract class ProcessFilesTask implements Callable<Object> {
     private void addNewSourceFile(String finalFilename, File sourceFile) throws FileNotFoundException {
         if (sourceFile.exists()) {
             if (finalFilename.equalsIgnoreCase(sourceFile.getName())) {
-                log.warn("The source file [" + ((verbose) ? sourceFile.getPath() : sourceFile.getName())
+                log.warn("The source file [" + (verbose ? sourceFile.getPath() : sourceFile.getName())
                         + "] has the same name as the final file.");
             }
-            log.debug("Adding source file [" + ((verbose) ? sourceFile.getPath() : sourceFile.getName()) + "].");
+            log.debug("Adding source file [" + (verbose ? sourceFile.getPath() : sourceFile.getName()) + "].");
             files.add(sourceFile);
         } else {
             throw new FileNotFoundException("The source file ["
-                    + ((verbose) ? sourceFile.getPath() : sourceFile.getName()) + "] does not exist.");
+                    + (verbose ? sourceFile.getPath() : sourceFile.getName()) + "] does not exist.");
         }
     }
 
