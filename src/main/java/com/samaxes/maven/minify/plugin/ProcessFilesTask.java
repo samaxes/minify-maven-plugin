@@ -139,10 +139,9 @@ public abstract class ProcessFilesTask implements Callable<Object> {
             log.info("Starting " + fileType + " task:");
 
             if (!targetDir.exists() && !targetDir.mkdirs()) {
-                log.error("Unable to create target directory: " + targetDir);
-                return null;
+                throw new RuntimeException("Unable to create target directory: " + targetDir);
             }
-            
+
             if (!files.isEmpty()) {
                 if (skipMerge) {
                     log.info("Skipping the merge step...");

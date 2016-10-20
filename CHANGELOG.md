@@ -8,6 +8,7 @@
 * Change suffix handling to permit alternative naming schemes (#68).
 * Add support for Google Closure Compiler's warning levels (#74).
 * Use Google Closure Compiler lightweight message formatter for printing compiler errors (#109, #110).
+* Clearer error message when target directory creation fails (#42, #87, #116).
 
 ## 1.7.4
 
