@@ -105,7 +105,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
         this.verbose = verbose;
         this.bufferSize = bufferSize;
         this.charset = charset;
-        this.suffix = suffix + ".";
+        this.suffix = suffix;
         this.nosuffix = nosuffix;
         this.skipMerge = skipMerge;
         this.skipMinify = skipMinify;
@@ -157,10 +157,8 @@ public abstract class ProcessFilesTask implements Callable<Object> {
                             throw new RuntimeException("Unable to create target directory for: " + targetPath);
                         }
 
-                        String mergedFileBasename = FileUtils.basename(mergedFile.getName());
-                        mergedFileBasename = mergedFileBasename.substring(0, mergedFileBasename.length() - 1);
                         File minifiedFile = new File(targetPath, (nosuffix) ? mergedFile.getName()
-                                : mergedFileBasename + suffix + FileUtils.getExtension(mergedFile.getName()));
+                                : FileUtils.removeExtension(mergedFilename) + suffix + "." + FileUtils.extension(mergedFile.getName()));
                         minify(mergedFile, minifiedFile);
                     }
                 } else if (skipMinify) {
@@ -170,10 +168,8 @@ public abstract class ProcessFilesTask implements Callable<Object> {
                 } else {
                     File mergedFile = new File(targetDir, (nosuffix) ? mergedFilename + TEMP_SUFFIX : mergedFilename);
                     merge(mergedFile);
-                    String mergedFileBasename = FileUtils.basename(mergedFilename);
-                    mergedFileBasename = mergedFileBasename.substring(0, mergedFileBasename.length() - 1);
                     File minifiedFile = new File(targetDir, (nosuffix) ? mergedFilename
-                            : mergedFileBasename + suffix + FileUtils.getExtension(mergedFilename));
+                            : FileUtils.removeExtension(mergedFilename) + suffix + "." + FileUtils.extension(mergedFilename));
                     minify(mergedFile, minifiedFile);
                     if (nosuffix) {
                         if (!mergedFile.delete()) {

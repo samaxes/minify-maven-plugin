@@ -11,6 +11,7 @@
 * Clearer error message when target directory creation fails (#42, #87, #116).
 * Add configuration for Google Closure Compiler extra annotations (#83, #117).
 * Update Google Closure Compiler to v20160911 (#119, #121).
+* Minified file should be in the same directory as the merged file (#73).
 
 ## 1.7.4
 
