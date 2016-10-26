@@ -104,7 +104,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
                     CompilerOptions options = new CompilerOptions();
                     closureConfig.getCompilationLevel().setOptionsForCompilationLevel(options);
                     options.setOutputCharset(Charset.forName(charset));
-                    options.setLanguageIn(closureConfig.getLanguage());
+                    options.setLanguageIn(closureConfig.getLanguageIn());
                     options.setDependencyOptions(closureConfig.getDependencyOptions());
                     options.setAngularPass(closureConfig.getAngularPass());
                     options.setExtraAnnotationNames(closureConfig.getExtraAnnotations());

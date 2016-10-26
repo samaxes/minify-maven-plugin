@@ -30,7 +30,7 @@ import java.util.Map;
  */
 public class ClosureConfig {
 
-    private final LanguageMode language;
+    private final LanguageMode languageIn;
 
     private final CompilationLevel compilationLevel;
 
@@ -51,7 +51,7 @@ public class ClosureConfig {
     /**
      * Init Closure Compiler values.
      *
-     * @param language          the version of ECMAScript used to report errors in the code
+     * @param languageIn        the version of ECMAScript used to report errors in the code
      * @param compilationLevel  the degree of compression and optimization to apply to JavaScript
      * @param dependencyOptions options for how to manage dependencies between input files
      * @param externs           preserve symbols that are defined outside of the code you are compiling
@@ -61,10 +61,10 @@ public class ClosureConfig {
      * @param angularPass       use {@code @ngInject} annotation to generate Angular injections
      * @param extraAnnotations  make extra annotations known to the closure engine
      */
-    public ClosureConfig(LanguageMode language, CompilationLevel compilationLevel, DependencyOptions dependencyOptions,
+    public ClosureConfig(LanguageMode languageIn, CompilationLevel compilationLevel, DependencyOptions dependencyOptions,
                          List<SourceFile> externs, boolean useDefaultExterns, boolean createSourceMap,
                          Map<DiagnosticGroup, CheckLevel> warningLevels, boolean angularPass, List<String> extraAnnotations) {
-        this.language = language;
+        this.languageIn = languageIn;
         this.compilationLevel = compilationLevel;
         this.dependencyOptions = dependencyOptions;
         this.externs = externs;
@@ -76,12 +76,12 @@ public class ClosureConfig {
     }
 
     /**
-     * Gets the language.
+     * Gets the languageIn.
      *
-     * @return the language
+     * @return the languageIn
      */
-    public LanguageMode getLanguage() {
-        return language;
+    public LanguageMode getLanguageIn() {
+        return languageIn;
     }
 
     /**

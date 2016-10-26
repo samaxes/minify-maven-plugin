@@ -353,17 +353,17 @@ public class MinifyMojo extends AbstractMojo {
      * Refers to which version of ECMAScript to assume when checking for errors in your code.<br/>
      * Possible values are:
      * <ul>
-     * <li>{@code ECMASCRIPT3}: Checks code assuming ECMAScript 3 compliance, and gives errors for code using features
-     * only present in ECMAScript 5.</li>
-     * <li>{@code ECMASCRIPT5}: Checks code assuming ECMAScript 5 compliance, allowing new features not present in
-     * ECMAScript 3.</li>
-     * <li>{@code ECMASCRIPT5_STRICT}: Like {@code ECMASCRIPT5} but assumes compliance with strict mode ('use strict';).</li>
+     * <li>{@code ECMASCRIPT3}: Checks code assuming ECMAScript 3 compliance, and gives errors for code using features only present in later versions of ECMAScript.</li>
+     * <li>{@code ECMASCRIPT5}: Checks code assuming ECMAScript 5 compliance, allowing new features not present in ECMAScript 3, and gives errors for code using features only present in later versions of ECMAScript.</li>
+     * <li>{@code ECMASCRIPT5_STRICT}: Like {@code ECMASCRIPT5} but assumes compliance with strict mode ({@code 'use strict';}).</li>
+     * <li>{@code ECMASCRIPT6}: Checks code assuming ECMAScript 6 compliance, allowing new features not present in ECMAScript 5.</li>
+     * <li>{@code ECMASCRIPT6_STRICT}: Like {@code ECMASCRIPT6} but assumes compliance with strict mode ({@code 'use strict';}).</li>
      * </ul>
      *
      * @since 1.7.2
      */
-    @Parameter(property = "closureLanguageIn", defaultValue = "ECMASCRIPT3")
-    private LanguageMode closureLanguage;
+    @Parameter(property = "closureLanguageIn", defaultValue = "ECMASCRIPT6")
+    private LanguageMode closureLanguageIn;
 
     /**
      * The degree of compression and optimization to apply to your JavaScript.<br/>
@@ -567,7 +567,7 @@ public class MinifyMojo extends AbstractMojo {
             }
         }
 
-        return new ClosureConfig(closureLanguage, closureCompilationLevel, dependencyOptions, externs,
+        return new ClosureConfig(closureLanguageIn, closureCompilationLevel, dependencyOptions, externs,
                 closureUseDefaultExterns, closureCreateSourceMap, warningLevels, closureAngularPass,
                 closureExtraAnnotations);
     }
