@@ -10,7 +10,7 @@
 * Use Google Closure Compiler lightweight message formatter for printing compiler errors (#109, #110).
 * Clearer error message when target directory creation fails (#42, #87, #116).
 * Add configuration for Google Closure Compiler extra annotations (#83, #117).
-* Update Google Closure Compiler to v20160911 (#119, #121).
+* Update Google Closure Compiler to v20161024 (#119, #121).
 * Minified file should be in the same directory as the merged file (#73).
 * Add ES6 support (#128).
 * Update YUI Compressor to 2.4.8 (#111).

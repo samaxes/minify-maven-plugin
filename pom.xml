@@ -103,7 +103,7 @@
         <dependency>
             <groupId>com.google.javascript</groupId>
             <artifactId>closure-compiler</artifactId>
-            <version>v20160911</version>
+            <version>v20161024</version>
             <optional>true</optional>
         </dependency>
         <dependency>
