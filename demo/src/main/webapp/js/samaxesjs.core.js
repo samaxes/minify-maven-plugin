@@ -1,4 +1,4 @@
-/*
+/*!
  * samaxesJS JavaScript Library
  * TOC JavaScript Control v@VERSION
  * http://code.google.com/p/samaxesjs/
