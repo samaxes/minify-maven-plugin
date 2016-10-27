@@ -439,6 +439,12 @@ public class MinifyMojo extends AbstractMojo {
      * <li>{@code WARNING}: Makes all warnings of the given group a non-breaking warning.</li>
      * <li>{@code OFF}: Silences all warnings of the given group.</li>
      * </ul>
+     * Example:
+     * <pre><code class="language-java">
+     * &lt;closureWarningLevels>
+     *     &lt;nonStandardJsDocs>OFF&lt;/nonStandardJsDocs>
+     * &lt;/closureWarningLevels>
+     * </code></pre>
      * For the complete list of diagnostic groups please visit <a href="https://github.com/google/closure-compiler/wiki/Warnings">https://github.com/google/closure-compiler/wiki/Warnings</a>.
      *
      * @since 1.7.5
