@@ -32,6 +32,8 @@ public class ClosureConfig {
 
     private final LanguageMode languageIn;
 
+    private final LanguageMode languageOut;
+
     private final CompilationLevel compilationLevel;
 
     private final DependencyOptions dependencyOptions;
@@ -52,6 +54,7 @@ public class ClosureConfig {
      * Init Closure Compiler values.
      *
      * @param languageIn        the version of ECMAScript used to report errors in the code
+     * @param languageOut       the version of ECMAScript the code will be returned in
      * @param compilationLevel  the degree of compression and optimization to apply to JavaScript
      * @param dependencyOptions options for how to manage dependencies between input files
      * @param externs           preserve symbols that are defined outside of the code you are compiling
@@ -61,10 +64,12 @@ public class ClosureConfig {
      * @param angularPass       use {@code @ngInject} annotation to generate Angular injections
      * @param extraAnnotations  make extra annotations known to the closure engine
      */
-    public ClosureConfig(LanguageMode languageIn, CompilationLevel compilationLevel, DependencyOptions dependencyOptions,
-                         List<SourceFile> externs, boolean useDefaultExterns, boolean createSourceMap,
-                         Map<DiagnosticGroup, CheckLevel> warningLevels, boolean angularPass, List<String> extraAnnotations) {
+    public ClosureConfig(LanguageMode languageIn, LanguageMode languageOut, CompilationLevel compilationLevel,
+                         DependencyOptions dependencyOptions, List<SourceFile> externs, boolean useDefaultExterns,
+                         boolean createSourceMap, Map<DiagnosticGroup, CheckLevel> warningLevels, boolean angularPass,
+                         List<String> extraAnnotations) {
         this.languageIn = languageIn;
+        this.languageOut = languageOut;
         this.compilationLevel = compilationLevel;
         this.dependencyOptions = dependencyOptions;
         this.externs = externs;
@@ -82,6 +87,15 @@ public class ClosureConfig {
      */
     public LanguageMode getLanguageIn() {
         return languageIn;
+    }
+
+    /**
+     * Gets the languageOut.
+     *
+     * @return the languageOut
+     */
+    public LanguageMode getLanguageOut() {
+        return languageOut;
     }
 
     /**

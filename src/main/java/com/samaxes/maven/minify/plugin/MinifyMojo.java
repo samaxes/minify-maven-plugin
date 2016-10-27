@@ -362,8 +362,17 @@ public class MinifyMojo extends AbstractMojo {
      *
      * @since 1.7.2
      */
-    @Parameter(property = "closureLanguageIn", defaultValue = "ECMASCRIPT6")
+    @Parameter(property = "closureLanguageIn", defaultValue = "ECMASCRIPT5")
     private LanguageMode closureLanguageIn;
+
+    /**
+     * Refers to which version of ECMAScript your code will be returned in.<br/>
+     * It accepts the same options as {@code closureLanguageIn} and is used to transpile between different levels of ECMAScript.
+     *
+     * @since 1.7.5
+     */
+    @Parameter(property = "closureLanguageOut", defaultValue = "ECMASCRIPT5")
+    private LanguageMode closureLanguageOut;
 
     /**
      * The degree of compression and optimization to apply to your JavaScript.<br/>
@@ -567,8 +576,8 @@ public class MinifyMojo extends AbstractMojo {
             }
         }
 
-        return new ClosureConfig(closureLanguageIn, closureCompilationLevel, dependencyOptions, externs,
-                closureUseDefaultExterns, closureCreateSourceMap, warningLevels, closureAngularPass,
+        return new ClosureConfig(closureLanguageIn, closureLanguageOut, closureCompilationLevel, dependencyOptions,
+                externs, closureUseDefaultExterns, closureCreateSourceMap, warningLevels, closureAngularPass,
                 closureExtraAnnotations);
     }
 
