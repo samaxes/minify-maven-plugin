@@ -27,6 +27,7 @@ import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -47,7 +48,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
 
     protected final Integer bufferSize;
 
-    protected final String charset;
+    protected final Charset charset;
 
     protected final String suffix;
 
@@ -97,10 +98,11 @@ public abstract class ProcessFilesTask implements Callable<Object> {
      * @param yuiConfig       YUI Compressor configuration
      * @throws FileNotFoundException when the given source file does not exist
      */
-    public ProcessFilesTask(Log log, boolean verbose, Integer bufferSize, String charset, String suffix,
-                            boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir, String webappTargetDir,
-                            String inputDir, List<String> sourceFiles, List<String> sourceIncludes, List<String> sourceExcludes,
-                            String outputDir, String outputFilename, Engine engine, YuiConfig yuiConfig) throws FileNotFoundException {
+    public ProcessFilesTask(Log log, boolean verbose, Integer bufferSize, Charset charset, String suffix,
+                            boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir,
+                            String webappTargetDir, String inputDir, List<String> sourceFiles,
+                            List<String> sourceIncludes, List<String> sourceExcludes, String outputDir,
+                            String outputFilename, Engine engine, YuiConfig yuiConfig) throws FileNotFoundException {
         this.log = log;
         this.verbose = verbose;
         this.bufferSize = bufferSize;

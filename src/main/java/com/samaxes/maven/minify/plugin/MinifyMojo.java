@@ -617,16 +617,16 @@ public class MinifyMojo extends AbstractMojo {
     private ProcessFilesTask createCSSTask(YuiConfig yuiConfig, ClosureConfig closureConfig,
                                            List<String> cssSourceFiles, List<String> cssSourceIncludes, List<String> cssSourceExcludes,
                                            String cssFinalFile) throws FileNotFoundException {
-        return new ProcessCSSFilesTask(getLog(), debug, bufferSize, charset, suffix, nosuffix, skipMerge, skipMinify,
-                webappSourceDir, webappTargetDir, cssSourceDir, cssSourceFiles, cssSourceIncludes, cssSourceExcludes,
-                cssTargetDir, cssFinalFile, cssEngine, yuiConfig);
+        return new ProcessCSSFilesTask(getLog(), debug, bufferSize, Charset.forName(charset), suffix, nosuffix,
+                skipMerge, skipMinify, webappSourceDir, webappTargetDir, cssSourceDir, cssSourceFiles,
+                cssSourceIncludes, cssSourceExcludes, cssTargetDir, cssFinalFile, cssEngine, yuiConfig);
     }
 
     private ProcessFilesTask createJSTask(YuiConfig yuiConfig, ClosureConfig closureConfig, List<String> jsSourceFiles,
                                           List<String> jsSourceIncludes, List<String> jsSourceExcludes, String jsFinalFile)
             throws FileNotFoundException {
-        return new ProcessJSFilesTask(getLog(), debug, bufferSize, charset, suffix, nosuffix, skipMerge, skipMinify,
-                webappSourceDir, webappTargetDir, jsSourceDir, jsSourceFiles, jsSourceIncludes, jsSourceExcludes,
-                jsTargetDir, jsFinalFile, jsEngine, yuiConfig, closureConfig);
+        return new ProcessJSFilesTask(getLog(), debug, bufferSize, Charset.forName(charset), suffix, nosuffix,
+                skipMerge, skipMinify, webappSourceDir, webappTargetDir, jsSourceDir, jsSourceFiles, jsSourceIncludes,
+                jsSourceExcludes, jsTargetDir, jsFinalFile, jsEngine, yuiConfig, closureConfig);
     }
 }

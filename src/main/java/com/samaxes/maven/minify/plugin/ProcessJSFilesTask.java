@@ -66,7 +66,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
      * @param closureConfig   Google Closure Compiler configuration
      * @throws FileNotFoundException when the given source file does not exist
      */
-    public ProcessJSFilesTask(Log log, boolean verbose, Integer bufferSize, String charset, String suffix,
+    public ProcessJSFilesTask(Log log, boolean verbose, Integer bufferSize, Charset charset, String suffix,
                               boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir,
                               String webappTargetDir, String inputDir, List<String> sourceFiles,
                               List<String> sourceIncludes, List<String> sourceExcludes, String outputDir,
@@ -104,7 +104,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
 
                     CompilerOptions options = new CompilerOptions();
                     closureConfig.getCompilationLevel().setOptionsForCompilationLevel(options);
-                    options.setOutputCharset(Charset.forName(charset));
+                    options.setOutputCharset(charset);
                     options.setLanguageIn(closureConfig.getLanguageIn());
                     options.setLanguageOut(closureConfig.getLanguageOut());
                     options.setDependencyOptions(closureConfig.getDependencyOptions());
@@ -126,7 +126,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
                         }
                     }
 
-                    SourceFile input = SourceFile.fromInputStream(mergedFile.getName(), in, Charset.forName(charset));
+                    SourceFile input = SourceFile.fromInputStream(mergedFile.getName(), in, charset);
                     List<SourceFile> externs = new ArrayList<>();
                     externs.addAll(CommandLineRunner.getBuiltinExterns(closureConfig.getEnvironment()));
                     externs.addAll(closureConfig.getExterns());

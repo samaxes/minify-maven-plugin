@@ -24,6 +24,7 @@ import com.yahoo.platform.yui.compressor.CssCompressor;
 import org.apache.maven.plugin.logging.Log;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.List;
 
 /**
@@ -55,7 +56,7 @@ public class ProcessCSSFilesTask extends ProcessFilesTask {
      * @param yuiConfig       YUI Compressor configuration
      * @throws FileNotFoundException when the given source file does not exist
      */
-    public ProcessCSSFilesTask(Log log, boolean verbose, Integer bufferSize, String charset, String suffix,
+    public ProcessCSSFilesTask(Log log, boolean verbose, Integer bufferSize, Charset charset, String suffix,
                                boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir,
                                String webappTargetDir, String inputDir, List<String> sourceFiles,
                                List<String> sourceIncludes, List<String> sourceExcludes, String outputDir,
