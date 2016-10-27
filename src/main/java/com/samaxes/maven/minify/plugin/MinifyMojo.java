@@ -362,7 +362,7 @@ public class MinifyMojo extends AbstractMojo {
      *
      * @since 1.7.2
      */
-    @Parameter(property = "closureLanguageIn", defaultValue = "ECMASCRIPT5")
+    @Parameter(property = "closureLanguageIn", defaultValue = "ECMASCRIPT6")
     private LanguageMode closureLanguageIn;
 
     /**
@@ -373,6 +373,15 @@ public class MinifyMojo extends AbstractMojo {
      */
     @Parameter(property = "closureLanguageOut", defaultValue = "ECMASCRIPT5")
     private LanguageMode closureLanguageOut;
+
+    /**
+     * Determines the set of builtin externs to load.<br/>
+     * Options: BROWSER, CUSTOM.
+     *
+     * @since 1.7.5
+     */
+    @Parameter(property = "closureEnvironment", defaultValue = "BROWSER")
+    private CompilerOptions.Environment closureEnvironment;
 
     /**
      * The degree of compression and optimization to apply to your JavaScript.<br/>
@@ -403,15 +412,6 @@ public class MinifyMojo extends AbstractMojo {
      */
     @Parameter(property = "closureExterns")
     private ArrayList<String> closureExterns;
-
-    /**
-     * Use default externs provided with Closure Compiler.<br/>
-     * For the complete list of externs please visit <a href="https://github.com/google/closure-compiler/tree/master/externs">https://github.com/google/closure-compiler/tree/master/externs</a>.
-     *
-     * @since 1.7.4
-     */
-    @Parameter(property = "closureUseDefaultExterns", defaultValue = "false")
-    private boolean closureUseDefaultExterns;
 
     /**
      * Collects information mapping the generated (compiled) source back to its original source for debugging purposes.<br/>
@@ -576,8 +576,8 @@ public class MinifyMojo extends AbstractMojo {
             }
         }
 
-        return new ClosureConfig(closureLanguageIn, closureLanguageOut, closureCompilationLevel, dependencyOptions,
-                externs, closureUseDefaultExterns, closureCreateSourceMap, warningLevels, closureAngularPass,
+        return new ClosureConfig(closureLanguageIn, closureLanguageOut, closureEnvironment, closureCompilationLevel,
+                dependencyOptions, externs, closureCreateSourceMap, warningLevels, closureAngularPass,
                 closureExtraAnnotations);
     }
 

@@ -30,7 +30,7 @@ public class Aggregation {
      * Defines the aggregation type.
      */
     public enum AggregationType {
-        css, js;
+        css, js
     }
 
     private AggregationType type;

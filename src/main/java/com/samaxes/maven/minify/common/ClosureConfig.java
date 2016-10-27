@@ -34,13 +34,13 @@ public class ClosureConfig {
 
     private final LanguageMode languageOut;
 
+    private final CompilerOptions.Environment environment;
+
     private final CompilationLevel compilationLevel;
 
     private final DependencyOptions dependencyOptions;
 
     private final List<SourceFile> externs;
-
-    private final Boolean useDefaultExterns;
 
     private final Format sourceMapFormat;
 
@@ -55,25 +55,26 @@ public class ClosureConfig {
      *
      * @param languageIn        the version of ECMAScript used to report errors in the code
      * @param languageOut       the version of ECMAScript the code will be returned in
+     * @param environment       the set of builtin externs to load
      * @param compilationLevel  the degree of compression and optimization to apply to JavaScript
      * @param dependencyOptions options for how to manage dependencies between input files
      * @param externs           preserve symbols that are defined outside of the code you are compiling
-     * @param useDefaultExterns use default externs packed with the Closure Compiler
      * @param createSourceMap   create a source map for the minifed/combined production files
      * @param warningLevels     a map of warnings to enable or disable in the compiler
      * @param angularPass       use {@code @ngInject} annotation to generate Angular injections
      * @param extraAnnotations  make extra annotations known to the closure engine
      */
-    public ClosureConfig(LanguageMode languageIn, LanguageMode languageOut, CompilationLevel compilationLevel,
-                         DependencyOptions dependencyOptions, List<SourceFile> externs, boolean useDefaultExterns,
-                         boolean createSourceMap, Map<DiagnosticGroup, CheckLevel> warningLevels, boolean angularPass,
+    public ClosureConfig(LanguageMode languageIn, LanguageMode languageOut, CompilerOptions.Environment environment,
+                         CompilationLevel compilationLevel, DependencyOptions dependencyOptions,
+                         List<SourceFile> externs, boolean createSourceMap,
+                         Map<DiagnosticGroup, CheckLevel> warningLevels, boolean angularPass,
                          List<String> extraAnnotations) {
         this.languageIn = languageIn;
         this.languageOut = languageOut;
+        this.environment = environment;
         this.compilationLevel = compilationLevel;
         this.dependencyOptions = dependencyOptions;
         this.externs = externs;
-        this.useDefaultExterns = useDefaultExterns;
         this.sourceMapFormat = (createSourceMap) ? SourceMap.Format.V3 : null;
         this.warningLevels = warningLevels;
         this.angularPass = angularPass;
@@ -96,6 +97,15 @@ public class ClosureConfig {
      */
     public LanguageMode getLanguageOut() {
         return languageOut;
+    }
+
+    /**
+     * Gets the environment.
+     *
+     * @return the environment
+     */
+    public CompilerOptions.Environment getEnvironment() {
+        return environment;
     }
 
     /**
@@ -123,15 +133,6 @@ public class ClosureConfig {
      */
     public List<SourceFile> getExterns() {
         return externs;
-    }
-
-    /**
-     * Gets the useDefaultExterns.
-     *
-     * @return the useDefaultExterns
-     */
-    public Boolean getUseDefaultExterns() {
-        return useDefaultExterns;
     }
 
     /**

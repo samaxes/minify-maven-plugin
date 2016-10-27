@@ -30,6 +30,7 @@ import org.apache.maven.plugin.logging.Log;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -125,11 +126,10 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
                         }
                     }
 
-                    SourceFile input = SourceFile.fromInputStream(mergedFile.getName(), in);
-                    List<SourceFile> externs = closureConfig.getExterns();
-                    if (closureConfig.getUseDefaultExterns()) {
-                        externs.addAll(CommandLineRunner.getDefaultExterns());
-                    }
+                    SourceFile input = SourceFile.fromInputStream(mergedFile.getName(), in, Charset.forName(charset));
+                    List<SourceFile> externs = new ArrayList<>();
+                    externs.addAll(CommandLineRunner.getBuiltinExterns(closureConfig.getEnvironment()));
+                    externs.addAll(closureConfig.getExterns());
 
                     Compiler compiler = new Compiler();
                     compiler.compile(externs, Lists.newArrayList(input), options);
