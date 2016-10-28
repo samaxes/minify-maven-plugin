@@ -14,6 +14,7 @@
 * Minified file should be in the same directory as the merged file (#73).
 * Add ES6 support (#128).
 * Update YUI Compressor to 2.4.8 (#111).
+* Enable colorized error output for Google Closure Compiler.
 
 ## 1.7.4
 

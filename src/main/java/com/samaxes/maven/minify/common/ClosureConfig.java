@@ -46,6 +46,8 @@ public class ClosureConfig {
 
     private final Map<DiagnosticGroup, CheckLevel> warningLevels;
 
+    private final Boolean colorizeErrorOutput;
+
     private final Boolean angularPass;
 
     private final List<String> extraAnnotations;
@@ -77,6 +79,7 @@ public class ClosureConfig {
         this.externs = externs;
         this.sourceMapFormat = (createSourceMap) ? SourceMap.Format.V3 : null;
         this.warningLevels = warningLevels;
+        this.colorizeErrorOutput = Boolean.TRUE;
         this.angularPass = angularPass;
         this.extraAnnotations = extraAnnotations;
     }
@@ -151,6 +154,15 @@ public class ClosureConfig {
      */
     public Map<DiagnosticGroup, CheckLevel> getWarningLevels() {
         return warningLevels;
+    }
+
+    /**
+     * Gets the colorizeErrorOutput.
+     *
+     * @return the colorizeErrorOutput
+     */
+    public Boolean getColorizeErrorOutput() {
+        return colorizeErrorOutput;
     }
 
     /**

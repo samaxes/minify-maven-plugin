@@ -108,6 +108,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
                     options.setLanguageIn(closureConfig.getLanguageIn());
                     options.setLanguageOut(closureConfig.getLanguageOut());
                     options.setDependencyOptions(closureConfig.getDependencyOptions());
+                    options.setColorizeErrorOutput(closureConfig.getColorizeErrorOutput());
                     options.setAngularPass(closureConfig.getAngularPass());
                     options.setExtraAnnotationNames(closureConfig.getExtraAnnotations());
                     // options.setRewritePolyfills(closureConfig.getLanguageIn().isEs6OrHigher());
