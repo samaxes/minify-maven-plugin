@@ -56,12 +56,20 @@
 
 ## 1.7
 
-* Added `nosuffix` option to avoid the suffix `.min` on the minified output file name (#16).
+* Add `nosuffix` option to avoid the suffix `.min` on the minified output file name (#16).
 * Option to use same subdirectory on target as in source (#17).
 * Build should fail if compiler can't parse/compile source files (#19).
 * Add `UTF-8` as the default charset.
 * Log compression gains.
 * Require Java SE 7 for better resource management. See [AutoCloseable](http://docs.oracle.com/javase/7/docs/api/java/lang/AutoCloseable.html) interface and [try-with-resources](http://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html) statements.
+
+## 1.6.2
+
+* Add `nosuffix` option to avoid the suffix `.min` on the minified output file name (Cherry picked from 31fe5c91bf2d24c29251595206c3c4ebada1c712).
+
+## 1.6.1
+
+* Preserve sub-directory structure when only minifying (Cherry picked from commit 924a23a373e6b9aa841af6b9e4300c670eb602aa).
 
 ## 1.6
 
