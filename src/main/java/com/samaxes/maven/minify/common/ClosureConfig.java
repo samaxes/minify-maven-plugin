@@ -18,10 +18,12 @@
  */
 package com.samaxes.maven.minify.common;
 
+import com.google.common.base.Strings;
 import com.google.javascript.jscomp.*;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 import com.google.javascript.jscomp.SourceMap.Format;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,25 +54,28 @@ public class ClosureConfig {
 
     private final List<String> extraAnnotations;
 
+    private final Map<String, Object> defineReplacements = new HashMap<>();
+
     /**
      * Init Closure Compiler values.
      *
-     * @param languageIn        the version of ECMAScript used to report errors in the code
-     * @param languageOut       the version of ECMAScript the code will be returned in
-     * @param environment       the set of builtin externs to load
-     * @param compilationLevel  the degree of compression and optimization to apply to JavaScript
-     * @param dependencyOptions options for how to manage dependencies between input files
-     * @param externs           preserve symbols that are defined outside of the code you are compiling
-     * @param createSourceMap   create a source map for the minifed/combined production files
-     * @param warningLevels     a map of warnings to enable or disable in the compiler
-     * @param angularPass       use {@code @ngInject} annotation to generate Angular injections
-     * @param extraAnnotations  make extra annotations known to the closure engine
+     * @param languageIn         the version of ECMAScript used to report errors in the code
+     * @param languageOut        the version of ECMAScript the code will be returned in
+     * @param environment        the set of builtin externs to load
+     * @param compilationLevel   the degree of compression and optimization to apply to JavaScript
+     * @param dependencyOptions  options for how to manage dependencies between input files
+     * @param externs            preserve symbols that are defined outside of the code you are compiling
+     * @param createSourceMap    create a source map for the minifed/combined production files
+     * @param warningLevels      a map of warnings to enable or disable in the compiler
+     * @param angularPass        use {@code @ngInject} annotation to generate Angular injections
+     * @param extraAnnotations   make extra annotations known to the closure engine
+     * @param defineReplacements replacements for {@code @defines}
      */
     public ClosureConfig(LanguageMode languageIn, LanguageMode languageOut, CompilerOptions.Environment environment,
                          CompilationLevel compilationLevel, DependencyOptions dependencyOptions,
                          List<SourceFile> externs, boolean createSourceMap,
                          Map<DiagnosticGroup, CheckLevel> warningLevels, boolean angularPass,
-                         List<String> extraAnnotations) {
+                         List<String> extraAnnotations, Map<String, String> defineReplacements) {
         this.languageIn = languageIn;
         this.languageOut = languageOut;
         this.environment = environment;
@@ -82,6 +87,32 @@ public class ClosureConfig {
         this.colorizeErrorOutput = Boolean.TRUE;
         this.angularPass = angularPass;
         this.extraAnnotations = extraAnnotations;
+
+        for (Map.Entry<String, String> defineReplacement : defineReplacements.entrySet()) {
+            if (Strings.isNullOrEmpty(defineReplacement.getValue())) {
+                throw new RuntimeException("Define replacement " + defineReplacement.getKey() + " does not have a value.");
+            }
+
+            if (String.valueOf(true).equals(defineReplacement.getValue()) ||
+                    String.valueOf(false).equals(defineReplacement.getValue())) {
+                this.defineReplacements.put(defineReplacement.getKey(), Boolean.valueOf(defineReplacement.getValue()));
+                continue;
+            }
+
+            try {
+                this.defineReplacements.put(defineReplacement.getKey(), Integer.valueOf(defineReplacement.getValue()));
+                continue;
+            } catch (NumberFormatException e) {
+            }
+
+            try {
+                this.defineReplacements.put(defineReplacement.getKey(), Double.valueOf(defineReplacement.getValue()));
+                continue;
+            } catch (NumberFormatException e) {
+            }
+
+            this.defineReplacements.put(defineReplacement.getKey(), defineReplacement.getValue());
+        }
     }
 
     /**
@@ -181,5 +212,14 @@ public class ClosureConfig {
      */
     public List<String> getExtraAnnotations() {
         return extraAnnotations;
+    }
+
+    /**
+     * Gets the defineReplacements.
+     *
+     * @return the defineReplacements
+     */
+    public Map<String, Object> getDefineReplacements() {
+        return defineReplacements;
     }
 }

@@ -15,6 +15,7 @@
 * Add ES6 support (#128).
 * Update YUI Compressor to 2.4.8 (#111).
 * Enable colorized error output for Google Closure Compiler.
+* Add support for @define replacements (#127).
 
 ## 1.7.4
 

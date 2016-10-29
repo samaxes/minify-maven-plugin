@@ -111,6 +111,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
                     options.setColorizeErrorOutput(closureConfig.getColorizeErrorOutput());
                     options.setAngularPass(closureConfig.getAngularPass());
                     options.setExtraAnnotationNames(closureConfig.getExtraAnnotations());
+                    options.setDefineReplacements(closureConfig.getDefineReplacements());
                     // options.setRewritePolyfills(closureConfig.getLanguageIn().isEs6OrHigher());
 
                     File sourceMapResult = new File(minifiedFile.getPath() + ".map");

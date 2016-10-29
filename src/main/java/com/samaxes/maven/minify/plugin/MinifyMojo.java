@@ -469,6 +469,21 @@ public class MinifyMojo extends AbstractMojo {
     private ArrayList<String> closureExtraAnnotations;
 
     /**
+     * Override the value of variables annotated with {@code @define}.<br/>
+     * The format is:
+     * <pre><code class="language-java">
+     * &lt;define>
+     *     &lt;name>value&lt;/name>
+     * &lt;/define>
+     * </code></pre>
+     * where {@code <name>} is the name of a {@code @define} variable and {@code value} is a boolean, number or string.
+     *
+     * @since 1.7.5
+     */
+    @Parameter(property = "closureDefine")
+    private HashMap<String, String> closureDefine;
+
+    /**
      * Executed when the goal is invoked, it will first invoke a parallel lifecycle, ending at the given phase.
      */
     @Override
@@ -584,7 +599,7 @@ public class MinifyMojo extends AbstractMojo {
 
         return new ClosureConfig(closureLanguageIn, closureLanguageOut, closureEnvironment, closureCompilationLevel,
                 dependencyOptions, externs, closureCreateSourceMap, warningLevels, closureAngularPass,
-                closureExtraAnnotations);
+                closureExtraAnnotations, closureDefine);
     }
 
     private Collection<ProcessFilesTask> createTasks(YuiConfig yuiConfig, ClosureConfig closureConfig)

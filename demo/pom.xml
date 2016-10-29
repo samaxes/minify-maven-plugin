@@ -77,6 +77,9 @@
                             </jsSourceFiles>
                             <jsEngine>CLOSURE</jsEngine>
                             <closureCreateSourceMap>true</closureCreateSourceMap>
+                            <closureDefine>
+                                <DEFINE_TEST>false</DEFINE_TEST>
+                            </closureDefine>
                             <!--closureCompilationLevel>ADVANCED_OPTIMIZATIONS</closureCompilationLevel-->
                             <!--closureExterns>
                                 <closureExtern>extern/external-lib.js</closureExtern>
