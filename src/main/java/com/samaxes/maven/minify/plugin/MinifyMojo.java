@@ -68,16 +68,6 @@ public class MinifyMojo extends AbstractMojo {
     /* ************** */
 
     /**
-     * Show source file paths in log output.
-     *
-     * @since 1.5.2
-     * @deprecated Use {@link #verbose} instead.
-     */
-    @Deprecated
-    @Parameter(property = "debug")
-    private Boolean debug;
-
-    /**
      * Display additional informational messages and warnings.
      */
     @Parameter(property = "verbose", defaultValue = "false")
@@ -282,30 +272,9 @@ public class MinifyMojo extends AbstractMojo {
      * option is used in that case to split long lines after a specific column. It can also be used to make the code
      * more readable and easier to debug. Specify {@code 0} to get a line break after each semi-colon in JavaScript, and
      * after each rule in CSS. Specify {@code -1} to disallow line breaks.
-     *
-     * @deprecated Use {@link #yuiLineBreak} instead.
-     */
-    @Deprecated
-    @Parameter(property = "linebreak")
-    private Integer linebreak;
-
-    /**
-     * Some source control tools don't like files containing lines longer than, say 8000 characters. The line-break
-     * option is used in that case to split long lines after a specific column. It can also be used to make the code
-     * more readable and easier to debug. Specify {@code 0} to get a line break after each semi-colon in JavaScript, and
-     * after each rule in CSS. Specify {@code -1} to disallow line breaks.
      */
     @Parameter(property = "yuiLineBreak", defaultValue = "-1")
     private int yuiLineBreak;
-
-    /**
-     * Obfuscate local symbols in addition to minification.
-     *
-     * @deprecated Use {@link #yuiNoMunge} instead.
-     */
-    @Deprecated
-    @Parameter(property = "munge")
-    private Boolean munge;
 
     /**
      * Minify only. Do not obfuscate local symbols.
@@ -316,28 +285,9 @@ public class MinifyMojo extends AbstractMojo {
     /**
      * Preserve unnecessary semicolons (such as right before a '}'). This option is useful when compressed code has to
      * be run through JSLint.
-     *
-     * @deprecated Use {@link #yuiPreserveSemicolons} instead.
-     */
-    @Deprecated
-    @Parameter(property = "preserveAllSemiColons")
-    private Boolean preserveAllSemiColons;
-
-    /**
-     * Preserve unnecessary semicolons (such as right before a '}'). This option is useful when compressed code has to
-     * be run through JSLint.
      */
     @Parameter(property = "yuiPreserveSemicolons", defaultValue = "false")
     private boolean yuiPreserveSemicolons;
-
-    /**
-     * Disable all the built-in micro-optimizations.
-     *
-     * @deprecated Use {@link #yuiDisableOptimizations} instead.
-     */
-    @Deprecated
-    @Parameter(property = "disableOptimizations")
-    private Boolean disableOptimizations;
 
     /**
      * Disable all the built-in micro-optimizations.
@@ -488,8 +438,6 @@ public class MinifyMojo extends AbstractMojo {
      */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        checkDeprecatedOptions();
-
         if (skipMerge && skipMinify) {
             getLog().warn("Both merge and minify steps are configured to be skipped.");
             return;
@@ -523,39 +471,6 @@ public class MinifyMojo extends AbstractMojo {
         }
     }
 
-    private void checkDeprecatedOptions() {
-        if (debug == null) {
-            debug = verbose;
-        } else {
-            getLog().warn(
-                    "The option 'debug' is deprecated and will be removed on the next version. Use 'verbose' instead.");
-        }
-        if (linebreak == null) {
-            linebreak = yuiLineBreak;
-        } else {
-            getLog().warn(
-                    "The option 'linebreak' is deprecated and will be removed on the next version. Use 'yuiLineBreak' instead.");
-        }
-        if (munge == null) {
-            munge = !yuiNoMunge;
-        } else {
-            getLog().warn(
-                    "The option 'munge' is deprecated and will be removed on the next version. Use 'yuiNoMunge' instead.");
-        }
-        if (preserveAllSemiColons == null) {
-            preserveAllSemiColons = yuiPreserveSemicolons;
-        } else {
-            getLog().warn(
-                    "The option 'preserveAllSemiColons' is deprecated and will be removed on the next version. Use 'yuiPreserveSemicolons' instead.");
-        }
-        if (disableOptimizations == null) {
-            disableOptimizations = yuiDisableOptimizations;
-        } else {
-            getLog().warn(
-                    "The option 'disableOptimizations' is deprecated and will be removed on the next version. Use 'yuiDisableOptimizations' instead.");
-        }
-    }
-
     private void fillOptionalValues() {
         if (Strings.isNullOrEmpty(cssTargetDir)) {
             cssTargetDir = cssSourceDir;
@@ -569,7 +484,7 @@ public class MinifyMojo extends AbstractMojo {
     }
 
     private YuiConfig fillYuiConfig() {
-        return new YuiConfig(linebreak, munge, preserveAllSemiColons, disableOptimizations);
+        return new YuiConfig(yuiLineBreak, !yuiNoMunge, yuiPreserveSemicolons, yuiDisableOptimizations);
     }
 
     private ClosureConfig fillClosureConfig() throws MojoFailureException {
@@ -638,7 +553,7 @@ public class MinifyMojo extends AbstractMojo {
     private ProcessFilesTask createCSSTask(YuiConfig yuiConfig, ClosureConfig closureConfig,
                                            List<String> cssSourceFiles, List<String> cssSourceIncludes, List<String> cssSourceExcludes,
                                            String cssFinalFile) throws FileNotFoundException {
-        return new ProcessCSSFilesTask(getLog(), debug, bufferSize, Charset.forName(charset), suffix, nosuffix,
+        return new ProcessCSSFilesTask(getLog(), verbose, bufferSize, Charset.forName(charset), suffix, nosuffix,
                 skipMerge, skipMinify, webappSourceDir, webappTargetDir, cssSourceDir, cssSourceFiles,
                 cssSourceIncludes, cssSourceExcludes, cssTargetDir, cssFinalFile, cssEngine, yuiConfig);
     }
@@ -646,7 +561,7 @@ public class MinifyMojo extends AbstractMojo {
     private ProcessFilesTask createJSTask(YuiConfig yuiConfig, ClosureConfig closureConfig, List<String> jsSourceFiles,
                                           List<String> jsSourceIncludes, List<String> jsSourceExcludes, String jsFinalFile)
             throws FileNotFoundException {
-        return new ProcessJSFilesTask(getLog(), debug, bufferSize, Charset.forName(charset), suffix, nosuffix,
+        return new ProcessJSFilesTask(getLog(), verbose, bufferSize, Charset.forName(charset), suffix, nosuffix,
                 skipMerge, skipMinify, webappSourceDir, webappTargetDir, jsSourceDir, jsSourceFiles, jsSourceIncludes,
                 jsSourceExcludes, jsTargetDir, jsFinalFile, jsEngine, yuiConfig, closureConfig);
     }
