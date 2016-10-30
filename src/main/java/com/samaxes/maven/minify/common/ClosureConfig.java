@@ -103,12 +103,14 @@ public class ClosureConfig {
                 this.defineReplacements.put(defineReplacement.getKey(), Integer.valueOf(defineReplacement.getValue()));
                 continue;
             } catch (NumberFormatException e) {
+                // Not a valid Integer, try next type
             }
 
             try {
                 this.defineReplacements.put(defineReplacement.getKey(), Double.valueOf(defineReplacement.getValue()));
                 continue;
             } catch (NumberFormatException e) {
+                // Not a valid Double, try next type
             }
 
             this.defineReplacements.put(defineReplacement.getKey(), defineReplacement.getValue());
