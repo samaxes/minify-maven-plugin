@@ -1,5 +1,9 @@
 # Minify Maven Plugin
 
+## 2.0.0
+
+* Adopt [Semantic Versioning](http://semver.org/) scheme.
+
 ## 1.7.5
 
 * Add support for external bundle configuration (#57).
