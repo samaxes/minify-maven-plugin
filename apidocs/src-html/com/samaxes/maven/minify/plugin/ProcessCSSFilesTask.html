@@ -26,97 +26,94 @@
 <span class="sourceLineNo">018</span> */<a name="line.18"></a>
 <span class="sourceLineNo">019</span>package com.samaxes.maven.minify.plugin;<a name="line.19"></a>
 <span class="sourceLineNo">020</span><a name="line.20"></a>
-<span class="sourceLineNo">021</span>import java.io.File;<a name="line.21"></a>
-<span class="sourceLineNo">022</span>import java.io.FileInputStream;<a name="line.22"></a>
-<span class="sourceLineNo">023</span>import java.io.FileNotFoundException;<a name="line.23"></a>
-<span class="sourceLineNo">024</span>import java.io.FileOutputStream;<a name="line.24"></a>
-<span class="sourceLineNo">025</span>import java.io.IOException;<a name="line.25"></a>
-<span class="sourceLineNo">026</span>import java.io.InputStream;<a name="line.26"></a>
-<span class="sourceLineNo">027</span>import java.io.InputStreamReader;<a name="line.27"></a>
-<span class="sourceLineNo">028</span>import java.io.OutputStream;<a name="line.28"></a>
-<span class="sourceLineNo">029</span>import java.io.OutputStreamWriter;<a name="line.29"></a>
-<span class="sourceLineNo">030</span>import java.util.List;<a name="line.30"></a>
-<span class="sourceLineNo">031</span><a name="line.31"></a>
-<span class="sourceLineNo">032</span>import org.apache.maven.plugin.logging.Log;<a name="line.32"></a>
-<span class="sourceLineNo">033</span><a name="line.33"></a>
-<span class="sourceLineNo">034</span>import com.samaxes.maven.minify.common.YuiConfig;<a name="line.34"></a>
-<span class="sourceLineNo">035</span>import com.samaxes.maven.minify.plugin.MinifyMojo.Engine;<a name="line.35"></a>
-<span class="sourceLineNo">036</span>import com.yahoo.platform.yui.compressor.CssCompressor;<a name="line.36"></a>
-<span class="sourceLineNo">037</span><a name="line.37"></a>
-<span class="sourceLineNo">038</span>/**<a name="line.38"></a>
-<span class="sourceLineNo">039</span> * Task for merging and compressing CSS files.<a name="line.39"></a>
-<span class="sourceLineNo">040</span> */<a name="line.40"></a>
-<span class="sourceLineNo">041</span>public class ProcessCSSFilesTask extends ProcessFilesTask {<a name="line.41"></a>
-<span class="sourceLineNo">042</span><a name="line.42"></a>
-<span class="sourceLineNo">043</span>    /**<a name="line.43"></a>
-<span class="sourceLineNo">044</span>     * Task constructor.<a name="line.44"></a>
-<span class="sourceLineNo">045</span>     *<a name="line.45"></a>
-<span class="sourceLineNo">046</span>     * @param log Maven plugin log<a name="line.46"></a>
-<span class="sourceLineNo">047</span>     * @param verbose display additional info<a name="line.47"></a>
-<span class="sourceLineNo">048</span>     * @param bufferSize size of the buffer used to read source files<a name="line.48"></a>
-<span class="sourceLineNo">049</span>     * @param charset if a character set is specified, a byte-to-char variant allows the encoding to be selected.<a name="line.49"></a>
-<span class="sourceLineNo">050</span>     *        Otherwise, only byte-to-byte operations are used<a name="line.50"></a>
-<span class="sourceLineNo">051</span>     * @param suffix final file name suffix<a name="line.51"></a>
-<span class="sourceLineNo">052</span>     * @param nosuffix whether to use a suffix for the minified file name or not<a name="line.52"></a>
-<span class="sourceLineNo">053</span>     * @param skipMerge whether to skip the merge step or not<a name="line.53"></a>
-<span class="sourceLineNo">054</span>     * @param skipMinify whether to skip the minify step or not<a name="line.54"></a>
-<span class="sourceLineNo">055</span>     * @param webappSourceDir web resources source directory<a name="line.55"></a>
-<span class="sourceLineNo">056</span>     * @param webappTargetDir web resources target directory<a name="line.56"></a>
-<span class="sourceLineNo">057</span>     * @param inputDir directory containing source files<a name="line.57"></a>
-<span class="sourceLineNo">058</span>     * @param sourceFiles list of source files to include<a name="line.58"></a>
-<span class="sourceLineNo">059</span>     * @param sourceIncludes list of source files to include<a name="line.59"></a>
-<span class="sourceLineNo">060</span>     * @param sourceExcludes list of source files to exclude<a name="line.60"></a>
-<span class="sourceLineNo">061</span>     * @param outputDir directory to write the final file<a name="line.61"></a>
-<span class="sourceLineNo">062</span>     * @param outputFilename the output file name<a name="line.62"></a>
-<span class="sourceLineNo">063</span>     * @param engine minify processor engine selected<a name="line.63"></a>
-<span class="sourceLineNo">064</span>     * @param yuiConfig YUI Compressor configuration<a name="line.64"></a>
-<span class="sourceLineNo">065</span>     * @throws FileNotFoundException when the given source file does not exist<a name="line.65"></a>
-<span class="sourceLineNo">066</span>     */<a name="line.66"></a>
-<span class="sourceLineNo">067</span>    public ProcessCSSFilesTask(Log log, boolean verbose, Integer bufferSize, String charset, String suffix,<a name="line.67"></a>
-<span class="sourceLineNo">068</span>            boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir, String webappTargetDir,<a name="line.68"></a>
-<span class="sourceLineNo">069</span>            String inputDir, List&lt;String&gt; sourceFiles, List&lt;String&gt; sourceIncludes, List&lt;String&gt; sourceExcludes,<a name="line.69"></a>
-<span class="sourceLineNo">070</span>            String outputDir, String outputFilename, Engine engine, YuiConfig yuiConfig) throws FileNotFoundException {<a name="line.70"></a>
-<span class="sourceLineNo">071</span>        super(log, verbose, bufferSize, charset, suffix, nosuffix, skipMerge, skipMinify, webappSourceDir,<a name="line.71"></a>
-<span class="sourceLineNo">072</span>                webappTargetDir, inputDir, sourceFiles, sourceIncludes, sourceExcludes, outputDir, outputFilename,<a name="line.72"></a>
-<span class="sourceLineNo">073</span>                engine, yuiConfig);<a name="line.73"></a>
-<span class="sourceLineNo">074</span>    }<a name="line.74"></a>
-<span class="sourceLineNo">075</span><a name="line.75"></a>
-<span class="sourceLineNo">076</span>    /**<a name="line.76"></a>
-<span class="sourceLineNo">077</span>     * Minifies a CSS file.<a name="line.77"></a>
-<span class="sourceLineNo">078</span>     *<a name="line.78"></a>
-<span class="sourceLineNo">079</span>     * @param mergedFile input file resulting from the merged step<a name="line.79"></a>
-<span class="sourceLineNo">080</span>     * @param minifiedFile output file resulting from the minify step<a name="line.80"></a>
-<span class="sourceLineNo">081</span>     * @throws IOException when the minify step fails<a name="line.81"></a>
-<span class="sourceLineNo">082</span>     */<a name="line.82"></a>
-<span class="sourceLineNo">083</span>    @Override<a name="line.83"></a>
-<span class="sourceLineNo">084</span>    protected void minify(File mergedFile, File minifiedFile) throws IOException {<a name="line.84"></a>
-<span class="sourceLineNo">085</span>        try (InputStream in = new FileInputStream(mergedFile);<a name="line.85"></a>
-<span class="sourceLineNo">086</span>                OutputStream out = new FileOutputStream(minifiedFile);<a name="line.86"></a>
-<span class="sourceLineNo">087</span>                InputStreamReader reader = new InputStreamReader(in, charset);<a name="line.87"></a>
-<span class="sourceLineNo">088</span>                OutputStreamWriter writer = new OutputStreamWriter(out, charset)) {<a name="line.88"></a>
-<span class="sourceLineNo">089</span>            log.info("Creating the minified file [" + ((verbose) ? minifiedFile.getPath() : minifiedFile.getName())<a name="line.89"></a>
-<span class="sourceLineNo">090</span>                    + "].");<a name="line.90"></a>
-<span class="sourceLineNo">091</span><a name="line.91"></a>
-<span class="sourceLineNo">092</span>            switch (engine) {<a name="line.92"></a>
-<span class="sourceLineNo">093</span>                case YUI:<a name="line.93"></a>
-<span class="sourceLineNo">094</span>                    log.debug("Using YUI Compressor engine.");<a name="line.94"></a>
-<span class="sourceLineNo">095</span><a name="line.95"></a>
-<span class="sourceLineNo">096</span>                    CssCompressor compressor = new CssCompressor(reader);<a name="line.96"></a>
-<span class="sourceLineNo">097</span>                    compressor.compress(writer, yuiConfig.getLineBreak());<a name="line.97"></a>
+<span class="sourceLineNo">021</span>import com.samaxes.maven.minify.common.YuiConfig;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import com.samaxes.maven.minify.plugin.MinifyMojo.Engine;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import com.yahoo.platform.yui.compressor.CssCompressor;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import org.apache.maven.plugin.logging.Log;<a name="line.24"></a>
+<span class="sourceLineNo">025</span><a name="line.25"></a>
+<span class="sourceLineNo">026</span>import java.io.*;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import java.nio.charset.Charset;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import java.util.List;<a name="line.28"></a>
+<span class="sourceLineNo">029</span><a name="line.29"></a>
+<span class="sourceLineNo">030</span>/**<a name="line.30"></a>
+<span class="sourceLineNo">031</span> * Task for merging and compressing CSS files.<a name="line.31"></a>
+<span class="sourceLineNo">032</span> */<a name="line.32"></a>
+<span class="sourceLineNo">033</span>public class ProcessCSSFilesTask extends ProcessFilesTask {<a name="line.33"></a>
+<span class="sourceLineNo">034</span><a name="line.34"></a>
+<span class="sourceLineNo">035</span>    /**<a name="line.35"></a>
+<span class="sourceLineNo">036</span>     * Task constructor.<a name="line.36"></a>
+<span class="sourceLineNo">037</span>     *<a name="line.37"></a>
+<span class="sourceLineNo">038</span>     * @param log             Maven plugin log<a name="line.38"></a>
+<span class="sourceLineNo">039</span>     * @param verbose         display additional info<a name="line.39"></a>
+<span class="sourceLineNo">040</span>     * @param bufferSize      size of the buffer used to read source files<a name="line.40"></a>
+<span class="sourceLineNo">041</span>     * @param charset         if a character set is specified, a byte-to-char variant allows the encoding to be selected.<a name="line.41"></a>
+<span class="sourceLineNo">042</span>     *                        Otherwise, only byte-to-byte operations are used<a name="line.42"></a>
+<span class="sourceLineNo">043</span>     * @param suffix          final file name suffix<a name="line.43"></a>
+<span class="sourceLineNo">044</span>     * @param nosuffix        whether to use a suffix for the minified file name or not<a name="line.44"></a>
+<span class="sourceLineNo">045</span>     * @param skipMerge       whether to skip the merge step or not<a name="line.45"></a>
+<span class="sourceLineNo">046</span>     * @param skipMinify      whether to skip the minify step or not<a name="line.46"></a>
+<span class="sourceLineNo">047</span>     * @param webappSourceDir web resources source directory<a name="line.47"></a>
+<span class="sourceLineNo">048</span>     * @param webappTargetDir web resources target directory<a name="line.48"></a>
+<span class="sourceLineNo">049</span>     * @param inputDir        directory containing source files<a name="line.49"></a>
+<span class="sourceLineNo">050</span>     * @param sourceFiles     list of source files to include<a name="line.50"></a>
+<span class="sourceLineNo">051</span>     * @param sourceIncludes  list of source files to include<a name="line.51"></a>
+<span class="sourceLineNo">052</span>     * @param sourceExcludes  list of source files to exclude<a name="line.52"></a>
+<span class="sourceLineNo">053</span>     * @param outputDir       directory to write the final file<a name="line.53"></a>
+<span class="sourceLineNo">054</span>     * @param outputFilename  the output file name<a name="line.54"></a>
+<span class="sourceLineNo">055</span>     * @param engine          minify processor engine selected<a name="line.55"></a>
+<span class="sourceLineNo">056</span>     * @param yuiConfig       YUI Compressor configuration<a name="line.56"></a>
+<span class="sourceLineNo">057</span>     * @throws FileNotFoundException when the given source file does not exist<a name="line.57"></a>
+<span class="sourceLineNo">058</span>     */<a name="line.58"></a>
+<span class="sourceLineNo">059</span>    public ProcessCSSFilesTask(Log log, boolean verbose, Integer bufferSize, Charset charset, String suffix,<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                               boolean nosuffix, boolean skipMerge, boolean skipMinify, String webappSourceDir,<a name="line.60"></a>
+<span class="sourceLineNo">061</span>                               String webappTargetDir, String inputDir, List&lt;String&gt; sourceFiles,<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                               List&lt;String&gt; sourceIncludes, List&lt;String&gt; sourceExcludes, String outputDir,<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                               String outputFilename, Engine engine, YuiConfig yuiConfig) throws FileNotFoundException {<a name="line.63"></a>
+<span class="sourceLineNo">064</span>        super(log, verbose, bufferSize, charset, suffix, nosuffix, skipMerge, skipMinify, webappSourceDir,<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                webappTargetDir, inputDir, sourceFiles, sourceIncludes, sourceExcludes, outputDir, outputFilename,<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                engine, yuiConfig);<a name="line.66"></a>
+<span class="sourceLineNo">067</span>    }<a name="line.67"></a>
+<span class="sourceLineNo">068</span><a name="line.68"></a>
+<span class="sourceLineNo">069</span>    /**<a name="line.69"></a>
+<span class="sourceLineNo">070</span>     * Minifies a CSS file. Create missing parent directories if needed.<a name="line.70"></a>
+<span class="sourceLineNo">071</span>     *<a name="line.71"></a>
+<span class="sourceLineNo">072</span>     * @param mergedFile   input file resulting from the merged step<a name="line.72"></a>
+<span class="sourceLineNo">073</span>     * @param minifiedFile output file resulting from the minify step<a name="line.73"></a>
+<span class="sourceLineNo">074</span>     * @throws IOException when the minify step fails<a name="line.74"></a>
+<span class="sourceLineNo">075</span>     */<a name="line.75"></a>
+<span class="sourceLineNo">076</span>    @Override<a name="line.76"></a>
+<span class="sourceLineNo">077</span>    protected void minify(File mergedFile, File minifiedFile) throws IOException {<a name="line.77"></a>
+<span class="sourceLineNo">078</span>        if (!minifiedFile.getParentFile().exists() &amp;&amp; !minifiedFile.getParentFile().mkdirs()) {<a name="line.78"></a>
+<span class="sourceLineNo">079</span>            throw new RuntimeException("Unable to create target directory for: " + minifiedFile.getParentFile());<a name="line.79"></a>
+<span class="sourceLineNo">080</span>        }<a name="line.80"></a>
+<span class="sourceLineNo">081</span><a name="line.81"></a>
+<span class="sourceLineNo">082</span>        try (InputStream in = new FileInputStream(mergedFile);<a name="line.82"></a>
+<span class="sourceLineNo">083</span>             OutputStream out = new FileOutputStream(minifiedFile);<a name="line.83"></a>
+<span class="sourceLineNo">084</span>             InputStreamReader reader = new InputStreamReader(in, charset);<a name="line.84"></a>
+<span class="sourceLineNo">085</span>             OutputStreamWriter writer = new OutputStreamWriter(out, charset)) {<a name="line.85"></a>
+<span class="sourceLineNo">086</span>            log.info("Creating the minified file [" + (verbose ? minifiedFile.getPath() : minifiedFile.getName())<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                    + "].");<a name="line.87"></a>
+<span class="sourceLineNo">088</span><a name="line.88"></a>
+<span class="sourceLineNo">089</span>            switch (engine) {<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                case YUI:<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                    log.debug("Using YUI Compressor engine.");<a name="line.91"></a>
+<span class="sourceLineNo">092</span><a name="line.92"></a>
+<span class="sourceLineNo">093</span>                    CssCompressor compressor = new CssCompressor(reader);<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                    compressor.compress(writer, yuiConfig.getLineBreak());<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                    break;<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                default:<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                    log.warn("CSS engine not supported.");<a name="line.97"></a>
 <span class="sourceLineNo">098</span>                    break;<a name="line.98"></a>
-<span class="sourceLineNo">099</span>                default:<a name="line.99"></a>
-<span class="sourceLineNo">100</span>                    log.warn("CSS engine not supported.");<a name="line.100"></a>
-<span class="sourceLineNo">101</span>                    break;<a name="line.101"></a>
-<span class="sourceLineNo">102</span>            }<a name="line.102"></a>
-<span class="sourceLineNo">103</span>        } catch (IOException e) {<a name="line.103"></a>
-<span class="sourceLineNo">104</span>            log.error("Failed to compress the CSS file [" + ((verbose) ? mergedFile.getPath() : mergedFile.getName())<a name="line.104"></a>
-<span class="sourceLineNo">105</span>                    + "].", e);<a name="line.105"></a>
-<span class="sourceLineNo">106</span>            throw e;<a name="line.106"></a>
-<span class="sourceLineNo">107</span>        }<a name="line.107"></a>
-<span class="sourceLineNo">108</span><a name="line.108"></a>
-<span class="sourceLineNo">109</span>        logCompressionGains(mergedFile, minifiedFile);<a name="line.109"></a>
-<span class="sourceLineNo">110</span>    }<a name="line.110"></a>
-<span class="sourceLineNo">111</span>}<a name="line.111"></a>
+<span class="sourceLineNo">099</span>            }<a name="line.99"></a>
+<span class="sourceLineNo">100</span>        } catch (IOException e) {<a name="line.100"></a>
+<span class="sourceLineNo">101</span>            log.error("Failed to compress the CSS file [" + (verbose ? mergedFile.getPath() : mergedFile.getName())<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                    + "].", e);<a name="line.102"></a>
+<span class="sourceLineNo">103</span>            throw e;<a name="line.103"></a>
+<span class="sourceLineNo">104</span>        }<a name="line.104"></a>
+<span class="sourceLineNo">105</span><a name="line.105"></a>
+<span class="sourceLineNo">106</span>        logCompressionGains(mergedFile, minifiedFile);<a name="line.106"></a>
+<span class="sourceLineNo">107</span>    }<a name="line.107"></a>
+<span class="sourceLineNo">108</span>}<a name="line.108"></a>
 
 
 
