@@ -203,7 +203,7 @@
                 </configuration>
             </plugin>
             <!--
-                Release the deployment to the central repository (immediately after mvn release:perform):
+                Release the deployment to the central repository (automatically done by mvn release:perform):
                 $ cd target/checkout
                 $ mvn nexus-staging:release
             -->
