@@ -160,7 +160,7 @@ public abstract class ProcessFilesTask implements Callable<Object> {
                         }
 
                         File minifiedFile = new File(targetPath, (nosuffix) ? mergedFile.getName()
-                                : FileUtils.removeExtension(mergedFilename) + suffix + "." + FileUtils.extension(mergedFile.getName()));
+                                : FileUtils.removeExtension(mergedFile.getName()) + suffix + "." + FileUtils.extension(mergedFile.getName()));
                         minify(mergedFile, minifiedFile);
                     }
                 } else if (skipMinify) {
