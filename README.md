@@ -29,7 +29,7 @@ Configure your project's `pom.xml` to run the plugin during the project's build 
     <plugin>
       <groupId>com.samaxes.maven</groupId>
       <artifactId>minify-maven-plugin</artifactId>
-      <version>1.7.5</version>
+      <version>1.7.6</version>
       <executions>
         <execution>
           <id>default-minify</id>
