@@ -1,5 +1,10 @@
 # Minify Maven Plugin
 
+## 2.0.0
+
+* Adopt [Semantic Versioning](http://semver.org/) scheme.
+* Remove @deprecated options.
+
 ## 1.7.6
 
 * `<skipMerge>true</skipMerge>` overwrites same file multiple times (#130, #131, #132).
