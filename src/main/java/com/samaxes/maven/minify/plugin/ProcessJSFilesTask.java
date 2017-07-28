@@ -30,6 +30,7 @@ import org.apache.maven.plugin.logging.Log;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -184,7 +185,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
     }
 
     private boolean flushSourceMap(File sourceMapOutputFile, String minifyFileName, SourceMap sourceMap) {
-        try (BufferedWriter out = Files.newBufferedWriter(sourceMapOutputFile.toPath())) {
+        try (BufferedWriter out = Files.newBufferedWriter(sourceMapOutputFile.toPath(), StandardCharsets.UTF_8)) {
             sourceMap.appendTo(out, minifyFileName);
             return true;
         } catch (IOException e) {
