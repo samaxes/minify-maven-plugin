@@ -30,6 +30,7 @@ import org.apache.maven.plugin.logging.Log;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -153,9 +154,7 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
                         log.info("Creating the minified file map ["
                                 + (verbose ? sourceMapResult.getPath() : sourceMapResult.getName()) + "].");
 
-                        if (sourceMapResult.createNewFile()) {
-                            flushSourceMap(sourceMapResult, minifiedFile.getName(), compiler.getSourceMap());
-
+                        if (flushSourceMap(sourceMapResult, minifiedFile.getName(), compiler.getSourceMap())) {
                             writer.append(System.getProperty("line.separator"));
                             writer.append("//# sourceMappingURL=").append(sourceMapResult.getName());
                         }
@@ -184,12 +183,14 @@ public class ProcessJSFilesTask extends ProcessFilesTask {
         logCompressionGains(mergedFile, minifiedFile);
     }
 
-    private void flushSourceMap(File sourceMapOutputFile, String minifyFileName, SourceMap sourceMap) {
-        try (FileWriter out = new FileWriter(sourceMapOutputFile)) {
+    private boolean flushSourceMap(File sourceMapOutputFile, String minifyFileName, SourceMap sourceMap) {
+        try (BufferedWriter out = Files.newBufferedWriter(sourceMapOutputFile.toPath())) {
             sourceMap.appendTo(out, minifyFileName);
+            return true;
         } catch (IOException e) {
             log.error("Failed to write the JavaScript Source Map file ["
                     + (verbose ? sourceMapOutputFile.getPath() : sourceMapOutputFile.getName()) + "].", e);
+            return false;
         }
     }
 }
