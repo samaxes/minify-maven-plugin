@@ -306,13 +306,16 @@ public class MinifyMojo extends AbstractMojo {
      * <li>{@code ECMASCRIPT3}: Checks code assuming ECMAScript 3 compliance, and gives errors for code using features only present in later versions of ECMAScript.</li>
      * <li>{@code ECMASCRIPT5}: Checks code assuming ECMAScript 5 compliance, allowing new features not present in ECMAScript 3, and gives errors for code using features only present in later versions of ECMAScript.</li>
      * <li>{@code ECMASCRIPT5_STRICT}: Like {@code ECMASCRIPT5} but assumes compliance with strict mode ({@code 'use strict';}).</li>
-     * <li>{@code ECMASCRIPT6}: Checks code assuming ECMAScript 6 compliance, allowing new features not present in ECMAScript 5.</li>
-     * <li>{@code ECMASCRIPT6_STRICT}: Like {@code ECMASCRIPT6} but assumes compliance with strict mode ({@code 'use strict';}).</li>
+     * <li>{@code ECMASCRIPT_2015}: Checks code assuming ECMAScript 2015 compliance.</li>
+     * <li>{@code ECMASCRIPT6_TYPED}: Checks code assuming a superset of ECMAScript 6 which adds Typescript-style type declarations.</li>
+     * <li>{@code ECMASCRIPT_2016}: Checks code assuming ECMAScript 2016 compliance.</li>
+     * <li>{@code ECMASCRIPT_2017}: Checks code assuming ECMAScript 2017 compliance.</li>
+     * <li>{@code ECMASCRIPT_NEXT}: Checks code assuming ECMAScript latest draft standard.</li>
      * </ul>
      *
      * @since 1.7.2
      */
-    @Parameter(property = "closureLanguageIn", defaultValue = "ECMASCRIPT6")
+    @Parameter(property = "closureLanguageIn", defaultValue = "ECMASCRIPT_2016")
     private LanguageMode closureLanguageIn;
 
     /**
