@@ -304,13 +304,16 @@ public abstract class ProcessFilesTask implements Callable<Object> {
             for (String includedFilename : scanner.getIncludedFiles()) {
                 includedFiles.add(new File(sourceDir, includedFilename));
             }
-
-            Collections.sort(includedFiles, new Comparator<File>() {
+            /* 
+            This parts is unnecesary. The plugin should keep the original order to make it usable. The user should put the 
+            files in the correct order before using the plugin.
+            */
+            /*Collections.sort(includedFiles, new Comparator<File>() {
                 @Override
                 public int compare(File o1, File o2) {
                     return o1.getName().compareToIgnoreCase(o2.getName());
                 }
-            });
+            });*/
         }
 
         return includedFiles;
