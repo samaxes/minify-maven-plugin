@@ -18,10 +18,11 @@
  */
 package com.samaxes.maven.minify.plugin;
 
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.javascript.jscomp.*;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
+import com.google.javascript.jscomp.jarjar.com.google.common.base.Strings;
+import com.google.javascript.jscomp.jarjar.com.google.common.collect.Lists;
 import com.samaxes.maven.minify.common.Aggregation;
 import com.samaxes.maven.minify.common.AggregationConfiguration;
 import com.samaxes.maven.minify.common.ClosureConfig;
@@ -40,8 +41,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
-import static com.google.common.collect.Lists.newArrayList;
 
 /**
  * Goal for combining and minifying CSS and JavaScript files.
@@ -260,7 +259,7 @@ public class MinifyMojo extends AbstractMojo {
      *
      * @since 1.6
      */
-    @Parameter(property = "jsEngine", defaultValue = "YUI")
+    @Parameter(property = "jsEngine", defaultValue = "CLOSURE")
     private Engine jsEngine;
 
     /* *************************** */
@@ -312,7 +311,7 @@ public class MinifyMojo extends AbstractMojo {
      *
      * @since 1.7.2
      */
-    @Parameter(property = "closureLanguageIn", defaultValue = "ECMASCRIPT6")
+    @Parameter(property = "closureLanguageIn", defaultValue = "ECMASCRIPT_2020")
     private LanguageMode closureLanguageIn;
 
     /**
@@ -488,18 +487,17 @@ public class MinifyMojo extends AbstractMojo {
     }
 
     private ClosureConfig fillClosureConfig() throws MojoFailureException {
-        DependencyOptions dependencyOptions = new DependencyOptions();
-        dependencyOptions.setDependencySorting(closureSortDependencies);
-
+        DependencyOptions dependencyOptions = closureSortDependencies
+                ? DependencyOptions.sortOnly()
+                : DependencyOptions.none();
         List<SourceFile> externs = new ArrayList<>();
         for (String extern : closureExterns) {
             externs.add(SourceFile.fromFile(webappSourceDir + File.separator + extern, Charset.forName(charset)));
         }
 
         Map<DiagnosticGroup, CheckLevel> warningLevels = new HashMap<>();
-        DiagnosticGroups diagnosticGroups = new DiagnosticGroups();
         for (Map.Entry<String, String> warningLevel : closureWarningLevels.entrySet()) {
-            DiagnosticGroup diagnosticGroup = diagnosticGroups.forName(warningLevel.getKey());
+            DiagnosticGroup diagnosticGroup = DiagnosticGroups.forName(warningLevel.getKey());
             if (diagnosticGroup == null) {
                 throw new MojoFailureException("Failed to process closureWarningLevels: " + warningLevel.getKey() + " is an invalid DiagnosticGroup");
             }
@@ -519,7 +517,7 @@ public class MinifyMojo extends AbstractMojo {
 
     private Collection<ProcessFilesTask> createTasks(YuiConfig yuiConfig, ClosureConfig closureConfig)
             throws MojoFailureException, FileNotFoundException {
-        List<ProcessFilesTask> tasks = newArrayList();
+        List<ProcessFilesTask> tasks = Lists.newArrayList();
 
         if (!Strings.isNullOrEmpty(bundleConfiguration)) { // If a bundleConfiguration is defined, attempt to use that
             AggregationConfiguration aggregationConfiguration;

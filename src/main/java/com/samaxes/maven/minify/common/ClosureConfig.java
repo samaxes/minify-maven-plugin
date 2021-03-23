@@ -18,10 +18,10 @@
  */
 package com.samaxes.maven.minify.common;
 
-import com.google.common.base.Strings;
 import com.google.javascript.jscomp.*;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 import com.google.javascript.jscomp.SourceMap.Format;
+import com.google.javascript.jscomp.jarjar.com.google.common.base.Strings;
 
 import java.util.HashMap;
 import java.util.List;
